@@ -29,7 +29,7 @@ X_test_std = sc.transform(X_test)
 # Redefining the plot_decision_region function from chapter 2:
 from sklearn.linear_model import Perceptron
 
-ppn = Perceptron(n_iter=40, eta0=0.1, random_state=0)
+ppn = Perceptron(n_iter_no_change=40, eta0=0.1, random_state=0)
 ppn.fit(X_train_std, y_train)
 
 y_test.shape
@@ -97,7 +97,7 @@ plt.ylabel('petal width [standardized]')
 plt.legend(loc='upper left')
 
 plt.tight_layout()
-plt.savefig('Image/iris_perceptron_scikit.png', dpi=300)
+#plt.savefig('./figures/iris_perceptron_scikit.png', dpi=300)
 plt.show()
 
 # ====================================================================================
