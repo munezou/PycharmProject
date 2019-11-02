@@ -27,7 +27,8 @@ def save_fig(fig_id, tight_layout=True):
         plt.tight_layout()
     plt.savefig(path, format='png', dpi=300)
 
-from six.moves import urllib
+import urllib.request
+import urllib.parse
 
 proxy_support = urllib.request.ProxyHandler({'https': 'http://proxy.kanto.sony.co.jp:10080'})
 opener = urllib.request.build_opener(proxy_support)
