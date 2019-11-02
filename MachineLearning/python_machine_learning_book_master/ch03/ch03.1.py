@@ -126,7 +126,7 @@ ax = plt.gca()
 ax.yaxis.grid(True)
 
 plt.tight_layout()
-plt.savefig('Image/sigmoid.png', dpi=300)
+plt.savefig('./images/sigmoid.png', dpi=300)
 plt.show()
 
 
@@ -155,6 +155,6 @@ plt.xlabel('$\phi$(z)')
 plt.ylabel('J(w)')
 plt.legend(loc='best')
 plt.tight_layout()
-plt.savefig('Image/log_cost.png', dpi=300)
+plt.savefig('./images/log_cost.png', dpi=300)
 plt.show()
 
