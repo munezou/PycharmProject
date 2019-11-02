@@ -20,7 +20,6 @@ np.random.seed(42)
 
 # To plot pretty figures
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 mpl.rc('axes', labelsize=14)
 mpl.rc('xtick', labelsize=12)
 mpl.rc('ytick', labelsize=12)
@@ -51,11 +50,9 @@ print ('-------------------------------------------------------------------\n'
        '-------------------------------------------------------------------\n')
 import os
 import tarfile
-from six.moves import urllib
+import urllib.request
+import urllib.parse
 
-proxy_support = urllib.request.ProxyHandler({'https': 'http://proxy.kanto.sony.co.jp:10080'})
-opener = urllib.request.build_opener(proxy_support)
-urllib.request.install_opener(opener)
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join(PROJECT_ROOT_DIR, "datasets", "housing")
