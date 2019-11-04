@@ -9,6 +9,7 @@ Let's use the Iris dataset: the Iris Setosa and Iris Versicolor classes are line
 ------------------------------------------------------------------------------------------------------------------------
 '''
 # common library
+import numpy as np
 from sklearn import datasets
 from sklearn.svm import SVC, LinearSVC
 from sklearn.linear_model import SGDClassifier
@@ -33,8 +34,7 @@ alpha = 1 / (C * len(X))
 
 lin_clf = LinearSVC(loss="hinge", C=C, random_state=42)
 svm_clf = SVC(kernel="linear", C=C)
-sgd_clf = SGDClassifier(loss="hinge", learning_rate="constant", eta0=0.001, alpha=alpha,
-                        max_iter=100000, tol=-np.infty, random_state=42)
+sgd_clf = SGDClassifier(loss="hinge", learning_rate="constant", eta0=0.001, alpha=alpha, max_iter=100000, tol=-np.infty, random_state=42)
 
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
