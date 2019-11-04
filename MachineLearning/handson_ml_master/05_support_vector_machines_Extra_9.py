@@ -20,8 +20,6 @@ print('-------------------------------------------------------------------------
       '--------------------------------------------------------------------------------------------------------------\n')
 mnist = fetch_openml('mnist_784', version=1, cache=True)
 
-print('data information = \n{0}'.format(mnist.DESCR))
-
 X = mnist["data"]
 y = mnist["target"]
 
@@ -57,3 +55,15 @@ X_test_scaled = scaler.transform(X_test.astype(np.float32))
 # Let us start simple, with a linear SVM classifier.
 # It will automatically use the One-vs-All (also called One-vs-the-Rest, OvR) strategy,
 # so there's nothing special we need to do. Easy!
+lin_clf = LinearSVC(random_state=42)
+lin_clf_fit = lin_clf.fit(X_train_scaled, y_train)
+print('lin_clf_fit = \n{0}'.format(lin_clf_fit))
+print()
+
+y_pred = lin_clf.predict(X_train_scaled)
+lin_clf_accuracy = accuracy_score(y_train, y_pred)
+print('lin_clf_accuracy = {0}'.format(lin_clf_accuracy))
+print()
+
+# That's much better (we cut the error rate in two), but still not great at all for MNIST.
+# If we want to use an SVM, we will have to use a kernel. Let's try an SVC with an RBF kernel (the default).
