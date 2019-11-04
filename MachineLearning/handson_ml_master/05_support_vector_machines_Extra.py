@@ -38,8 +38,13 @@ for i in range(10):
     print(i, tol, t2 - t1)
     tol /= 10
 
+plt.figure(figsize= (11, 8))
 plt.semilogx(tols, times)
+plt.title("Relationship between tolerable range (TOL) of stop criteria and processing time (sec)")
+plt.xlabel("TOL")
+plt.ylabel("t(sec)")
 plt.show()
+print()
 
 print('------------------------------------------------------------------------------------------------------\n'
       '          Linear SVM classifier implementation using Batch Gradient Descent                           \n'
@@ -47,11 +52,14 @@ print('-------------------------------------------------------------------------
 # Get iris from the dataset.
 iris = datasets.load_iris()
 
+# iris information
+print(iris.DESCR)
+
 # Training set
 X = iris["data"][:, (2, 3)]  # petal length, petal width
 y = (iris["target"] == 2).astype(np.float64).reshape(-1, 1)  # Iris-Virginica
 
-
+# Homebrew LinearSVC class
 class MyLinearSVC(BaseEstimator):
     def __init__(self, C=1, eta0=1, eta_d=10000, n_epochs=1000, random_state=None):
         self.C = C
@@ -111,19 +119,24 @@ print('svm_clf_predict = \n{0}'.format(svm_clf_predict))
 print()
 
 plt.plot(range(svm_clf.n_epochs), svm_clf.Js)
+plt.title("Relationship between epoch number and js")
 plt.axis([0, svm_clf.n_epochs, 0, 100])
+plt.xlabel("n_epochs")
+plt.ylabel("js")
+plt.legend('best')
 plt.show()
 print()
 
 print('svm_clf.intercept_ = {0}\n svm_clf.coef_ = \n{1}'.format(svm_clf.intercept_, svm_clf.coef_))
 print()
 
+# using skleran SVC
 svm_clf2 = SVC(kernel="linear", C=C)
 svm_clf2.fit(X, y.ravel())
 print('svm_clf2.intercept_ = {0}\n svm_clf2.coef_ = \n{1}'.format(svm_clf2.intercept_, svm_clf2.coef_))
 print()
 
-
+# Plot decision boundary of SVC.
 def plot_svc_decision_boundary(svm_clf, xmin, xmax):
     w = svm_clf.coef_[0]
     b = svm_clf.intercept_[0]
@@ -143,8 +156,10 @@ def plot_svc_decision_boundary(svm_clf, xmin, xmax):
     plt.plot(x0, gutter_up, "k--", linewidth=2)
     plt.plot(x0, gutter_down, "k--", linewidth=2)
 
-
+# Convert y to plot.
 yr = y.ravel()
+
+# Compare MyLinearSVC and sklearn SVC.
 plt.figure(figsize=(12, 4.0))
 plt.subplot(121)
 plt.plot(X[:, 0][yr == 1], X[:, 1][yr == 1], "g^", label="Iris-Virginica")
@@ -164,6 +179,7 @@ plt.title("SVC", fontsize=14)
 plt.axis([4, 6, 0.8, 2.8])
 plt.show()
 
+# Examination of sklearn SGDClassifier
 sgd_clf = SGDClassifier(loss="hinge", alpha=0.017, max_iter=50, tol=-np.infty, random_state=42)
 sgd_clf.fit(X, y.ravel())
 
