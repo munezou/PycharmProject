@@ -6,14 +6,14 @@ import sys
 List comprehensions and readability
 '''
 print('------------------< List comprehensions and readability >-----------------------')
-symbols = '$¢£\'
+symbols = '$¢£¥€¤'
 codes = []
 
 '''
 ord()
 Returns a string representing a single Unicode character, 
 an integer representing the Unicode code point of that character. 
-For example, ord ('a') returns the integer 97 and ord ('') (the euro symbol) returns 8364. 
+For example, ord ('a') returns the integer 97 and ord ('€') (the euro symbol) returns 8364. 
 This is the reverse of chr ().
 '''
 
@@ -208,3 +208,48 @@ You can also slice by specifying the number of steps in [Start Position: End Pos
 a = ('Python', 'C', 'C++', 'Java', 'PHP', 'Ruby', 'JavaScript')
 print('a = {0}'.format(a))
 
+# How to use step
+print('a[0:6:2] = {0}'.format(a[0:6:2]))
+print('a[2:6:3] = {0}'.format(a[2:6:3]))
+
+# Start and end can be omitted
+print('a[0::2] = {0}'.format(a[0::2]))
+print('a[::2] = {0}'.format(a[::2]))
+print('a[1::3] = {0}'.format(a[1::3]))
+
+print()
+
+# Get the number of elements.
+print('length of a tuple is {0}.'.format(len(a)))
+
+print()
+
+# Add / Change / Delete Element
+t = ('a', 'b', 'c')
+
+try:
+    print('t[0] = d')
+    t[0] = 'd'
+except Exception as ex:
+    print(ex)
+    print(type(ex))
+
+print()
+
+try:
+    print('del t[0]')
+    del t[0]
+except Exception as ex:
+    print(ex)
+    print(type(ex))
+
+print()
+
+'''
+--------------------------------------------------------
+Tuples thus guarantee element immutability. 
+Therefore, it is used as a fixed set value, as a substitute for "constants" in other programming languages.
+* Although many programming languages have constants (variables whose values can not be changed),
+ Python does not have "constants" in other languages.
+--------------------------------------------------------
+'''

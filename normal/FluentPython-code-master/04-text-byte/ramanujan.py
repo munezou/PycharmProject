@@ -7,7 +7,7 @@ re_numbers_bytes = re.compile(rb'\d+')  # <2>
 re_words_bytes = re.compile(rb'\w+')
 
 text_str = ("Ramanujan saw \u0be7\u0bed\u0be8\u0bef"  # <3>
-            " as 1729 = 1続 + 12続 = 9続 + 10続.")        # <4>
+            " as 1729 = 1³ + 12³ = 9³ + 10³.")        # <4>
 
 text_bytes = text_str.encode('utf_8')  # <5>
 

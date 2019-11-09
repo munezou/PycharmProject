@@ -1,5 +1,5 @@
 import time
-from clockdeco_param import clock
+from normal.PythonDataModel.ch07_closure_deco.clockdeco_param import clock
 
 @clock('{name}: {elapsed}s')
 def snooze(seconds):

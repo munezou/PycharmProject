@@ -42,3 +42,4 @@ def tag(name, *content, cls=None, **attrs):
     else:
         return '<%s%s />' % (name, attr_str)
 # END TAG_FUNC
+

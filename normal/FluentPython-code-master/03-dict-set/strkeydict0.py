@@ -1,4 +1,6 @@
-"""StrKeyDict0 converts non-string keys to `str` on lookup
+'''
+
+StrKeyDict0 converts non-string keys to `str` on lookup
 
 # BEGIN STRKEYDICT0_TESTS
 
@@ -32,9 +34,7 @@ Tests for the `in` operator::
     False
 
 # END STRKEYDICT0_TESTS
-"""
-
-
+'''
 # BEGIN STRKEYDICT0
 class StrKeyDict0(dict):  # <1>
 
@@ -53,3 +53,33 @@ class StrKeyDict0(dict):  # <1>
         return key in self.keys() or str(key) in self.keys()  # <6>
 
 # END STRKEYDICT0
+
+print('---< start main routine >---')
+
+d = StrKeyDict0([('2', 'two'), ('4', 'four')])
+print ('d[2] = {0}'.format(d['2']))
+print ('d[4] = {0}'.format(d[4]))
+
+'''
+------------------------------------------
+if index does not exist, occure error
+------------------------------------------
+'''
+try:
+    print('d[1] = {0}'.format(d[1]))
+except Exception as e:
+    print(e)
+finally:
+    pass
+
+print()
+
+print ('d.get("2") = {0}'.format(d.get('2')))
+print ('d.get(4) = {0}'.format(d.get(4)))
+'''
+---------------------------------------------
+
+--------------------------------------------
+'''
+print ('d.get(1, "N/A") = {0}'.format(d.get(1, 'N/A')))
+print()

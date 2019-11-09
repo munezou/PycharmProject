@@ -14,14 +14,15 @@ def register(active=True):  # <2>
         return func  # <6>
     return decorate  # <7>
 
-@register(active=False)  # <8>
+@register(active=True)  # <8>
 def f1():
     print('running f1()')
 
-@register()  # <9>
+@register(active=False)  # <9>
 def f2():
     print('running f2()')
 
+@register(active=True)
 def f3():
     print('running f3()')
 

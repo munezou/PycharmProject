@@ -3,7 +3,7 @@ Utility functions for normalized Unicode string comparison.
 
 Using Normal Form C, case sensitive:
 
-    >>> s1 = 'cafテゥ'
+    >>> s1 = 'café'
     >>> s2 = 'cafe\u0301'
     >>> s1 == s2
     False
@@ -14,7 +14,7 @@ Using Normal Form C, case sensitive:
 
 Using Normal Form C with case folding:
 
-    >>> s3 = 'Straテ歹'
+    >>> s3 = 'Straße'
     >>> s4 = 'strasse'
     >>> s3 == s4
     False

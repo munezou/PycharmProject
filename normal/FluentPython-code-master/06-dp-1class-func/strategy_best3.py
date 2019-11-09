@@ -39,10 +39,9 @@
 from collections import namedtuple
 import inspect
 
-import promotions
+from normal.PythonDataModel.ch06_dp_1class_func import promotions
 
 Customer = namedtuple('Customer', 'name fidelity')
-
 
 class LineItem:
 

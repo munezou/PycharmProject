@@ -1,4 +1,4 @@
-from clockdeco import clock
+from normal.PythonDataModel.ch07_closure_deco.clockdeco import clock
 
 @clock
 def fibonacci(n):

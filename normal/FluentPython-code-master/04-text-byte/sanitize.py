@@ -4,27 +4,27 @@ Radical folding and text sanitizing.
 
 Handling a string with `cp1252` symbols:
 
-    >>> order = '“Herr Vos:   cup of tker caffe latte  bowl of acai.”'
+    >>> order = '“Herr Voß: • ½ cup of Œtker™ caffè latte • bowl of açaí.”'
     >>> shave_marks(order)
-    '“Herr Vos:   cup of tker caffe latte  bowl of acai.”'
+    '“Herr Voß: • ½ cup of Œtker™ caffe latte • bowl of acai.”'
     >>> shave_marks_latin(order)
-    '“Herr Vos:   cup of tker caffe latte  bowl of acai.”'
+    '“Herr Voß: • ½ cup of Œtker™ caffe latte • bowl of acai.”'
     >>> dewinize(order)
-    '"Herr Vos: -  cup of OEtker(TM) caffe latte - bowl of acai."'
+    '"Herr Voß: - ½ cup of OEtker(TM) caffè latte - bowl of açaí."'
     >>> asciize(order)
-    '"Herr Voss: - 12 cup of OEtker(TM) caffe latte - bowl of acai."'
+    '"Herr Voss: - 1⁄2 cup of OEtker(TM) caffe latte - bowl of acai."'
 
 Handling a string with Greek and Latin accented characters:
 
-    >>> greek = 'Ζφυρο, Zefiro'
+    >>> greek = 'Ζέφυρος, Zéfiro'
     >>> shave_marks(greek)
-    'Ζεφυρο, Zefiro'
+    'Ζεφυρος, Zefiro'
     >>> shave_marks_latin(greek)
-    'Ζφυρο, Zefiro'
+    'Ζέφυρος, Zefiro'
     >>> dewinize(greek)
-    'Ζφυρο, Zefiro'
+    'Ζέφυρος, Zéfiro'
     >>> asciize(greek)
-    'Ζφυρο, Zefiro'
+    'Ζέφυρος, Zefiro'
 
 """
 
@@ -59,15 +59,15 @@ def shave_marks_latin(txt):
 # END SHAVE_MARKS_LATIN
 
 # BEGIN ASCIIZE
-single_map = str.maketrans("""†‘’“”""",  # <1>
+single_map = str.maketrans("""‚ƒ„†ˆ‹‘’“”•–—˜›""",  # <1>
                            """'f"*^<''""---~>""")
 
 multi_map = str.maketrans({  # <2>
-    '': '<euro>',
+    '€': '<euro>',
     '…': '...',
-    '': 'OE',
-    '': '(TM)',
-    '': 'oe',
+    'Œ': 'OE',
+    '™': '(TM)',
+    'œ': 'oe',
     '‰': '<per mille>',
     '‡': '**',
 })
@@ -82,6 +82,6 @@ def dewinize(txt):
 
 def asciize(txt):
     no_marks = shave_marks_latin(dewinize(txt))     # <5>
-    no_marks = no_marks.replace('s', 'ss')          # <6>
+    no_marks = no_marks.replace('ß', 'ss')          # <6>
     return unicodedata.normalize('NFKC', no_marks)  # <7>
 # END ASCIIZE

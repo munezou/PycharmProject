@@ -140,3 +140,74 @@ class TransformDict(MutableMapping):
             equiv = list(self.items())
         return '%s(%r, %s)' % (self.__class__.__name__,
                                self._transform, repr(equiv))
+
+print ('---< class types.MappingProxyType(mapping) >---')
+from types import MappingProxyType
+d = {1: 'A'}
+print('d = {0}'.format(d))
+d_proxy = MappingProxyType(d)
+print ('d_proxy = {0}'.format(d_proxy))
+print ('type(d_proxy) = {0}'.format(type(d_proxy)))
+print()
+print('d_proxy[1] = {0}'.format(d_proxy[1]))
+print()
+
+try:
+    print('---< d_proxy[2] = "B" >---')
+    d_proxy[2] = 'B'
+except Exception as e:
+    print(e)
+finally:
+    pass
+
+d[2] = 'B'
+print('---< Add {2: "B"} to d')
+print ('d_proxy = {0}'.format(d_proxy))
+print()
+print('d_proxy[2] = {0}'.format(d_proxy[2]))
+print()
+
+l = ['spam', 'spam', 'eggs', 'spam']
+print ('l = {0}'.format(l))
+print('type(l) = {0}'.format(type(l)))
+print()
+m = set(l)
+print('m = {0}'.format(set(l)))
+print('type(m) = {0}'.format(type(m)))
+print()
+print('---< transform m to list. >---')
+n = list(m)
+print('n = {0}'.format(n))
+print('type(n) = {0}'.format(type(n)))
+print()
+
+print('---< literal >---')
+s ={1}
+print('s = {0}, type(s) = {1}'.format(s, type(s)))
+print()
+print('s.pop() = {0}'.format(s.pop()))
+print()
+print('s = {0}'.format(s))
+print()
+
+from dis import dis
+A = dis('{0}')
+print('A = \n{0}'.format(A))
+print()
+B = dis('set({1})')
+print('B = \n{0}'.format(B))
+print()
+
+print('frozenset(range(10)) = {0}'.format(frozenset(range(10))))
+print()
+
+print('---< Set comprehension notation >---')
+from unicodedata import name
+C = {chr(i) for i in range(32, 256) if 'SIGN' in name(chr(i), '')}
+print('C = {0}'.format(C))
+print()
+
+
+
+
+

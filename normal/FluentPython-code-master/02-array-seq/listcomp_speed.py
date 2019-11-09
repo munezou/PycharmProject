@@ -3,7 +3,7 @@ import timeit
 TIMES = 10000
 
 SETUP = """
-symbols = '$ツ「ツ」ツ・竄ャツ、'
+symbols = '$¢£¥€¤'
 def non_ascii(c):
     return c > 127
 """
