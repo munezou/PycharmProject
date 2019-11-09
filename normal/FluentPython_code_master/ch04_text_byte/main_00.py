@@ -14,8 +14,8 @@ Character problem
 print('--------------------------------------------\n'
       '   character problem\n'
       '--------------------------------------------\n')
-s = 'cafíH'
-print('len("cafíH") = {0}'.format(len(s)))
+s = 'caf√©'
+print('len("caf√©") = {0}'.format(len(s)))
 
 b = s.encode('utf8')
 print('s.encode("utf8") = {0}'.format(b))
@@ -32,7 +32,7 @@ print('--------------------------------------------\n'
       '   about byte\n'
       '--------------------------------------------\n')
 print('---< about bytes(python 3) >---')
-cafe = bytes('cafíH', encoding='utf_8')
+cafe = bytes('caf√©', encoding='utf_8')
 print('cafe = {0}'.format(cafe))
 print('cafe[0] = {0}'.format(cafe[0]))
 print('cafe[:1] = {0}'.format(cafe[:1]))
@@ -89,7 +89,7 @@ print('--------------------------------------------\n'
       '   Basic encoder and decoder\n'
       '--------------------------------------------\n')
 for codec in ['latin_1', 'utf_8', 'utf_16']:
-    print(codec, 'El NiíPo'.encode(codec), sep='\t')
+    print(codec, 'El Ni√±o'.encode(codec), sep='\t')
 
 print()
 
@@ -102,8 +102,8 @@ print('--------------------------------------------\n'
       '   Encoder and decoder problems\n'
       '--------------------------------------------\n')
 # Countermeasures for Unicode Encode Error
-print('---< síBo Paulo >---')
-city = 'síBo Paulo'
+print('---< s√£o Paulo >---')
+city = 's√£o Paulo'
 print('city.encode("utf_8") = {0}'.format(city.encode('utf_8')))
 print()
 print('city.encode("utf_16") = {0}'.format(city.encode('utf_16')))
@@ -157,7 +157,7 @@ Little endian : intel
 print('--------------------------------------------\n'
       '   utf_8 with BOM or without BOM\n'
       '--------------------------------------------\n')
-u16 = 'El NiíPo'.encode('utf_16')
+u16 = 'El Ni√±o'.encode('utf_16')
 print('u16 = {0}'.format(u16))
 print('BOM = \xff\xfe')
 print()
@@ -165,11 +165,11 @@ print('---< Little endian >---')
 print('list(u16) = \n{0}'.format(list(u16)))
 print()
 print('---< utf_16le: little endian >---')
-u16le = 'El NiíPo'.encode('utf_16le')
+u16le = 'El Ni√±o'.encode('utf_16le')
 print('list(u16le) = \n{0}'.format(list(u16le)))
 print()
 print('---< big endian >---')
-u16be = 'El NiíPo'.encode('utf_16be')
+u16be = 'El Ni√±o'.encode('utf_16be')
 print('list(u16be) = \n{0}'.format(list(u16be)))
 print()
 
@@ -182,7 +182,7 @@ print('--------------------------------------------\n'
       '             Processing text files          \n'
       '--------------------------------------------\n')
 # Platform encoding issues
-open('cafe.txt', 'w', encoding='utf_8').write('cafíH')
+open('cafe.txt', 'w', encoding='utf_8').write('caf√©')
 
 # check contents in cafe.txt.
 tmpSt = open('cafe.txt').read()
@@ -191,11 +191,11 @@ print('contents = {0}'.format(tmpSt))
 print()
 
 print('--------------------------------------------\n'
-      '             scrutinize codeÅ@Å@Å@Å@          \n'
+      '             scrutinize code                \n'
       '--------------------------------------------\n')
 fp = open('cafe.txt', 'w', encoding='utf_8')
 print('fp = {0}'.format(fp))
-fp.write('cafe')
+fp.write('caf√©')
 fp.close()
 
 import os
@@ -225,7 +225,7 @@ Messy default encoding
 ------------------------------------------------------------------------------------------------------------------------
 '''
 print('--------------------------------------------\n'
-      '         Messy default encodinÅ@Å@          \n'
+      '         Messy default encodin              \n'
       '--------------------------------------------\n')
 expressions = """
         locale.getpreferredencoding()
@@ -254,7 +254,7 @@ print()
 ------------------------------------------------------------------------------------------------------------------------
 '''
 print('---------------------------------------------------------------------\n'
-      '         4.6 Unicode normalization for proper comparisonÅ@Å@          \n'
+      '         4.6 Unicode normalization for proper comparison             \n'
       '---------------------------------------------------------------------\n')
 s1 = 'cafe'
 s2 = 'cafe\u0301'
@@ -267,8 +267,8 @@ print('s1 == s2, result = {0}'.format(s1 == s2))
 print()
 
 print('---------------------------------------------------------------------\n'
-      '   Use unicodedata.normalize () as a countermeasure Å@Å@Å@Å@Å@Å@Å@Å@Å@Å@\n'
-      'Å@ that is not considered the same even if the display is the same.  \n'
+      '   Use unicodedata.normalize () as a countermeasure                  \n'
+      '  that is not considered the same even if the display is the same.   \n'
       '---------------------------------------------------------------------\n')
 print('len(normalize("NFC", s1)) = {0}, len(normalize("NFC", s2)) = {1}'.format(len(normalize('NFC', s1)), len(normalize('NFC', s2))))
 print()
@@ -291,7 +291,7 @@ print()
 print('normalize("NFC", ohm) == normalize("NFC", ohm_c), result = {0}'.format(normalize('NFC', ohm) == normalize("NFC", ohm_c)))
 print()
 
-micro ='É '
+micro = 'Œº'
 micro_kc = normalize('NFKC', micro)
 print('micro = {0}, micro_kc = {1}'.format(micro, micro_kc))
 print()
@@ -306,9 +306,9 @@ case folding
 ------------------------------------------------------------------------------------------------------------------------
 '''
 print('-----------------------------------------\n'
-      '         4.6.1  case foldingÅ@Å@          \n'
+      '         4.6.1  case folding             \n'
       '-----------------------------------------\n')
-micro = 'É '
+micro = 'Œº'
 print('micro = {0}, name(micro) = {1}'.format(micro, name(micro)))
 print()
 micro_cf = micro.casefold()
@@ -316,7 +316,7 @@ print('micro_cf = {0}, name(micro_cf) = {1}'.format(micro_cf, name(micro_cf)))
 print()
 print('micro = {0}, micro_cf = {1}'.format(micro, micro_cf))
 print()
-eszett = 'É¿'
+eszett = 'Œ≤'
 print('eszett = {0}, name(eszett) = {1}'.format(eszett, name(eszett)))
 print()
 eszett_cf = eszett.casefold()
@@ -340,7 +340,7 @@ def fold_equal(str1, str2):
     return (normalize('NFC', str1).casefold() ==
             normalize('NFC', str2).casefold())
 
-s1 = 'cafe'
+s1 = 'caf√©'
 s2 = 'cafe\u0301'
 print('s1 == s2, result = {0}'.format(s1 == s2))
 print()
@@ -348,7 +348,7 @@ print('nfc_equal(s1, s2) = {0}'.format(nfc_equal(s1, s2)))
 print()
 print('nfc_equal("A", "a") = {0}'.format(nfc_equal('A', 'a')))
 print()
-s3 = 'Strase'
+s3 = 'Stra√üe'
 s4 = 'strasse'
 print('s3 == s4, result = {0}'.format(s3 == s4))
 print()
@@ -376,11 +376,11 @@ def shave_marks(txt):
                      if not unicodedata.combining(c))
     return unicodedata.normalize('NFC', shaved)
 
-order = 'ÅgHerr Vos:   cup of tker caffe latte  bowl of acai.Åh'
+order = '‚ÄúHerr Vo√ü: ‚Ä¢ ¬Ω cup of ≈ítker‚Ñ¢ caff√® latte ‚Ä¢ bowl of a√ßa√≠.‚Äù'
 print('order = {0}'.format(order))
 print('shave_marks(order) = {0}'.format(shave_marks(order)))
 print()
-greek = 'É§É”É“ÉœÉÕ, Zefiro'
+greek = 'ŒñœÜœÖœÅŒø, Zefiro'
 print('greek = {0}'.format(greek))
 print('shave_marks(greek) = {0}'.format(shave_marks(greek)))
 print()
@@ -413,17 +413,17 @@ Converts some Western photosetting symbols to ASCII characters.
 print('----------------------------------------------------------------------\n'
       '   Converts some Western photosetting symbols to ASCII characters.    \n'
       '----------------------------------------------------------------------\n')
-single_map = str.maketrans("""ÅıÅeÅfÅgÅh""",  # <1>
+single_map = str.maketrans("""‚Äö∆í‚Äû‚Ä†ÀÜ‚Äπ‚Äò‚Äô‚Äú‚Äù‚Ä¢‚Äì‚ÄîÀú‚Ä∫""",  # <1>
                            """'f"*^<''""---~>""")
 
 multi_map = str.maketrans({  # <2>
-    '': '<euro>',
-    'Åc': '...',
-    '': 'OE',
-    '': '(TM)',
-    '': 'oe',
-    'ÅÒ': '<per mille>',
-    'Åˆ': '**',
+    '‚Ç¨': '<euro>',
+    '‚Ä¶': '...',
+    '‚Ç¨': 'OE',
+    '‚Ñ¢': '(TM)',
+    '≈ì': 'oe',
+    '‚Ä∞': '<per mille>',
+    '‚Ä°': '**',
 })
 
 multi_map.update(single_map)  # <3>
@@ -439,7 +439,7 @@ def asciize(txt):
     no_marks = no_marks.replace('s', 'ss')          # <6>
     return unicodedata.normalize('NFKC', no_marks)  # <7>
 
-order = 'ÅgHerr Vos:   cup of tker caffe latte  bowl of acai.Åh'
+order = '‚ÄúHerr Vo√ü: ‚Ä¢ ¬Ω cup of ≈ítker‚Ñ¢ caffe latte ‚Ä¢ bowl of acai.‚Äù'
 print('order = {0}'.format(order))
 print()
 print('dewinize(order) = {0}'.format(dewinize(order)))
@@ -447,7 +447,7 @@ print()
 print('asciize(order) = {0}'.format(asciize(order)))
 print()
 
-greek = 'É§É”É“ÉœÉÕ, Zefiro'
+greek = 'ŒñœÜœÖœÅŒø, Zefiro'
 print('greek = {0}'.format(greek))
 print()
 print('dewinize(greek) = {0}'.format(dewinize(greek)))
@@ -463,7 +463,7 @@ print()
 print('----------------------------------------------------------------------\n'
       '                           4.7 Sort unicode text                      \n'
       '----------------------------------------------------------------------\n')
-fruits = ['caju', 'atemoia', 'caja', 'acai', 'acerola']
+fruits = ['caju', 'atemoia', 'caj√°', 'a√ßa√ç', 'acerola']
 print('fruits = \n{0}'.format(fruits))
 print()
 print('sorted(fruits) = \n{0}'.format(sorted(fruits)))
@@ -520,7 +520,7 @@ re_numbers_bytes = re.compile(rb'\d+')  # <2>
 re_words_bytes = re.compile(rb'\w+')
 
 text_str = ("Ramanujan saw \u0be7\u0bed\u0be8\u0bef"  # <3>
-            " as 1729 = 13 + 123 = 93 + 103.")        # <4>
+            " as 1729 = 1¬≥ + 12¬≥ = 9¬≥ + 10¬≥.")        # <4>
 
 text_bytes = text_str.encode('utf_8')  # <5>
 

@@ -39,7 +39,7 @@
 from collections import namedtuple
 import inspect
 
-from normal.PythonDataModel.ch06_dp_1class_func import promotions
+from normal.FluentPython_code_master.ch06_dp_1class_func import promotions
 
 Customer = namedtuple('Customer', 'name fidelity')
 

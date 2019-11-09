@@ -6,7 +6,7 @@
 print('-----------------------------------------------------------------------------------------------------------------\n'
       '                                    7.2 Decorator execution timing                                               \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
-from normal.PythonDataModel.ch07_closure_deco.registration import *
+from normal.FluentPython_code_master.ch07_closure_deco.registration import *
 
 '''
 ------------------------------------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ from normal.PythonDataModel.ch07_closure_deco.registration import *
 print('-----------------------------------------------------------------------------------------------------------------\n'
       '                          7.3 Improving strategy patterns using decorators                                       \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
-from normal.PythonDataModel.ch07_closure_deco.strategy_best4 import *
+from normal.FluentPython_code_master.ch07_closure_deco.strategy_best4 import *
 
 joe = Customer('John Doe', 0)
 ann = Customer('Ann Smith', 1100)

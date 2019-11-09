@@ -1,6 +1,6 @@
 # common library
 import weakref
-from normal.PythonDataModel.ch08_obj_ref.cheese import *
+from normal.FluentPython_code_master.ch08_obj_ref.cheese import *
 
 print('-----------------------------------------------------------------\n'
       '                     8.5 del and garbage collection              \n'
@@ -26,7 +26,7 @@ print('ender.alive = {0}'.format(ender.alive))
 print()
 
 print('-----------------------------------------------------------------\n'
-      '                     8.6 weak reference　　　　　　              \n'
+      '                     8.6 weak reference                          \n'
       '-----------------------------------------------------------------\n')
 a_set = {0, 1}
 
@@ -48,7 +48,7 @@ print('wref() is None = {0}'.format(wref() is None))
 print()
 
 print('-----------------------------------------------------------------\n'
-      '            8.6.1 Conte "WeakValueDictionary"　　　　             \n'
+      '            8.6.1 Conte "WeakValueDictionary"                    \n'
       '-----------------------------------------------------------------\n')
 stock = weakref.WeakValueDictionary()
 catalog = [Cheese('Red Leicester'), Cheese('Tilsit'), Cheese('Brie'), Cheese('Parmesan')]

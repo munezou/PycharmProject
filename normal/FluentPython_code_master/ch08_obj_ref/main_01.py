@@ -1,18 +1,18 @@
 print('----------------------------------------------------------\n'
-      '          8.3 The default copy is ÅgshallowÅh.              \n'
+      '          8.3 The default copy is ÔøΩgshallowÔøΩh.              \n'
       '----------------------------------------------------------\n')
 import copy
 from copy import deepcopy
-from normal.PythonDataModel.ch08_obj_ref.bus import *
-from normal.PythonDataModel.ch08_obj_ref.haunted_bus import *
-from normal.PythonDataModel.ch08_obj_ref.twilight_bus import *
-from normal.PythonDataModel.ch08_obj_ref.TwilightBus_Modify import *
+from normal.FluentPython_code_master.ch08_obj_ref.bus import *
+from normal.FluentPython_code_master.ch08_obj_ref.haunted_bus import *
+from normal.FluentPython_code_master.ch08_obj_ref.twilight_bus import *
+from normal.FluentPython_code_master.ch08_obj_ref.TwilightBus_Modify import *
 
 '''
 copy.copy (x)
 Returns a shallow copy of x.
 
-copy.deepcopy (x [, memo]) Å˜
+copy.deepcopy (x [, memo]) ÔøΩÔøΩ
 Returns a deep copy of x.
 
 exception copy.error
@@ -32,7 +32,7 @@ print('l2: {0}'.format(l2))
 print()
 
 print('----------------------------------------------------------\n'
-      '    8.3.1 ÅgDeepÅh and ÅgShallowÅh copies of any object       \n'
+      '    8.3.1 Deep and Shallow copies of any object           \n'
       '----------------------------------------------------------\n')
 bus1 = Bus(['Alice', 'Bill', 'Claire', 'David'])
 bus2 = copy.copy(bus1)
@@ -131,7 +131,7 @@ print('HauntedBus.__init__.__defaults__[0] is bus2.passengers = {0}'.format(Haun
 print()
 
 print('-----------------------------------------------------------------\n'
-      'Å@Å@8.4.2 Make programs that use variable arguments robust.      \n'
+      '    8.4.2 Make programs that use variable arguments robust.      \n'
       '-----------------------------------------------------------------\n')
 basketball_team = ['Sue', 'Tina', 'Maya', 'Diana', 'Pat']
 bus = TwilightBus(basketball_team)

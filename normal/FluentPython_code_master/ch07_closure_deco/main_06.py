@@ -1,4 +1,4 @@
-from normal.PythonDataModel.ch07_closure_deco.clockdeco import *
+from normal.FluentPython_code_master.ch07_closure_deco.clockdeco import *
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
       '                                             7.6 NONLOCAL declaration                                            \n'

@@ -3,15 +3,16 @@ print('-------------------------------------------------------------------------
       '-----------------------------------------------------------------------------------------------------------------\n')
 
 print('---< f1 function >---')
-try:
-    b1 = 6
-    def f1(a):
-        print('a = {0}'.format(a))
+
+b1 = 6
+def f1(a):
+    print('a = {0}'.format(a))
+    try:
         print('b1 = {0}'.format(b1))
-except Exception as e:
-    print(e)
-finally:
-    pass
+    except Exception as e:
+        print(e)
+    finally:
+        pass
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
       '                                   Error verification by disassembler                                            \n'
@@ -26,16 +27,18 @@ print()
 
 
 print('--< f2 function >---')
-try:
-    b2 = 6
-    def f2(a):
-        print('a = {0}'.format(a))
+
+b2 = 6
+def f2(a):
+    print('a = {0}'.format(a))
+    try:
         print('b2 = {0}'.format(b2))
-        b2 = 9
-except Exception as e:
-    print(e)
-finally:
-    pass
+    except Exception as e:
+        print(e)
+    finally:
+        pass
+    b2 = 9
+
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
       '                                   Error verification by disassembler                                            \n'

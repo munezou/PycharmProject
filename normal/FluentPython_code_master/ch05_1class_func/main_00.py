@@ -17,7 +17,7 @@ import unicodedata
 import random
 
 print('-------------------------------------------------------------------\n'
-      '     　　　　　　5.1 Treat functions like objects.　　　　　　　　　　　\n'
+      '     5.1 Treat functions like objects.                             \n'
       '-------------------------------------------------------------------\n')
 def factorial(n):
     '''return n!'''
@@ -267,7 +267,7 @@ def clip(text, max_len=80):
         end = len(text)
     return text[:end].rstrip()
 
-from clip import clip
+from normal.FluentPython_code_master.ch05_1class_func.clip import clip
 print('clip.__default__ = {0}'.format(clip.__defaults__))
 print()
 
@@ -324,7 +324,7 @@ print('-------------------------------------------------------------------\n'
 print('---< Annotated clip function >---')
 
 '''
-Annotation is an English word meaning “annotation”. 
+Annotation is an English word meaning annotation. 
 In the IT field, additional information embedded in data and programs using a special notation is often called in this way.
 '''
 
@@ -462,7 +462,7 @@ print('if nfc(s1) == nfc(s2) is {0}'.format(nfc(s1) == nfc(s2)))
 print()
 
 print('---< Demo with partial applied to tag function >---')
-from tagger import tag
+from normal.FluentPython_code_master.ch05_1class_func.tagger import tag
 print('tag = {0}'.format(tag))
 print()
 

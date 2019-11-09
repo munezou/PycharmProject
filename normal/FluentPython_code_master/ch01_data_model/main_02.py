@@ -25,6 +25,11 @@ The usage of __str__ and __repr__ in print statement and format statement is as 
 -If both __str__ and __repr__ are defined, __str__ is used.
 -----------------------------------------------------------------------------------------------------------------
 '''
+import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+
+from normal.FluentPython_code_master.ch01_data_model.human import Human
 
 class Person:
     def __init__(self, name, age):
@@ -94,8 +99,6 @@ special methods (__hash__ / __bool__ / __eq__ )
 '''
 
 print('----------< special methods (__hash__ / __bool__ / __eq__ ) >---------')
-from normal.PythonDataModel.ch01_data_model.human import Human
-
 taro = Human("Taro", 21)
 jiro = Human("Jiro", 20)
 taro_2 = Human("Taro", 21)

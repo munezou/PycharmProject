@@ -116,6 +116,7 @@ try:
     print('d.update([1, 3, 5]) = {0}'.format(d.update([1, 3, 5])))
 except Exception as e:
     print(e)
+    pass
 finally:
     pass
 print()

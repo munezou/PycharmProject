@@ -4,7 +4,7 @@ Revised clockdeco
 ------------------------------------------------------------------------------------------
 '''
 import time
-from normal.PythonDataModel.ch07_closure_deco.clockdeco_modify import clock
+from normal.FluentPython_code_master.ch07_closure_deco.clockdeco_modify import clock
 
 @clock
 def snooze(second):
@@ -28,19 +28,19 @@ if __name__ == '__main__':
 print('-----------------------------------------------------------------------------------------------------------------\n'
       '                           7.8.1 Memoization using functools.lru_cache                                           \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
-from fibo_demo import *
+from normal.FluentPython_code_master.ch07_closure_deco.fibo_demo import *
 
 print('---< no using lru_cache >---')
 fibonacci(6)
 print()
 
-from fibo_demo_lru import *
+from normal.FluentPython_code_master.ch07_closure_deco.fibo_demo_lru import *
 
 print('---< using lru_cache >---')
 fibonacci_lru(30)
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
-      '                        Å@Å@   7.8.2 Single dispatch generic function    Å@                                       \n'
+      '                           7.8.2 Single dispatch generic function                                                \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
 import html
 

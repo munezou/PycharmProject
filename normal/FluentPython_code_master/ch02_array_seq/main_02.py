@@ -37,8 +37,8 @@ print('---< Use tapple as a record. >---')
 lax_coordinate = (33.9425, -118.408056)
 city, year, pop, chg, area = ('Tokyo', 2003, 32.450, 0.66, 8014)
 '''
-pop: population　（Unit millions）
-chg: Population change rate（％）
+pop: population Unit millions
+chg: Population change rate
 area: area (km^2)
 '''
 traveler_ids = [('USA', '31195855'), ('BRA', 'CE342567'), ('ESP', 'XDA205856')]

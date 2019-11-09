@@ -1,6 +1,6 @@
 import functools
 
-from normal.PythonDataModel.ch07_closure_deco.clockdeco import clock
+from normal.FluentPython_code_master.ch07_closure_deco.clockdeco import clock
 
 @functools.lru_cache() # <1>
 @clock  # <2>

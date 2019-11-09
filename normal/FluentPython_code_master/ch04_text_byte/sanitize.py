@@ -1,31 +1,26 @@
 
 """
 Radical folding and text sanitizing.
-
 Handling a string with `cp1252` symbols:
-
-    >>> order = '�gHerr Vos:   cup of tker caffe latte  bowl of acai.�h'
+    >>> order = '“Herr Voß: • ½ cup of Œtker™ caffè latte • bowl of açaí.”'
     >>> shave_marks(order)
-    '�gHerr Vos:   cup of tker caffe latte  bowl of acai.�h'
+    '“Herr Voß: • ½ cup of Œtker™ caffe latte • bowl of acai.”'
     >>> shave_marks_latin(order)
-    '�gHerr Vos:   cup of tker caffe latte  bowl of acai.�h'
+    '“Herr Voß: • ½ cup of Œtker™ caffe latte • bowl of acai.”'
     >>> dewinize(order)
-    '"Herr Vos: -  cup of OEtker(TM) caffe latte - bowl of acai."'
+    '"Herr Voß: - ½ cup of OEtker(TM) caffè latte - bowl of açaí."'
     >>> asciize(order)
-    '"Herr Voss: - 12 cup of OEtker(TM) caffe latte - bowl of acai."'
-
+    '"Herr Voss: - 1⁄2 cup of OEtker(TM) caffe latte - bowl of acai."'
 Handling a string with Greek and Latin accented characters:
-
-    >>> greek = '���Ӄ҃σ�, Zefiro'
+    >>> greek = 'Ζέφυρος, Zéfiro'
     >>> shave_marks(greek)
-    '���ÃӃ҃σ�, Zefiro'
+    'Ζεφυρος, Zefiro'
     >>> shave_marks_latin(greek)
-    '���Ӄ҃σ�, Zefiro'
+    'Ζέφυρος, Zefiro'
     >>> dewinize(greek)
-    '���Ӄ҃σ�, Zefiro'
+    'Ζέφυρος, Zéfiro'
     >>> asciize(greek)
-    '���Ӄ҃σ�, Zefiro'
-
+    'Ζέφυρος, Zefiro'
 """
 
 # BEGIN SHAVE_MARKS
@@ -59,17 +54,17 @@ def shave_marks_latin(txt):
 # END SHAVE_MARKS_LATIN
 
 # BEGIN ASCIIZE
-single_map = str.maketrans("""���e�f�g�h""",  # <1>
+single_map = str.maketrans("""‚ƒ„†ˆ‹‘’“”•–—˜›""",  # <1>
                            """'f"*^<''""---~>""")
 
 multi_map = str.maketrans({  # <2>
-    '': '<euro>',
-    '�c': '...',
-    '': 'OE',
-    '': '(TM)',
-    '': 'oe',
-    '��': '<per mille>',
-    '��': '**',
+    '€': '<euro>',
+    '…': '...',
+    'Œ': 'OE',
+    '™': '(TM)',
+    'œ': 'oe',
+    '‰': '<per mille>',
+    '‡': '**',
 })
 
 multi_map.update(single_map)  # <3>

@@ -1,12 +1,14 @@
 # Chapter 2
+
 import bisect
 import sys
+from collections import Hashable
 
 '''
 List comprehensions and readability
 '''
 print('------------------< List comprehensions and readability >-----------------------')
-symbols = '$￠￡\'
+symbols = '$ﾂ｢ﾂ｣ﾂ･竄ｬﾂ､'
 codes = []
 
 '''
@@ -30,7 +32,7 @@ print('code = {0}'.format(codes))
 
 print()
 
-print('---------<  list comprehension and Difference between　map and  filter >---------')
+print('---------<  list comprehension and Difference between?map and  filter >---------')
 
 print()
 
@@ -89,9 +91,6 @@ print(type(l))  # <class 'list'>
 print()
 
 print('----< Check if list and tuple are hashable. >----')
-
-from collections import Hashable
-
 print('isinstance([], Hashtable) = {0}'.format(isinstance([], Hashable)))
 print('isinstance((), Hashtable) = {0}'.format(isinstance((), Hashable)))
 
@@ -104,9 +103,9 @@ Prepare dict with value of building name using latitude and longitude informatio
 -----------------------------------------------------
 '''
 locations = {
-    (35.676, 139.744): '国会議事堂',
-    (34.669, 135.431): 'ホグワーツ城',
-    (35.039, 135.729): '鹿苑寺金閣',
+    (35.676, 139.744): '?????',
+    (34.669, 135.431): '??????',
+    (35.039, 135.729): '?????',
 }
 
 # output key of location.

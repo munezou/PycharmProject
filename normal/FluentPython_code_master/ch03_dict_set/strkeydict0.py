@@ -69,6 +69,7 @@ try:
     print('d[1] = {0}'.format(d[1]))
 except Exception as e:
     print(e)
+    pass
 finally:
     pass
 

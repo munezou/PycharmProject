@@ -1,4 +1,4 @@
-from normal.PythonDataModel.ch06_dp_1class_func.strategy_best2 import *
+from normal.FluentPython_code_master.ch06_dp_1class_func.strategy_best2 import *
 
 '''
 ------------------------------------------------------------------------------------------------------------------------

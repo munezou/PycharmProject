@@ -1,9 +1,10 @@
-import os, sys
+import os
+import sys
 sys.path.append(os.path.dirname(__file__))
 
-from frnchdeck import FrenchDeck, Card
+from normal.FluentPython_code_master.ch01_data_model.frenchdeck import FrenchDeck, Card
 from random import choice
-from vector2d import Vector
+from normal.FluentPython_code_master.ch01_data_model.vector2d import Vector
 
 beer_card = Card('7', 'diamonds')
 

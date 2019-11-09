@@ -1,5 +1,5 @@
-from normal.PythonDataModel.ch07_closure_deco.clockdeco_demo import snooze
-from normal.PythonDataModel.ch07_closure_deco.generic import *
+from normal.FluentPython_code_master.ch07_closure_deco.clockdeco_demo import snooze
+from normal.FluentPython_code_master.ch07_closure_deco.generic import *
 
 print(htmlize({1, 2, 3}))
 print()
@@ -12,10 +12,10 @@ print()
 7.10 Parameterized decorator
 ------------------------------------------------------------------------------------------------------------------------
 '''
-from normal.PythonDataModel.ch07_closure_deco.registration import *
+from normal.FluentPython_code_master.ch07_closure_deco.registration import *
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
-      '                        Å@Å@     7.10 Parameterized decorator    Å@                                               \n'
+      '                             7.10 Parameterized decorator                                                        \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
 main()
 print()
@@ -25,10 +25,10 @@ print()
 7.10.1 Registered decorator parameterization
 ------------------------------------------------------------------------------------------------------------------------
 '''
-from normal.PythonDataModel.ch07_closure_deco.registration_param import *
+from normal.FluentPython_code_master.ch07_closure_deco.registration_param import *
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
-      '                        7.10.1 Registered decorator parameterization    Å@                                       \n'
+      '                        7.10.1 Registered decorator parameterization    ÔøΩ@                                       \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
 
 print('f1() = {0}'.format(f1))
@@ -44,9 +44,9 @@ print('registtry = {0}'.format(registry))
 print()
 
 print('-----------------------------------------------------------------------------------------------------------------\n'
-      '                             7.10.2 clock decorator parameterization    Å@                                       \n'
+      '                             7.10.2 clock decorator parameterization    ÔøΩ@                                       \n'
       '-----------------------------------------------------------------------------------------------------------------\n')
-from normal.PythonDataModel.ch07_closure_deco.clockdeco_param import clock
+from normal.FluentPython_code_master.ch07_closure_deco.clockdeco_param import clock
 import time
 
 clock()
