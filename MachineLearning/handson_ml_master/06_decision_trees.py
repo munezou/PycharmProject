@@ -5,6 +5,9 @@ sys.path.append(os.path.dirname(__file__))
 
 from sklearn.datasets import load_iris
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import export_graphviz
+from matplotlib.colors import ListedColormap
+
 
 '''
 ----------------------------------------------------------------------
@@ -33,4 +36,27 @@ def save_fig(fig_id, tight_layout=True):
     if tight_layout:
         plt.tight_layout()
     plt.savefig(image_path(fig_id) + ".png", format='png', dpi=300)
+
+'''
+------------------------------------------------------------------------------------------------------------------------
+6.1 Decision tree training and visualization
+------------------------------------------------------------------------------------------------------------------------
+'''
+# load data
+iris = load_iris()
+X = iris.data[:, 2:] # petal length and width
+y = iris.target
+
+tree_clf = DecisionTreeClassifier(max_depth=2, random_state=42)
+tree_clf_fit = tree_clf.fit(X, y)
+print('tree_clf_fit = \n{0}\n'.format(tree_clf_fit))
+
+export_graphviz(
+        tree_clf,
+        out_file=image_path("iris_tree.dot"),
+        feature_names=iris.feature_names[2:],
+        class_names=iris.target_names,
+        rounded=True,
+        filled=True
+    )
 
