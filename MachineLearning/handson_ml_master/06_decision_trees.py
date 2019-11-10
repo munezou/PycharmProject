@@ -9,7 +9,7 @@ from sklearn.tree import export_graphviz
 from PIL import Image
 from subprocess import check_call
 from matplotlib.colors import ListedColormap
-
+from sklearn.datasets import make_moons
 
 '''
 ----------------------------------------------------------------------
@@ -123,6 +123,7 @@ print('tree_clf_priedict = {0}\n'.format(tree_clf_predict))
 print('------------------------------------------------------------------------------------------------------\n'
       '          Sensitivity to training set details                                                         \n'
       '------------------------------------------------------------------------------------------------------\n')
+print('---< dataset = iris >---')
 # to find widest Iris-Versicolor flower
 widest_iris_versicolor = X[(X[:, 1]==X[:, 1][y==1].max()) & (y==1)]
 print('widest_iris_versicolor = {0}\n'.format(widest_iris_versicolor))
@@ -133,3 +134,45 @@ y_tweaked = y[not_widest_versicolor]
 
 tree_clf_tweaked = DecisionTreeClassifier(max_depth=2, random_state=40)
 tree_clf_tweaked_fit = tree_clf_tweaked.fit(X_tweaked, y_tweaked)
+print('tree_clf_tweaked_fit = \n{0}\n'.format(tree_clf_tweaked_fit))
+
+plt.figure(figsize=(8, 4))
+plot_decision_boundary(tree_clf_tweaked, X_tweaked, y_tweaked, legend=False)
+plt.plot([0, 7.5], [0.8, 0.8], "k-", linewidth=2)
+plt.plot([0, 7.5], [1.75, 1.75], "k--", linewidth=2)
+plt.text(1.0, 0.9, "Depth=0", fontsize=15)
+plt.text(1.0, 1.80, "Depth=1", fontsize=13)
+
+save_fig("decision_tree_instability_plot")
+plt.show()
+print()
+
+print('---< dataset = make_moons >---')
+Xm, ym = make_moons(n_samples=100, noise=0.25, random_state=53)
+
+plt.figure(figsize=(8, 4))
+plt.title("raw data in make_moons")
+plt.scatter(Xm[:, 0][ym == 0], Xm[:,1][ym == 0], c='red', label="ym = 0")
+plt.scatter(Xm[:, 0][ym == 1], Xm[:,1][ym == 1], c='blue', label="ym = 1")
+plt.grid(True)
+plt.xlabel("X1")
+plt.ylabel("X2")
+plt.legend(loc='upper right')
+plt.show()
+
+deep_tree_clf1 = DecisionTreeClassifier(random_state=42)
+deep_tree_clf2 = DecisionTreeClassifier(min_samples_leaf=4, random_state=42)
+deep_tree_clf1.fit(Xm, ym)
+deep_tree_clf2.fit(Xm, ym)
+
+plt.figure(figsize=(11, 4))
+plt.subplot(121)
+plot_decision_boundary(deep_tree_clf1, Xm, ym, axes=[-1.5, 2.5, -1, 1.5], iris=False)
+plt.title("No restrictions", fontsize=16)
+plt.subplot(122)
+plot_decision_boundary(deep_tree_clf2, Xm, ym, axes=[-1.5, 2.5, -1, 1.5], iris=False)
+plt.title("min_samples_leaf = {}".format(deep_tree_clf2.min_samples_leaf), fontsize=14)
+
+save_fig("min_samples_leaf_plot")
+plt.show()
+print()
