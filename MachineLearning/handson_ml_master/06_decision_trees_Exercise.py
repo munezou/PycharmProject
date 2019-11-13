@@ -8,6 +8,8 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.base import clone
 import numpy as np
 from scipy.stats import mode
+import matplotlib.pyplot as plt
+
 
 
 print('--------------------------------------------------------------------------------------------------------------\n'
@@ -18,6 +20,15 @@ print('---< a. Generate a moons dataset using make_moons(n_samples=10000, noise=
 
 # create make_moons
 X, y = make_moons(n_samples=10000, noise=0.4, random_state=42)
+
+# plot raw data
+plt.figure(figsize=(8, 7))
+plt.title("moons(noise=0.4, randam_state=42)")
+plt.scatter(X[:, 0][y == 0], X[:, 1][y == 0], c='red', label="X0")
+plt.scatter(X[:, 0][y == 1], X[:, 1][y == 1], c='blue', label="X1")
+plt.grid(True)
+plt.legend()
+plt.show()
 
 print('---< b. Split it into a training set and a test set using train_test_split(). >---')
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

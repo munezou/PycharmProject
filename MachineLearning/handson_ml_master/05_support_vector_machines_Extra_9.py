@@ -51,6 +51,7 @@ lin_clf_accuracy = accuracy_score(y_train, y_pred)
 print('lin_clf_accuracy = {0}'.format(lin_clf_accuracy))
 print()
 
+# SVM scales because it is susceptible to feature scale.
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train.astype(np.float32))
 X_test_scaled = scaler.transform(X_test.astype(np.float32))
@@ -64,17 +65,19 @@ print('lin_clf_fit = \n{0}'.format(lin_clf_fit))
 print()
 
 y_pred = lin_clf.predict(X_train_scaled)
-lin_clf_accuracy = accuracy_score(y_train, y_pred)
-print('lin_clf_accuracy = {0}'.format(lin_clf_accuracy))
+lin_clf_accuracy_with_scaler = accuracy_score(y_train, y_pred)
+print('lin_clf_accuracy_with_scaler = {0}'.format(lin_clf_accuracy_with_scaler))
 print()
 
 # That's much better (we cut the error rate in two), but still not great at all for MNIST.
 # If we want to use an SVM, we will have to use a kernel. Let's try an SVC with an RBF kernel (the default).
 svm_clf = SVC(decision_function_shape="ovr", gamma="auto")
 svm_clf_fit = svm_clf.fit(X_train_scaled[:10000], y_train[:10000])
+print('svm_clf_fit = \n{0}\n'.format(svm_clf_fit))
 
 y_pred = svm_clf.predict(X_train_scaled)
-accuracy_score(y_train, y_pred)
+svm_clf_accuracy = accuracy_score(y_train, y_pred)
+print('svm_clf_accuracy = {0}\n'.format(svm_clf_accuracy))
 
 # That's promising, we get better performance even though we trained the model on 6 times less data.
 # Let's tune the hyperparameters by doing a randomized search with cross validation.

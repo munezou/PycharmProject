@@ -9,6 +9,11 @@ from sklearn.svm import SVR
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import reciprocal, uniform
 
+import urllib.request
+
+proxy_support = urllib.request.ProxyHandler({'https': 'http://proxy.kanto.sony.co.jp:10080'})
+opener = urllib.request.build_opener(proxy_support)
+urllib.request.install_opener(opener)
 
 print('---------------------------------------------------------------------------------------------------------------\n'
       ' 10.                                                                                                           \n'
@@ -22,6 +27,7 @@ housing = fetch_california_housing()
 print('housing information = \n{0}'.format(housing.DESCR))
 print()
 
+# prepare learning data
 X = housing["data"]
 y = housing["target"]
 

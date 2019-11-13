@@ -1,5 +1,6 @@
 '''
 ------------------------------------------------------------------------------------------------------------------------
+8.
 Exercise:
 train a LinearSVC on a linearly separable dataset.
 Then train an SVC and a SGDClassifier on the same dataset.
@@ -27,6 +28,17 @@ y = iris["target"]
 setosa_or_versicolor = (y == 0) | (y == 1)
 X = X[setosa_or_versicolor]
 y = y[setosa_or_versicolor]
+
+# Classification of setosa and versicolour
+plt.figure(figsize=(8, 7))
+plt.title("setosa and versicolour data")
+plt.scatter(X[:, 0][y == 0], X[:, 1][y == 0], c = 'red', label= 'Setosa')
+plt.scatter(X[:, 0][y == 1], X[:, 1][y == 1], c = 'blue', label = 'Versicolour')
+plt.xlabel("petal length")
+plt.ylabel("petal width")
+plt.grid(True)
+plt.legend()
+plt.show()
 
 # Compare LinearSVC, SVC and SGDClassifier.
 C = 5

@@ -1,7 +1,6 @@
 # Common imports
 import numpy as np
 import os, sys
-sys.path.append(os.path.dirname(__file__))
 
 from sklearn.datasets import load_iris
 from sklearn.tree import DecisionTreeClassifier
@@ -28,7 +27,7 @@ mpl.rc('xtick', labelsize=12)
 mpl.rc('ytick', labelsize=12)
 
 # Where to save the figures
-PROJECT_ROOT_DIR = "."
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
 CHAPTER_ID = "decision_trees"
 
 def image_path(fig_id):
