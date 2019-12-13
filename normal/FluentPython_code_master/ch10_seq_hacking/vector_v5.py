@@ -1,195 +1,10 @@
 # BEGIN VECTOR_V5
 """
 A multi-dimensional ``Vector`` class, take 5
-
-A ``Vector`` is built from an iterable of numbers::
-
-    >>> Vector([3.1, 4.2])
-    Vector([3.1, 4.2])
-    >>> Vector((3, 4, 5))
-    Vector([3.0, 4.0, 5.0])
-    >>> Vector(range(10))
-    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
-
-
-Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
-
-    >>> v1 = Vector([3, 4])
-    >>> x, y = v1
-    >>> x, y
-    (3.0, 4.0)
-    >>> v1
-    Vector([3.0, 4.0])
-    >>> v1_clone = eval(repr(v1))
-    >>> v1 == v1_clone
-    True
-    >>> print(v1)
-    (3.0, 4.0)
-    >>> octets = bytes(v1)
-    >>> octets
-    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
-    >>> abs(v1)
-    5.0
-    >>> bool(v1), bool(Vector([0, 0]))
-    (True, False)
-
-
-Test of ``.frombytes()`` class method:
-
-    >>> v1_clone = Vector.frombytes(bytes(v1))
-    >>> v1_clone
-    Vector([3.0, 4.0])
-    >>> v1 == v1_clone
-    True
-
-
-Tests with 3-dimensions::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> x, y, z = v1
-    >>> x, y, z
-    (3.0, 4.0, 5.0)
-    >>> v1
-    Vector([3.0, 4.0, 5.0])
-    >>> v1_clone = eval(repr(v1))
-    >>> v1 == v1_clone
-    True
-    >>> print(v1)
-    (3.0, 4.0, 5.0)
-    >>> abs(v1)  # doctest:+ELLIPSIS
-    7.071067811...
-    >>> bool(v1), bool(Vector([0, 0, 0]))
-    (True, False)
-
-
-Tests with many dimensions::
-
-    >>> v7 = Vector(range(7))
-    >>> v7
-    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
-    >>> abs(v7)  # doctest:+ELLIPSIS
-    9.53939201...
-
-
-Test of ``.__bytes__`` and ``.frombytes()`` methods::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> v1_clone = Vector.frombytes(bytes(v1))
-    >>> v1_clone
-    Vector([3.0, 4.0, 5.0])
-    >>> v1 == v1_clone
-    True
-
-
-Tests of sequence behavior::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> len(v1)
-    3
-    >>> v1[0], v1[len(v1)-1], v1[-1]
-    (3.0, 5.0, 5.0)
-
-
-Test of slicing::
-
-    >>> v7 = Vector(range(7))
-    >>> v7[-1]
-    6.0
-    >>> v7[1:4]
-    Vector([1.0, 2.0, 3.0])
-    >>> v7[-1:]
-    Vector([6.0])
-    >>> v7[1,2]
-    Traceback (most recent call last):
-      ...
-    TypeError: Vector indices must be integers
-
-
-Tests of dynamic attribute access::
-
-    >>> v7 = Vector(range(10))
-    >>> v7.x
-    0.0
-    >>> v7.y, v7.z, v7.t
-    (1.0, 2.0, 3.0)
-
-Dynamic attribute lookup failures::
-
-    >>> v7.k
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'Vector' object has no attribute 'k'
-    >>> v3 = Vector(range(3))
-    >>> v3.t
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'Vector' object has no attribute 't'
-    >>> v3.spam
-    Traceback (most recent call last):
-      ...
-    AttributeError: 'Vector' object has no attribute 'spam'
-
-
-Tests of hashing::
-
-    >>> v1 = Vector([3, 4])
-    >>> v2 = Vector([3.1, 4.2])
-    >>> v3 = Vector([3, 4, 5])
-    >>> v6 = Vector(range(6))
-    >>> hash(v1), hash(v3), hash(v6)
-    (7, 2, 1)
-
-
-Most hash values of non-integers vary from a 32-bit to 64-bit CPython build::
-
-    >>> import sys
-    >>> hash(v2) == (384307168202284039 if sys.maxsize > 2**32 else 357915986)
-    True
-
-
-Tests of ``format()`` with Cartesian coordinates in 2D::
-
-    >>> v1 = Vector([3, 4])
-    >>> format(v1)
-    '(3.0, 4.0)'
-    >>> format(v1, '.2f')
-    '(3.00, 4.00)'
-    >>> format(v1, '.3e')
-    '(3.000e+00, 4.000e+00)'
-
-
-Tests of ``format()`` with Cartesian coordinates in 3D and 7D::
-
-    >>> v3 = Vector([3, 4, 5])
-    >>> format(v3)
-    '(3.0, 4.0, 5.0)'
-    >>> format(Vector(range(7)))
-    '(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0)'
-
-
-Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::
-
-    >>> format(Vector([1, 1]), 'h')  # doctest:+ELLIPSIS
-    '<1.414213..., 0.785398...>'
-    >>> format(Vector([1, 1]), '.3eh')
-    '<1.414e+00, 7.854e-01>'
-    >>> format(Vector([1, 1]), '0.5fh')
-    '<1.41421, 0.78540>'
-    >>> format(Vector([1, 1, 1]), 'h')  # doctest:+ELLIPSIS
-    '<1.73205..., 0.95531..., 0.78539...>'
-    >>> format(Vector([2, 2, 2]), '.3eh')
-    '<3.464e+00, 9.553e-01, 7.854e-01>'
-    >>> format(Vector([0, 0, 0]), '0.5fh')
-    '<0.00000, 0.00000, 0.00000>'
-    >>> format(Vector([-1, -1, -1, -1]), 'h')  # doctest:+ELLIPSIS
-    '<2.0, 2.09439..., 2.18627..., 3.92699...>'
-    >>> format(Vector([2, 2, 2, 2]), '.3eh')
-    '<4.000e+00, 1.047e+00, 9.553e-01, 7.854e-01>'
-    >>> format(Vector([0, 1, 0, 0]), '0.5fh')
-    '<1.00000, 1.57080, 0.00000, 0.00000>'
 """
 
 from array import array
+import sys
 import reprlib
 import math
 import numbers
@@ -197,6 +12,7 @@ import functools
 import operator
 import itertools  # <1>
 
+print(__doc__)
 
 class Vector:
     typecode = 'd'
@@ -271,8 +87,7 @@ class Vector:
     def __format__(self, fmt_spec=''):
         if fmt_spec.endswith('h'):  # hyperspherical coordinates
             fmt_spec = fmt_spec[:-1]
-            coords = itertools.chain([abs(self)],
-                                     self.angles())  # <4>
+            coords = itertools.chain([abs(self)], self.angles())  # <4>
             outer_fmt = '<{}>'  # <5>
         else:
             coords = self
@@ -286,3 +101,248 @@ class Vector:
         memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
 # END VECTOR_V5
+
+# BEGIN VECTOR_DEMO: take_5
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '             A ``Vector`` is built from an iterable of numbers::                                            \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+print('Vector([3.1, 4.2]) = {0}\n'.format(Vector([3.1, 4.2])))
+
+print('Vector((3, 4, 5)) = {0}\n'.format(Vector((3, 4, 5))))
+
+print('Vector(range(10)) = {0}\n'.format(Vector(range(10))))
+
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '             Tests with 2-dimensions (same results as ``vector2d_v1.py``)::                                 \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4])
+x, y = v1
+print('({0}, {1})\n'.format(x, y))
+
+print('v1 = {0}\n'.format(v1))
+
+v1_clone = eval(repr(v1))
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print('v1 = {0}\n'.format(v1))
+
+octets = bytes(v1)
+print('octets = \n{0}\n'.format(octets))
+
+print('abs(v1) = {0}\n'.format(abs(v1)))
+
+print('({0}, {1})\n'.format(bool(v1), bool(Vector([0, 0]))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '             Test of ``.frombytes()`` class method:                                                         \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1_clone = Vector.frombytes(bytes(v1))
+print('v1_clone = {0}\n'.format(v1_clone))
+
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '             Tests with 3-dimensions::                                                                      \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4, 5])
+x, y, z = v1
+print('({0}, {1}, {2})\n'.format(x, y, z))
+
+print('v1 = {0}\n'.format(v1))
+
+v1_clone = eval(repr(v1))
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print('v1 = {0}\n'.format(v1))
+
+print('abs(v1) = {0}\n'.format(abs(v1))) # doctest:+ELLIPSIS
+
+print('({0}, {1})\n'.format(bool(v1), bool(Vector([0, 0, 0]))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '             Tests with many dimensions::                                                                   \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v7 = Vector(range(7))
+print('v7 = {0}\n'.format(v7))
+
+print('abs(v7) = {0}\n'.format(abs(v7))) # doctest:+ELLIPSIS
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '             Test of ``.__bytes__`` and ``.frombytes()`` methods::                                          \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4, 5])
+v1_clone = Vector.frombytes(bytes(v1))
+print('v1_clone = {0}\n'.format(v1_clone))
+
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                    Tests of sequence behavior::                                                            \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4, 5])
+print('len(v1) = {0}\n'.format(len(v1)))
+
+print('({0}, {1}, {2})\n'.format(v1[0], v1[len(v1)-1], v1[-1]))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                    Test of slicing::                                                                        \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v7 = Vector(range(7))
+print('v7[-1] = {0}\n'.format(v7[-1]))
+
+print('v7[1:4] = {0}\n'.format(v7[1:4]))
+
+print('v7[-1:] = {0}\n'.format(v7[-1:]))
+
+try:
+    print('v7[1,2] = {0}\n'.format(v7[1,2]))
+    pass
+except Exception as ex:
+    print(ex)
+    pass
+finally:
+    pass
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                    Tests of dynamic attribute access::                                                     \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v7 = Vector(range(10))
+print('v7.x = {0}\n'.format(v7.x))
+
+print('({0}, {1}, {2})\n'.format(v7.y, v7.z, v7.t))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                    Dynamic attribute lookup failures::                                                     \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+try:
+    print('v7.k = {0}\n'.format(v7.k))
+    pass
+except Exception as ex:
+    print(ex)
+    pass
+else:
+    pass
+finally:
+    pass
+
+v3 = Vector(range(3))
+
+try:
+    print('v3.t = {0}\n'.format(v3.t))
+    pass
+except Exception as ex:
+    print(ex)
+    pass
+finally:
+    pass
+
+try:
+    print('v3.spam = {0}\n'.format(v3.spam))
+    pass
+except Exception as ex:
+    print(ex)
+    pass
+finally:
+    pass
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                  Tests of hashing::                                                                        \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4])
+v2 = Vector([3.1, 4.2])
+v3 = Vector([3, 4, 5])
+v6 = Vector(range(6))
+print('({0}, {1}, {2})\n'.format(hash(v1), hash(v3), hash(v6)))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                 Most hash values of non-integers vary from a 32-bit to 64-bit CPython build::              \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+memory_contents = (384307168202284039 if sys.maxsize > 2**32 else 357915986)
+print('hash(v2) == memory_contents = {0}\n'.format(hash(v2) == memory_contents))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '                 Tests of ``format()`` with Cartesian coordinates in 2D::                                   \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4])
+print('format(v1) = {0}\n'.format(format(v1)))
+
+print('format(v1, ''.2f'') = {0}\n'.format(format(v1, '.2f')))
+
+print('format(v1, ''.3e'') = {0}\n'.format((format(v1, '.3e'))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Tests of ``format()`` with Cartesian coordinates in 3D and 7D::                               \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v3 = Vector([3, 4, 5])
+print('format(v3) = {0}\n'.format(format(v3)))
+
+print('format(Vector(range(7))) = {0}\n'.format(format(Vector(range(7)))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Tests of ``format()`` with spherical coordinates in 2D, 3D and 4D::                               \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+print('format(Vector([1, 1]), ''h'') = \n{0}\n'.format(format(Vector([1, 1]), 'h'))) # doctest:+ELLIPSIS
+
+print('format(Vector([1, 1]), ''.3eh'') = \n{0}\n'.format(format(Vector([1, 1]), '.3eh')))
+
+print('format(Vector([1, 1]), ''0.5fh'') = \n{0}\n'.format(format(Vector([1, 1]), '0.5fh')))
+
+print('format(Vector([1, 1, 1]), ''h'') = \n{0}\n'.format(format(Vector([1, 1, 1]), 'h'))) # doctest:+ELLIPSIS
+
+print('format(Vector([2, 2, 2]), ''.3eh'') = \n{0}\n'.format(format(Vector([2, 2, 2]), '.3eh')))
+
+print('format(Vector([0, 0, 0]), ''0.5fh'') = \n{0}\n'.format(format(Vector([0, 0, 0]), '0.5fh')))
+
+print('format(Vector([-1, -1, -1, -1]), ''h'') = \n{0}\n'.format(format(Vector([-1, -1, -1, -1]), 'h')))  # doctest:+ELLIPSIS
+
+print('format(Vector([2, 2, 2, 2]), ''.3eh'') = \n{0}\n'.format(format(Vector([2, 2, 2, 2]), '.3eh')))
+
+print('format(Vector([0, 1, 0, 0]), ''0.5fh'') = \n{0}\n'.format(format(Vector([0, 1, 0, 0]), '0.5fh')))
+
+# END VECTOR_DEMO: take_5

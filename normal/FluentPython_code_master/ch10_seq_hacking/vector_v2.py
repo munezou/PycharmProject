@@ -1,113 +1,6 @@
-"""
+'''
 A multi-dimensional ``Vector`` class, take 2
-
-A ``Vector`` is built from an iterable of numbers::
-
-    >>> Vector([3.1, 4.2])
-    Vector([3.1, 4.2])
-    >>> Vector((3, 4, 5))
-    Vector([3.0, 4.0, 5.0])
-    >>> Vector(range(10))
-    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
-
-
-Tests with 2-dimensions (same results as ``vector2d_v1.py``)::
-
-    >>> v1 = Vector([3, 4])
-    >>> x, y = v1
-    >>> x, y
-    (3.0, 4.0)
-    >>> v1
-    Vector([3.0, 4.0])
-    >>> v1_clone = eval(repr(v1))
-    >>> v1 == v1_clone
-    True
-    >>> print(v1)
-    (3.0, 4.0)
-    >>> octets = bytes(v1)
-    >>> octets
-    b'd\\x00\\x00\\x00\\x00\\x00\\x00\\x08@\\x00\\x00\\x00\\x00\\x00\\x00\\x10@'
-    >>> abs(v1)
-    5.0
-    >>> bool(v1), bool(Vector([0, 0]))
-    (True, False)
-
-
-Test of ``.frombytes()`` class method:
-
-    >>> v1_clone = Vector.frombytes(bytes(v1))
-    >>> v1_clone
-    Vector([3.0, 4.0])
-    >>> v1 == v1_clone
-    True
-
-
-Tests with 3-dimensions::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> x, y, z = v1
-    >>> x, y, z
-    (3.0, 4.0, 5.0)
-    >>> v1
-    Vector([3.0, 4.0, 5.0])
-    >>> v1_clone = eval(repr(v1))
-    >>> v1 == v1_clone
-    True
-    >>> print(v1)
-    (3.0, 4.0, 5.0)
-    >>> abs(v1)  # doctest:+ELLIPSIS
-    7.071067811...
-    >>> bool(v1), bool(Vector([0, 0, 0]))
-    (True, False)
-
-
-Tests with many dimensions::
-
-    >>> v7 = Vector(range(7))
-    >>> v7
-    Vector([0.0, 1.0, 2.0, 3.0, 4.0, ...])
-    >>> abs(v7)  # doctest:+ELLIPSIS
-    9.53939201...
-
-
-Test of ``.__bytes__`` and ``.frombytes()`` methods::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> v1_clone = Vector.frombytes(bytes(v1))
-    >>> v1_clone
-    Vector([3.0, 4.0, 5.0])
-    >>> v1 == v1_clone
-    True
-
-
-Tests of sequence behavior::
-
-    >>> v1 = Vector([3, 4, 5])
-    >>> len(v1)
-    3
-    >>> v1[0], v1[len(v1)-1], v1[-1]
-    (3.0, 5.0, 5.0)
-
-
-Test of slicing::
-
-# BEGIN VECTOR_V2_DEMO
-
-    >>> v7 = Vector(range(7))
-    >>> v7[-1]  # <1>
-    6.0
-    >>> v7[1:4]  # <2>
-    Vector([1.0, 2.0, 3.0])
-    >>> v7[-1:]  # <3>
-    Vector([6.0])
-    >>> v7[1,2]  # <4>
-    Traceback (most recent call last):
-      ...
-    TypeError: Vector indices must be integers
-
-# END VECTOR_V2_DEMO
-
-"""
+'''
 
 from array import array
 import reprlib
@@ -165,3 +58,128 @@ class Vector:
         typecode = chr(octets[0])
         memv = memoryview(octets[1:]).cast(typecode)
         return cls(memv)
+
+# BEGIN VECTOR_DEMO: take_2
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              A ``Vector`` is built from an iterable of numbers::                                           \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+print('Vector([3.1, 4.2]) = {0}\n'.format(Vector([3.1, 4.2])))
+
+print('Vector((3, 4, 5)) = {0}\n'.format(Vector((3, 4, 5))))
+
+print('Vector(range(10)) = \n{0}\n'.format(Vector(range(10))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Tests with 2-dimensions (same results as ``vector2d_v1.py``)::                                \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4])
+x, y = v1
+print('x = {0}, y = {1}\n'.format(x, y))
+
+print('v1 = {0}\n'.format(v1))
+
+v1_clone = eval(repr(v1))
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print('v1 = {0}\n'.format(v1))
+
+octets = bytes(v1)
+print('octets = \n{0}\n'.format(octets))
+
+print('abs(v1) = {0}\n'.format(abs(v1)))
+
+print('(bool(v1) = {0}, bool(Vector([0, 0]))) = {1})\n'.format(bool(v1), bool(Vector([0, 0]))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Test of ``.frombytes()`` class method:                                                        \n'
+        '----------------------------------------------------------------   -----------------------------------------\n'
+        )
+
+v1_clone = Vector.frombytes(bytes(v1))
+print('v1_clone = {0}\n'.format(v1_clone))
+
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Tests with 3-dimensions::                                                                     \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4, 5])
+x, y, z = v1
+print('(x = {0}, y = {1}, z = {2})\n'.format(x, y, z))
+
+print('v1 = {0}\n'.format(v1))
+
+v1_clone = eval(repr(v1))
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print('v1 = {0}\n'.format(v1))
+
+print('abs(v1) = {0}\n'.format(abs(v1))) # doctest:+ELLIPSIS
+
+print('(bool(v1) = {0}, bool(Vector([0, 0, 0])) = {1})\n'.format(bool(v1), bool(Vector([0, 0, 0]))))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Tests with many dimensions::                                                                  \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v7 = Vector(range(7))
+print('v7 = {0}\n'.format(v7))
+
+print('abs(v7) = {0}\n'.format(abs(v7)))  # doctest:+ELLIPSIS
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Test of ``.__bytes__`` and ``.frombytes()`` methods::                                         \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4, 5])
+v1_clone = Vector.frombytes(bytes(v1))
+print('v1_clone = {0}\n'.format(v1_clone))
+
+print('v1 == v1_clone = {0}\n'.format(v1 == v1_clone))
+
+print   (
+        '------------------------------------------------------------------------------------------------------------\n'
+        '              Tests of sequence behavior::                                                                   \n'
+        '------------------------------------------------------------------------------------------------------------\n'
+        )
+
+v1 = Vector([3, 4, 5])
+print('len(v1) = {0}\n'.format(len(v1)))
+
+print('(v1[0] = {0}, v1[len(v1)-1] = {1}, v1[-1] = {2})\n'.format(v1[0], v1[len(v1)-1], v1[-1]))
+
+# END VECTOR_DEMO: take_2
+
+# Test of slicing::
+
+# BEGIN VECTOR_V2_DEMO
+
+v7 = Vector(range(7))
+print('v7[-1] = {0}\n'.format(v7[-1])) # <1>
+
+print('v7[1:4] = {0}\n'.format(v7[1:4])) # <2>
+
+print('v7[-1:] = {0}\n'.format(v7[-1:]))
+
+try:
+    v7[1,2]
+except Exception as ex:
+    print(ex)
+    pass
+finally:
+    pass
+# END VECTOR_V2_DEMO
