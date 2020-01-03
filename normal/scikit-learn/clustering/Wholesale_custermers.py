@@ -9,11 +9,13 @@ pd.options.display.max_columns = None
 Read data set of Wholesale customers Data Set.
 ------------------------------------------------------------------------------------------------------------------------
 '''
+'''
 from six.moves import urllib
 
 proxy_support = urllib.request.ProxyHandler({'https': 'http://proxy.kanto.sony.co.jp:10080'})
 opener = urllib.request.build_opener(proxy_support)
 urllib.request.install_opener(opener)
+'''
 
 cust_df = pd.read_csv("https://pythondatascience.plavox.info/wp-content/uploads/2016/05/Wholesale_customers_data.csv")
 
