@@ -31,9 +31,12 @@ Attribute Information:
 import os
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from keras.datasets import boston_housing
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # For using the boosted trees classifier (binary classification) in TF:
 # Note: target labels have to be 0 and 1.
@@ -84,7 +87,7 @@ for ix, column in enumerate(x_train.T):
 
 
 # Create an input function
-input_fun = tf.estimator.inputs.numpy_input_fn(X_dtrain, y=y_train, batch_size=batch_size, num_epochs=10, shuffle=True)
+input_fun = tf.compat.v1.estimator.inputs.numpy_input_fn(X_dtrain, y=y_train, batch_size=batch_size, num_epochs=10, shuffle=True)
 
 # Training
 model = regression_classifier(feature_columns=feature_cols,
@@ -96,11 +99,11 @@ model.train(input_fn=input_fun, steps=train_steps)
 
 # Evaluation on test set
 # Do not shuffle when predicting
-p_input_fun = tf.estimator.inputs.numpy_input_fn(X_dtest, y=y_test, batch_size=batch_size, num_epochs=1, shuffle=False)
+p_input_fun = tf.compat.v1.estimator.inputs.numpy_input_fn(X_dtest, y=y_test, batch_size=batch_size, num_epochs=1, shuffle=False)
 # Get predictions
 predictions = list(model.predict(input_fn=p_input_fun))
 final_preds = [pred['predictions'][0] for pred in predictions]
 
 # Get accuracy (mean absolute error, MAE)
 mae = np.mean([np.abs((actual - predicted) / predicted) for actual, predicted in zip(y_test, final_preds)])
-print('Mean Abs Err on test set: {}'.format(acc))
+print('Mean Abs Err on test set: {}'.format(mae))

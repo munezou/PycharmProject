@@ -3,13 +3,16 @@
 #
 # This script will show you how to create model layers with Keras
 #
-
+import os
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn.preprocessing import MultiLabelBinarizer
 from keras.utils import to_categorical
 from tensorflow import keras
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Load MNIST data
 from tensorflow.examples.tutorials.mnist import input_data
@@ -45,7 +48,7 @@ model.add(keras.layers.Dense(16, activation='relu'))
 model.add(keras.layers.Dense(10, activation='softmax'))
 
 # Train the model:
-model.compile(optimizer=tf.train.AdamOptimizer(0.001),
+model.compile(optimizer=tf.compat.v1.train.AdamOptimizer(0.001),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
@@ -106,7 +109,7 @@ cnn_model.add(keras.layers.Flatten())
 
 cnn_model.add(keras.layers.Dense(num_classes, activation='softmax'))
 
-cnn_model.compile(optimizer=tf.train.AdamOptimizer(0.001),
+cnn_model.compile(optimizer=tf.compat.v1.train.AdamOptimizer(0.001),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 

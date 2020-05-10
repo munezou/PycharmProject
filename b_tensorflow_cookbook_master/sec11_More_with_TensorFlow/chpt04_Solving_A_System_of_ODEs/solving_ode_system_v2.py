@@ -10,13 +10,17 @@
 
 
 # Declaring Operations
+import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Open interactive graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Discrete Lotka-Volterra predator/prey equations
 #
@@ -31,11 +35,11 @@ X_t1 = tf.Variable(x_initial)
 Y_t1 = tf.Variable(y_initial)
 
 # Make the placeholders
-t_delta = tf.placeholder(tf.float32, shape=())
-a = tf.placeholder(tf.float32, shape=())
-b = tf.placeholder(tf.float32, shape=())
-c = tf.placeholder(tf.float32, shape=())
-d = tf.placeholder(tf.float32, shape=())
+t_delta = tf.compat.v1.placeholder(tf.float32, shape=())
+a = tf.compat.v1.placeholder(tf.float32, shape=())
+b = tf.compat.v1.placeholder(tf.float32, shape=())
+c = tf.compat.v1.placeholder(tf.float32, shape=())
+d = tf.compat.v1.placeholder(tf.float32, shape=())
 
 # Discretized ODE update
 X_t2 = X_t1 + (a * X_t1 + b * X_t1 * Y_t1) * t_delta
@@ -46,7 +50,7 @@ step = tf.group(
   X_t1.assign(X_t2),
   Y_t1.assign(Y_t2))
   
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run the ODE

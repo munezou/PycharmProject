@@ -3,10 +3,11 @@
 #----------------------------------
 #
 # This script shows how to do k-means with TensorFlow
-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from scipy.spatial import cKDTree
 from sklearn.decomposition import PCA
@@ -14,7 +15,9 @@ from sklearn.preprocessing import scale
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
-sess = tf.Session()
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+sess = tf.compat.v1.Session()
 
 iris = datasets.load_iris()
 
@@ -39,18 +42,18 @@ centroids = tf.Variable(rand_starts)
 centroid_matrix = tf.reshape(tf.tile(centroids, [num_pts, 1]), [num_pts, k, num_feats])
 # Then we reshape the data points into k (3) repeats
 point_matrix = tf.reshape(tf.tile(data_points, [1, k]), [num_pts, k, num_feats])
-distances = tf.reduce_sum(tf.square(point_matrix - centroid_matrix), axis=2)
+distances = tf.reduce_sum(input_tensor=tf.square(point_matrix - centroid_matrix), axis=2)
 
 # Find the group it belongs to with tf.argmin()
-centroid_group = tf.argmin(distances, 1)
+centroid_group = tf.argmin(input=distances, axis=1)
 
 
 # Find the group average
 def data_group_avg(group_ids, data):
     # Sum each group
-    sum_total = tf.unsorted_segment_sum(data, group_ids, 3)
+    sum_total = tf.math.unsorted_segment_sum(data, group_ids, 3)
     # Count each group
-    num_total = tf.unsorted_segment_sum(tf.ones_like(data), group_ids, 3)
+    num_total = tf.math.unsorted_segment_sum(tf.ones_like(data), group_ids, 3)
     # Calculate average
     avg_by_group = sum_total/num_total
     return avg_by_group
@@ -60,7 +63,7 @@ means = data_group_avg(centroid_group, data_points)
 
 update = tf.group(centroids.assign(means), cluster_labels.assign(centroid_group))
 
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 
 sess.run(init)
 

@@ -25,9 +25,11 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Genetic Algorithm Parameters
 pop_size = 100
@@ -39,7 +41,7 @@ num_parents = int(pop_size*selection)
 num_children = pop_size - num_parents
 
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Create ground truth
 truth = np.sin(2*np.pi*(np.arange(features, dtype=np.float32))/features)
@@ -48,17 +50,17 @@ truth = np.sin(2*np.pi*(np.arange(features, dtype=np.float32))/features)
 population = tf.Variable(np.random.randn(pop_size, features), dtype=tf.float32)
 
 # Initialize placeholders
-truth_ph = tf.placeholder(tf.float32, [1, features])
-crossover_mat_ph = tf.placeholder(tf.float32, [num_children, features])
-mutation_val_ph = tf.placeholder(tf.float32, [num_children, features])
+truth_ph = tf.compat.v1.placeholder(tf.float32, [1, features])
+crossover_mat_ph = tf.compat.v1.placeholder(tf.float32, [num_children, features])
+mutation_val_ph = tf.compat.v1.placeholder(tf.float32, [num_children, features])
 
 # Calculate fitness (MSE)
-fitness = -tf.reduce_mean(tf.square(tf.subtract(population, truth_ph)), 1)
+fitness = -tf.reduce_mean(input_tensor=tf.square(tf.subtract(population, truth_ph)), axis=1)
 top_vals, top_ind = tf.nn.top_k(fitness, k=pop_size)
 
 # Get best fit individual
-best_val = tf.reduce_min(top_vals)
-best_ind = tf.argmin(top_vals, 0)
+best_val = tf.reduce_min(input_tensor=top_vals)
+best_ind = tf.argmin(input=top_vals, axis=0)
 best_individual = tf.gather(population, best_ind)
 
 # Get parents
@@ -85,7 +87,7 @@ new_population = tf.concat(axis=0, values=[parents, mutated_children])
 
 step = tf.group(population.assign(new_population))
 
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run through generations
