@@ -16,6 +16,7 @@
 
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -34,7 +35,7 @@ ops.reset_default_graph()
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare model parameters
 batch_size = 100
@@ -68,13 +69,14 @@ def load_movie_data():
 
         # Save tar.gz file
         req = requests.get(movie_data_url, stream=True)
-        with open('temp_movie_review_temp.tar.gz', 'wb') as f:
+        with open('Python/lect_tensorflow/tensorflow_cookbook_master/sec07_Natural_Language_Processing/chpt04_Working_With_Skip_Gram_Embeddings/temp_movie_review_temp.tar.gz', 'wb') as f:
             for chunk in req.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
                     f.flush()
+        
         # Extract tar.gz file into temp folder
-        tar = tarfile.open('temp_movie_review_temp.tar.gz', "r:gz")
+        tar = tarfile.open('./temp_movie_review_temp.tar.gz', "r:gz")
         tar.extractall(path='temp')
         tar.close()
 
@@ -216,23 +218,23 @@ def generate_batch_data(sentences, batch_size, window_size, method='skip_gram'):
 
 
 # Define Embeddings:
-embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+embeddings = tf.Variable(tf.random.uniform([vocabulary_size, embedding_size], -1.0, 1.0))
 
 # NCE loss parameters
-nce_weights = tf.Variable(tf.truncated_normal([vocabulary_size, embedding_size],
+nce_weights = tf.Variable(tf.random.truncated_normal([vocabulary_size, embedding_size],
                                               stddev=1.0 / np.sqrt(embedding_size)))
 nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
 
 # Create data/target placeholders
-x_inputs = tf.placeholder(tf.int32, shape=[batch_size])
-y_target = tf.placeholder(tf.int32, shape=[batch_size, 1])
+x_inputs = tf.compat.v1.placeholder(tf.int32, shape=[batch_size])
+y_target = tf.compat.v1.placeholder(tf.int32, shape=[batch_size, 1])
 valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
 # Lookup the word embedding:
-embed = tf.nn.embedding_lookup(embeddings, x_inputs)
+embed = tf.nn.embedding_lookup(params=embeddings, ids=x_inputs)
 
 # Get loss from prediction
-loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
+loss = tf.reduce_mean(input_tensor=tf.nn.nce_loss(weights=nce_weights,
                                      biases=nce_biases,
                                      labels=y_target,
                                      inputs=embed,
@@ -240,16 +242,16 @@ loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
                                      num_classes=vocabulary_size))
                                      
 # Create optimizer
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=1.0).minimize(loss)
+optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=1.0).minimize(loss)
 
 # Cosine similarity between words
-norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keepdims=True))
+norm = tf.sqrt(tf.reduce_sum(input_tensor=tf.square(embeddings), axis=1, keepdims=True))
 normalized_embeddings = embeddings / norm
-valid_embeddings = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
+valid_embeddings = tf.nn.embedding_lookup(params=normalized_embeddings, ids=valid_dataset)
 similarity = tf.matmul(valid_embeddings, normalized_embeddings, transpose_b=True)
 
 # Add variable initializer.
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run the skip gram model.
@@ -268,7 +270,7 @@ for i in range(generations):
         loss_vec.append(loss_val)
         loss_x_vec.append(i+1)
         print('Loss at step {} : {}'.format(i+1, loss_val))
-      
+    
     # Validation: Print some random words and top 5 related words
     if (i+1) % print_valid_every == 0:
         sim = sess.run(similarity, feed_dict=feed_dict)

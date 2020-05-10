@@ -10,6 +10,7 @@
 # analysis on the movie review dataset.
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -29,12 +30,12 @@ ops.reset_default_graph()
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Make a saving directory if it doesn't exist
-data_folder_name = 'temp'
+data_folder_name = './temp'
 if not os.path.exists(data_folder_name):
     os.makedirs(data_folder_name)
 
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare model parameters
 batch_size = 500
@@ -86,33 +87,33 @@ valid_examples = [word_dictionary[x] for x in valid_words]
 
 print('Creating Model')
 # Define Embeddings:
-embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
-doc_embeddings = tf.Variable(tf.random_uniform([len(texts), doc_embedding_size], -1.0, 1.0))
+embeddings = tf.Variable(tf.random.uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+doc_embeddings = tf.Variable(tf.random.uniform([len(texts), doc_embedding_size], -1.0, 1.0))
 
 # NCE loss parameters
-nce_weights = tf.Variable(tf.truncated_normal([vocabulary_size, concatenated_size],
+nce_weights = tf.Variable(tf.random.truncated_normal([vocabulary_size, concatenated_size],
                                                stddev=1.0 / np.sqrt(concatenated_size)))
 nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
 
 # Create data/target placeholders
-x_inputs = tf.placeholder(tf.int32, shape=[None, window_size + 1]) # plus 1 for doc index
-y_target = tf.placeholder(tf.int32, shape=[None, 1])
+x_inputs = tf.compat.v1.placeholder(tf.int32, shape=[None, window_size + 1]) # plus 1 for doc index
+y_target = tf.compat.v1.placeholder(tf.int32, shape=[None, 1])
 valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
 # Lookup the word embedding
 # Add together element embeddings in window:
 embed = tf.zeros([batch_size, embedding_size])
 for element in range(window_size):
-    embed += tf.nn.embedding_lookup(embeddings, x_inputs[:, element])
+    embed += tf.nn.embedding_lookup(params=embeddings, ids=x_inputs[:, element])
 
 doc_indices = tf.slice(x_inputs, [0,window_size],[batch_size,1])
-doc_embed = tf.nn.embedding_lookup(doc_embeddings,doc_indices)
+doc_embed = tf.nn.embedding_lookup(params=doc_embeddings,ids=doc_indices)
 
 # concatenate embeddings
 final_embed = tf.concat(axis=1, values=[embed, tf.squeeze(doc_embed)])
 
 # Get loss from prediction
-loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
+loss = tf.reduce_mean(input_tensor=tf.nn.nce_loss(weights=nce_weights,
                                      biases=nce_biases,
                                      labels=y_target,
                                      inputs=final_embed,
@@ -120,20 +121,20 @@ loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
                                      num_classes=vocabulary_size))
                                      
 # Create optimizer
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=model_learning_rate)
+optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=model_learning_rate)
 train_step = optimizer.minimize(loss)
 
 # Cosine similarity between words
-norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keep_dims=True))
+norm = tf.sqrt(tf.reduce_sum(input_tensor=tf.square(embeddings), axis=1, keepdims=True))
 normalized_embeddings = embeddings / norm
-valid_embeddings = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
+valid_embeddings = tf.nn.embedding_lookup(params=normalized_embeddings, ids=valid_dataset)
 similarity = tf.matmul(valid_embeddings, normalized_embeddings, transpose_b=True)
 
 # Create model saving operation
-saver = tf.train.Saver({"embeddings": embeddings, "doc_embeddings": doc_embeddings})
+saver = tf.compat.v1.train.Saver({"embeddings": embeddings, "doc_embeddings": doc_embeddings})
 
 #Add variable initializer.
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run the doc2vec model.
@@ -201,43 +202,43 @@ text_data_train = np.array([x[0:max_words] for x in [y+[0]*max_words for y in te
 text_data_test = np.array([x[0:max_words] for x in [y+[0]*max_words for y in text_data_test]])
 
 # Define Logistic placeholders
-log_x_inputs = tf.placeholder(tf.int32, shape=[None, max_words + 1]) # plus 1 for doc index
-log_y_target = tf.placeholder(tf.int32, shape=[None, 1])
+log_x_inputs = tf.compat.v1.placeholder(tf.int32, shape=[None, max_words + 1]) # plus 1 for doc index
+log_y_target = tf.compat.v1.placeholder(tf.int32, shape=[None, 1])
 
 # Define logistic embedding lookup (needed if we have two different batch sizes)
 # Add together element embeddings in window:
 log_embed = tf.zeros([logistic_batch_size, embedding_size])
 for element in range(max_words):
-    log_embed += tf.nn.embedding_lookup(embeddings, log_x_inputs[:, element])
+    log_embed += tf.nn.embedding_lookup(params=embeddings, ids=log_x_inputs[:, element])
 
 log_doc_indices = tf.slice(log_x_inputs, [0,max_words],[logistic_batch_size,1])
-log_doc_embed = tf.nn.embedding_lookup(doc_embeddings,log_doc_indices)
+log_doc_embed = tf.nn.embedding_lookup(params=doc_embeddings,ids=log_doc_indices)
 
 # concatenate embeddings
 log_final_embed = tf.concat(axis=1, values=[log_embed, tf.squeeze(log_doc_embed)])
 
 # Define model:
 # Create variables for logistic regression
-A = tf.Variable(tf.random_normal(shape=[concatenated_size,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[concatenated_size,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Declare logistic model (sigmoid in loss function)
 model_output = tf.add(tf.matmul(log_final_embed, A), b)
 
 # Declare loss function (Cross Entropy loss)
-logistic_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=tf.cast(log_y_target, tf.float32)))
+logistic_loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=tf.cast(log_y_target, tf.float32)))
 
 # Actual Prediction
 prediction = tf.round(tf.sigmoid(model_output))
 predictions_correct = tf.cast(tf.equal(prediction, tf.cast(log_y_target, tf.float32)), tf.float32)
-accuracy = tf.reduce_mean(predictions_correct)
+accuracy = tf.reduce_mean(input_tensor=predictions_correct)
 
 # Declare optimizer
-logistic_opt = tf.train.GradientDescentOptimizer(learning_rate=0.01)
+logistic_opt = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=0.01)
 logistic_train_step = logistic_opt.minimize(logistic_loss, var_list=[A, b])
 
 # Intitialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Start Logistic Regression

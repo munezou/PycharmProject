@@ -7,6 +7,7 @@
 # From this data set we will compute/fit the CBOW model of
 #  the Word2Vec Algorithm
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -24,18 +25,18 @@ from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Set Random Seeds
-tf.set_random_seed(42)
+tf.compat.v1.set_random_seed(42)
 np.random.seed(42)
 
-# os.chdir(os.path.dirname(os.path.realpath(__file__)))
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Make a saving directory if it doesn't exist
-data_folder_name = 'temp'
+data_folder_name = './temp'
 if not os.path.exists(data_folder_name):
     os.makedirs(data_folder_name)
 
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare model parameters
 batch_size = 500
@@ -82,26 +83,26 @@ valid_examples = [word_dictionary[x] for x in valid_words]
 
 print('Creating Model')
 # Define Embeddings:
-embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+embeddings = tf.Variable(tf.random.uniform([vocabulary_size, embedding_size], -1.0, 1.0))
 
 # NCE loss parameters
-nce_weights = tf.Variable(tf.truncated_normal([vocabulary_size, embedding_size],
+nce_weights = tf.Variable(tf.random.truncated_normal([vocabulary_size, embedding_size],
                                                stddev=1.0 / np.sqrt(embedding_size)))
 nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
 
 # Create data/target placeholders
-x_inputs = tf.placeholder(tf.int32, shape=[batch_size, 2*window_size])
-y_target = tf.placeholder(tf.int32, shape=[batch_size, 1])
+x_inputs = tf.compat.v1.placeholder(tf.int32, shape=[batch_size, 2*window_size])
+y_target = tf.compat.v1.placeholder(tf.int32, shape=[batch_size, 1])
 valid_dataset = tf.constant(valid_examples, dtype=tf.int32)
 
 # Lookup the word embedding
 # Add together window embeddings:
 embed = tf.zeros([batch_size, embedding_size])
 for element in range(2*window_size):
-    embed += tf.nn.embedding_lookup(embeddings, x_inputs[:, element])
+    embed += tf.nn.embedding_lookup(params=embeddings, ids=x_inputs[:, element])
 
 # Get loss from prediction
-loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
+loss = tf.reduce_mean(input_tensor=tf.nn.nce_loss(weights=nce_weights,
                                      biases=nce_biases,
                                      labels=y_target,
                                      inputs=embed,
@@ -109,19 +110,19 @@ loss = tf.reduce_mean(tf.nn.nce_loss(weights=nce_weights,
                                      num_classes=vocabulary_size))
                                      
 # Create optimizer
-optimizer = tf.train.GradientDescentOptimizer(learning_rate=model_learning_rate).minimize(loss)
+optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=model_learning_rate).minimize(loss)
 
 # Cosine similarity between words
-norm = tf.sqrt(tf.reduce_sum(tf.square(embeddings), 1, keepdims=True))
+norm = tf.sqrt(tf.reduce_sum(input_tensor=tf.square(embeddings), axis=1, keepdims=True))
 normalized_embeddings = embeddings / norm
-valid_embeddings = tf.nn.embedding_lookup(normalized_embeddings, valid_dataset)
+valid_embeddings = tf.nn.embedding_lookup(params=normalized_embeddings, ids=valid_dataset)
 similarity = tf.matmul(valid_embeddings, normalized_embeddings, transpose_b=True)
 
 # Create model saving operation
-saver = tf.train.Saver({"embeddings": embeddings})
+saver = tf.compat.v1.train.Saver({"embeddings": embeddings})
 
 #Add variable initializer.
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Filter out sentences that aren't long enough:

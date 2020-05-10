@@ -7,6 +7,7 @@
 # From this data set we will compute/fit the CBOW model of
 #  the Word2Vec Algorithm
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -26,7 +27,7 @@ ops.reset_default_graph()
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare model parameters
 embedding_size = 200
@@ -58,7 +59,7 @@ target_train = np.array([x for ix, x in enumerate(target) if ix in train_indices
 target_test = np.array([x for ix, x in enumerate(target) if ix in test_indices])
 
 # Load dictionary and embedding matrix
-dict_file = os.path.join('..', '05_Working_With_CBOW_Embeddings', 'temp', 'movie_vocab.pkl')
+dict_file = os.path.join('..', 'chpt05_Working_With_CBOW_Embeddings', 'temp', 'movie_vocab.pkl')
 word_dictionary = pickle.load(open(dict_file, 'rb'))
 
 # Convert texts to lists of indices
@@ -71,45 +72,45 @@ text_data_test = np.array([x[0:max_words] for x in [y+[0]*max_words for y in tex
 
 print('Creating Model')
 # Define Embeddings:
-embeddings = tf.Variable(tf.random_uniform([vocabulary_size, embedding_size], -1.0, 1.0))
+embeddings = tf.Variable(tf.random.uniform([vocabulary_size, embedding_size], -1.0, 1.0))
 
 # Define model:
 # Create variables for logistic regression
-A = tf.Variable(tf.random_normal(shape=[embedding_size, 1]))
-b = tf.Variable(tf.random_normal(shape=[1, 1]))
+A = tf.Variable(tf.random.normal(shape=[embedding_size, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, max_words], dtype=tf.int32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, max_words], dtype=tf.int32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Lookup embeddings vectors
-embed = tf.nn.embedding_lookup(embeddings, x_data)
+embed = tf.nn.embedding_lookup(params=embeddings, ids=x_data)
 # Take average of all word embeddings in documents
-embed_avg = tf.reduce_mean(embed, 1)
+embed_avg = tf.reduce_mean(input_tensor=embed, axis=1)
 
 # Declare logistic model (sigmoid in loss function)
 model_output = tf.add(tf.matmul(embed_avg, A), b)
 
 # Declare loss function (Cross Entropy loss)
-loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
+loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
 
 # Actual Prediction
 prediction = tf.round(tf.sigmoid(model_output))
 predictions_correct = tf.cast(tf.equal(prediction, y_target), tf.float32)
-accuracy = tf.reduce_mean(predictions_correct)
+accuracy = tf.reduce_mean(input_tensor=predictions_correct)
 
 # Declare optimizer
-my_opt = tf.train.AdagradOptimizer(0.005)
+my_opt = tf.compat.v1.train.AdagradOptimizer(0.005)
 train_step = my_opt.minimize(loss)
 
 # Intitialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Load model embeddings
-model_checkpoint_path = os.path.join('..', '05_Working_With_CBOW_Embeddings',
+model_checkpoint_path = os.path.join('..', 'chpt05_Working_With_CBOW_Embeddings',
                                      'temp', 'cbow_movie_embeddings.ckpt')
-saver = tf.train.Saver({"embeddings": embeddings})
+saver = tf.compat.v1.train.Saver({"embeddings": embeddings})
 saver.restore(sess, model_checkpoint_path)
 
 # Start Logistic Regression

@@ -10,6 +10,7 @@
 #  use the regular TensorFlow logistic algorithm outline.
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import csv
 import numpy as np
@@ -24,7 +25,7 @@ from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 batch_size = 200
 max_features = 1000
@@ -93,30 +94,30 @@ target_train = np.array([x for ix, x in enumerate(target) if ix in train_indices
 target_test = np.array([x for ix, x in enumerate(target) if ix in test_indices])
 
 # Create variables for logistic regression
-A = tf.Variable(tf.random_normal(shape=[max_features, 1]))
-b = tf.Variable(tf.random_normal(shape=[1, 1]))
+A = tf.Variable(tf.random.normal(shape=[max_features, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, max_features], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, max_features], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Declare logistic model (sigmoid in loss function)
 model_output = tf.add(tf.matmul(x_data, A), b)
 
 # Declare loss function (Cross Entropy loss)
-loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
+loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
 
 # Actual Prediction
 prediction = tf.round(tf.sigmoid(model_output))
 predictions_correct = tf.cast(tf.equal(prediction, y_target), tf.float32)
-accuracy = tf.reduce_mean(predictions_correct)
+accuracy = tf.reduce_mean(input_tensor=predictions_correct)
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.0025)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.0025)
 train_step = my_opt.minimize(loss)
 
 # Intitialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Start Logistic Regression

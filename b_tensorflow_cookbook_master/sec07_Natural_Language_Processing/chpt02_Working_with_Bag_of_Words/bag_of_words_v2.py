@@ -9,6 +9,7 @@
 #  predict if a text is spam or ham.
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import os
 import numpy as np
@@ -21,8 +22,10 @@ from tensorflow.contrib import learn
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Check if data was downloaded, otherwise download it and save for future use
 save_file_name = os.path.join('temp','temp_spam_data.csv')
@@ -99,36 +102,36 @@ target_train = [x for ix, x in enumerate(target) if ix in train_indices]
 target_test = [x for ix, x in enumerate(target) if ix in test_indices]
 
 # Setup Index Matrix for one-hot-encoding
-identity_mat = tf.diag(tf.ones(shape=[embedding_size]))
+identity_mat = tf.linalg.tensor_diag(tf.ones(shape=[embedding_size]))
 
 # Create variables for logistic regression
-A = tf.Variable(tf.random_normal(shape=[embedding_size,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[embedding_size,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[sentence_size], dtype=tf.int32)
-y_target = tf.placeholder(shape=[1, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[sentence_size], dtype=tf.int32)
+y_target = tf.compat.v1.placeholder(shape=[1, 1], dtype=tf.float32)
 
 # Text-Vocab Embedding
-x_embed = tf.nn.embedding_lookup(identity_mat, x_data)
-x_col_sums = tf.reduce_sum(x_embed, 0)
+x_embed = tf.nn.embedding_lookup(params=identity_mat, ids=x_data)
+x_col_sums = tf.reduce_sum(input_tensor=x_embed, axis=0)
 
 # Declare model operations
 x_col_sums_2D = tf.expand_dims(x_col_sums, 0)
 model_output = tf.add(tf.matmul(x_col_sums_2D, A), b)
 
 # Declare loss function (Cross Entropy loss)
-loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
+loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
 
 # Prediction operation
 prediction = tf.sigmoid(model_output)
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.001)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.001)
 train_step = my_opt.minimize(loss)
 
 # Intitialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Start Logistic Regression
