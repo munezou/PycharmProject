@@ -6,11 +6,12 @@
 
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Regression Example:
 # We will create sample data as follows:
@@ -23,11 +24,11 @@ sess = tf.Session()
 # Create data
 x_vals = np.random.normal(1, 0.1, 100)
 y_vals = np.repeat(10., 100)
-x_data = tf.placeholder(shape=[1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[1], dtype=tf.float32)
 
 # Create variable (one model parameter = A)
-A = tf.Variable(tf.random_normal(shape=[1]))
+A = tf.Variable(tf.random.normal(shape=[1]))
 
 # Add operation to graph
 my_output = tf.multiply(x_data, A)
@@ -36,11 +37,11 @@ my_output = tf.multiply(x_data, A)
 loss = tf.square(my_output - y_target)
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.02)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.02)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run Loop
@@ -66,16 +67,16 @@ for i in range(100):
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Create data
 x_vals = np.concatenate((np.random.normal(-1, 1, 50), np.random.normal(3, 1, 50)))
 y_vals = np.concatenate((np.repeat(0., 50), np.repeat(1., 50)))
-x_data = tf.placeholder(shape=[1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[1], dtype=tf.float32)
 
 # Create variable (one model parameter = A)
-A = tf.Variable(tf.random_normal(mean=10, shape=[1]))
+A = tf.Variable(tf.random.normal(mean=10, shape=[1]))
 
 # Add operation to graph
 # Want to create the operstion sigmoid(x + A)
@@ -87,14 +88,14 @@ my_output_expanded = tf.expand_dims(my_output, 0)
 y_target_expanded = tf.expand_dims(y_target, 0)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Add classification loss (cross entropy)
 xentropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=my_output_expanded, labels=y_target_expanded)
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.05)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.05)
 train_step = my_opt.minimize(xentropy)
 
 # Run loop

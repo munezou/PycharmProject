@@ -8,6 +8,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
@@ -15,16 +16,16 @@ ops.reset_default_graph()
 
 # Stochastic Training:
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Create data
 x_vals = np.random.normal(1, 0.1, 100)
 y_vals = np.repeat(10., 100)
-x_data = tf.placeholder(shape=[1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[1], dtype=tf.float32)
 
 # Create variable (one model parameter = A)
-A = tf.Variable(tf.random_normal(shape=[1]))
+A = tf.Variable(tf.random.normal(shape=[1]))
 
 # Add operation to graph
 my_output = tf.multiply(x_data, A)
@@ -33,11 +34,11 @@ my_output = tf.multiply(x_data, A)
 loss = tf.square(my_output - y_target)
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.02)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.02)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 loss_stochastic = []
@@ -57,7 +58,7 @@ for i in range(100):
 # Batch Training:
 # Re-initialize graph
 ops.reset_default_graph()
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare batch size
 batch_size = 20
@@ -65,24 +66,24 @@ batch_size = 20
 # Create data
 x_vals = np.random.normal(1, 0.1, 100)
 y_vals = np.repeat(10., 100)
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variable (one model parameter = A)
-A = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Add operation to graph
 my_output = tf.matmul(x_data, A)
 
 # Add L2 loss operation to graph
-loss = tf.reduce_mean(tf.square(my_output - y_target))
+loss = tf.reduce_mean(input_tensor=tf.square(my_output - y_target))
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.02)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.02)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 loss_batch = []

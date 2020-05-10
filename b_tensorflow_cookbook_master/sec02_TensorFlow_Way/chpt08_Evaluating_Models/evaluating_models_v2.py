@@ -17,7 +17,7 @@ from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Regression Example:
 # We will create sample data as follows:
@@ -33,8 +33,8 @@ batch_size = 25
 # Create data
 x_vals = np.random.normal(1, 0.1, 100)
 y_vals = np.repeat(10., 100)
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Split data into train/test = 80%/20%
 train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
@@ -45,20 +45,20 @@ y_vals_train = y_vals[train_indices]
 y_vals_test = y_vals[test_indices]
 
 # Create variable (one model parameter = A)
-A = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Add operation to graph
 my_output = tf.matmul(x_data, A)
 
 # Add L2 loss operation to graph
-loss = tf.reduce_mean(tf.square(my_output - y_target))
+loss = tf.reduce_mean(input_tensor=tf.square(my_output - y_target))
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.02)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.02)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run Loop
@@ -90,7 +90,7 @@ print('MSE on train:' + str(np.round(mse_train, 2)))
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare batch size
 batch_size = 25
@@ -98,8 +98,8 @@ batch_size = 25
 # Create data
 x_vals = np.concatenate((np.random.normal(-1, 1, 50), np.random.normal(2, 1, 50)))
 y_vals = np.concatenate((np.repeat(0., 50), np.repeat(1., 50)))
-x_data = tf.placeholder(shape=[1, None], dtype=tf.float32)
-y_target = tf.placeholder(shape=[1, None], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[1, None], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[1, None], dtype=tf.float32)
 
 # Split data into train/test = 80%/20%
 train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
@@ -110,7 +110,7 @@ y_vals_train = y_vals[train_indices]
 y_vals_test = y_vals[test_indices]
 
 # Create variable (one model parameter = A)
-A = tf.Variable(tf.random_normal(mean=10, shape=[1]))
+A = tf.Variable(tf.random.normal(mean=10, shape=[1]))
 
 # Add operation to graph
 # Want to create the operstion sigmoid(x + A)
@@ -118,14 +118,14 @@ A = tf.Variable(tf.random_normal(mean=10, shape=[1]))
 my_output = tf.add(x_data, A)
 
 # Add classification loss (cross entropy)
-xentropy = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=my_output, labels=y_target))
+xentropy = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=my_output, labels=y_target))
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.05)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.05)
 train_step = my_opt.minimize(xentropy)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run loop
@@ -141,7 +141,7 @@ for i in range(1800):
 # Evaluate Predictions on test set
 y_prediction = tf.squeeze(tf.round(tf.nn.sigmoid(tf.add(x_data, A))))
 correct_prediction = tf.equal(y_prediction, y_target)
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_prediction, tf.float32))
 acc_value_test = sess.run(accuracy, feed_dict={x_data: [x_vals_test], y_target: [y_vals_test]})
 acc_value_train = sess.run(accuracy, feed_dict={x_data: [x_vals_train], y_target: [y_vals_train]})
 print('Accuracy on train set: ' + str(acc_value_train))

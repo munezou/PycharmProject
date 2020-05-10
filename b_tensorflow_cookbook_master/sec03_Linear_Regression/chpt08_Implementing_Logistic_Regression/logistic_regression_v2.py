@@ -12,6 +12,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import requests
 from tensorflow.python.framework import ops
 import os.path
@@ -21,14 +22,14 @@ import csv
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 ###
 # Obtain and prepare data for modeling
 ###
 
 # Set name of data file
-birth_weight_file = 'birth_weight.csv'
+birth_weight_file = 'Python/lect_tensorflow/tensorflow_cookbook_master/sec03_Linear_Regression/chpt08_Implementing_Logistic_Regression/birth_weight.csv'
 
 # Download data and create data file if file does not exist in current directory
 if not os.path.exists(birth_weight_file):
@@ -61,7 +62,7 @@ x_vals = np.array([x[1:8] for x in birth_data])
 # Set for reproducible results
 seed = 99
 np.random.seed(seed)
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 
 # Split data into train/test = 80%/20%
 train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
@@ -90,21 +91,21 @@ x_vals_test, _, _ = np.nan_to_num(normalize_cols(x_vals_test, train_min, train_m
 batch_size = 25
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 7], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 7], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random_normal(shape=[7,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[7,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
 
 # Declare loss function (Cross Entropy loss)
-loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
+loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=model_output, labels=y_target))
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.01)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.01)
 train_step = my_opt.minimize(loss)
 
 ###
@@ -112,13 +113,13 @@ train_step = my_opt.minimize(loss)
 ###
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Actual Prediction
 prediction = tf.round(tf.sigmoid(model_output))
 predictions_correct = tf.cast(tf.equal(prediction, y_target), tf.float32)
-accuracy = tf.reduce_mean(predictions_correct)
+accuracy = tf.reduce_mean(input_tensor=predictions_correct)
 
 # Training loop
 loss_vec = []

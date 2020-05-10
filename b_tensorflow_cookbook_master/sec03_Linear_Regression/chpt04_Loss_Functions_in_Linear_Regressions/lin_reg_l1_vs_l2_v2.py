@@ -7,12 +7,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Load the data
 # iris.data = [(Sepal Length, Sepal Width, Petal Length, Petal Width)]
@@ -26,25 +27,25 @@ learning_rate = 0.4 # Will not converge with learning rate at 0.4
 iterations = 50
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random_normal(shape=[1,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
 
 # Declare loss functions
-loss_l1 = tf.reduce_mean(tf.abs(y_target - model_output))
+loss_l1 = tf.reduce_mean(input_tensor=tf.abs(y_target - model_output))
 
 # Declare optimizers
-my_opt_l1 = tf.train.GradientDescentOptimizer(learning_rate)
+my_opt_l1 = tf.compat.v1.train.GradientDescentOptimizer(learning_rate)
 train_step_l1 = my_opt_l1.minimize(loss_l1)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Training loop
@@ -65,28 +66,28 @@ for i in range(iterations):
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random_normal(shape=[1,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
 
 # Declare loss functions
-loss_l2 = tf.reduce_mean(tf.square(y_target - model_output))
+loss_l2 = tf.reduce_mean(input_tensor=tf.square(y_target - model_output))
 
 # Declare optimizers
-my_opt_l2 = tf.train.GradientDescentOptimizer(learning_rate)
+my_opt_l2 = tf.compat.v1.train.GradientDescentOptimizer(learning_rate)
 train_step_l2 = my_opt_l2.minimize(loss_l2)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 loss_vec_l2 = []

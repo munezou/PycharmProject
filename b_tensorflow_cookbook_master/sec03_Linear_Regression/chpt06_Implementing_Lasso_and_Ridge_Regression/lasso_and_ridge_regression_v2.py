@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import sys
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
 
@@ -25,7 +26,7 @@ regression_type = 'Ridge'
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 ###
 # Load iris data
@@ -44,17 +45,17 @@ y_vals = np.array([y[0] for y in iris.data])
 batch_size = 50
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # make results reproducible
 seed = 13
 np.random.seed(seed)
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random_normal(shape=[1,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
@@ -72,14 +73,14 @@ if regression_type == 'LASSO':
     lasso_param = tf.constant(0.9)
     heavyside_step = tf.truediv(1., tf.add(1., tf.exp(tf.multiply(-50., tf.subtract(A, lasso_param)))))
     regularization_param = tf.multiply(heavyside_step, 99.)
-    loss = tf.add(tf.reduce_mean(tf.square(y_target - model_output)), regularization_param)
+    loss = tf.add(tf.reduce_mean(input_tensor=tf.square(y_target - model_output)), regularization_param)
 
 elif regression_type == 'Ridge':
     # Declare the Ridge loss function
     # Ridge loss = L2_loss + L2 norm of slope
     ridge_param = tf.constant(1.)
-    ridge_loss = tf.reduce_mean(tf.square(A))
-    loss = tf.expand_dims(tf.add(tf.reduce_mean(tf.square(y_target - model_output)), tf.multiply(ridge_param, ridge_loss)), 0)
+    ridge_loss = tf.reduce_mean(input_tensor=tf.square(A))
+    loss = tf.expand_dims(tf.add(tf.reduce_mean(input_tensor=tf.square(y_target - model_output)), tf.multiply(ridge_param, ridge_loss)), 0)
     
 else:
     print('Invalid regression_type parameter value',file=sys.stderr)
@@ -90,7 +91,7 @@ else:
 ###
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.001)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.001)
 train_step = my_opt.minimize(loss)
 
 ###
@@ -98,7 +99,7 @@ train_step = my_opt.minimize(loss)
 ###
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Training loop

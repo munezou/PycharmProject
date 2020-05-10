@@ -11,11 +11,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Create the data
 x_vals = np.linspace(0, 10, 100)
@@ -34,9 +35,9 @@ A_tensor = tf.constant(A)
 b_tensor = tf.constant(b)
 
 # Matrix inverse solution
-tA_A = tf.matmul(tf.transpose(A_tensor), A_tensor)
-tA_A_inv = tf.matrix_inverse(tA_A)
-product = tf.matmul(tA_A_inv, tf.transpose(A_tensor))
+tA_A = tf.matmul(tf.transpose(a=A_tensor), A_tensor)
+tA_A_inv = tf.linalg.inv(tA_A)
+product = tf.matmul(tA_A_inv, tf.transpose(a=A_tensor))
 solution = tf.matmul(product, b_tensor)
 
 solution_eval = sess.run(solution)

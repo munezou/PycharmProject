@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
@@ -29,16 +30,16 @@ iris_2d = np.array([[x[2], x[3]] for x in iris.data])
 batch_size = 20
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Declare placeholders
-x1_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-x2_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x1_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+x2_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables A and b (0 = x1 - A*x2 + b)
-A = tf.Variable(tf.random_normal(shape=[1, 1]))
-b = tf.Variable(tf.random_normal(shape=[1, 1]))
+A = tf.Variable(tf.random.normal(shape=[1, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Add model to graph:
 # x1 - A*x2 + b
@@ -50,11 +51,11 @@ my_output = tf.subtract(x1_data, my_add)
 xentropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=my_output, labels=y_target)
 
 # Create Optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.05)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.05)
 train_step = my_opt.minimize(xentropy)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Run Loop
