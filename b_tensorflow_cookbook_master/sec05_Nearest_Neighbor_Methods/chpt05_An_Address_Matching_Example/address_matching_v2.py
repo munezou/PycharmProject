@@ -15,6 +15,7 @@ import random
 import string
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
@@ -52,13 +53,13 @@ test_data = [list(x) for x in zip(typo_full_streets, zips)]
 
 # Now we can perform address matching
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Placeholders
-test_address = tf.sparse_placeholder(dtype=tf.string)
-test_zip = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-ref_address = tf.sparse_placeholder(dtype=tf.string)
-ref_zip = tf.placeholder(shape=[None, n], dtype=tf.float32)
+test_address = tf.compat.v1.sparse_placeholder(dtype=tf.string)
+test_zip = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+ref_address = tf.compat.v1.sparse_placeholder(dtype=tf.string)
+ref_zip = tf.compat.v1.placeholder(shape=[None, n], dtype=tf.float32)
 
 # Declare Zip code distance for a test zip and reference set
 zip_dist = tf.square(tf.subtract(ref_zip, test_zip))
@@ -67,18 +68,18 @@ zip_dist = tf.square(tf.subtract(ref_zip, test_zip))
 address_dist = tf.edit_distance(test_address, ref_address, normalize=True)
 
 # Create similarity scores
-zip_max = tf.gather(tf.squeeze(zip_dist), tf.argmax(zip_dist, 1))
-zip_min = tf.gather(tf.squeeze(zip_dist), tf.argmin(zip_dist, 1))
-zip_sim = tf.div(tf.subtract(zip_max, zip_dist), tf.subtract(zip_max, zip_min))
+zip_max = tf.gather(tf.squeeze(zip_dist), tf.argmax(input=zip_dist, axis=1))
+zip_min = tf.gather(tf.squeeze(zip_dist), tf.argmin(input=zip_dist, axis=1))
+zip_sim = tf.compat.v1.div(tf.subtract(zip_max, zip_dist), tf.subtract(zip_max, zip_min))
 address_sim = tf.subtract(1., address_dist)
 
 # Combine distance functions
 address_weight = 0.5
 zip_weight = 1. - address_weight
-weighted_sim = tf.add(tf.transpose(tf.multiply(address_weight, address_sim)), tf.multiply(zip_weight, zip_sim))
+weighted_sim = tf.add(tf.transpose(a=tf.multiply(address_weight, address_sim)), tf.multiply(zip_weight, zip_sim))
 
 # Predict: Get max similarity entry
-top_match_index = tf.argmax(weighted_sim, 1)
+top_match_index = tf.argmax(input=weighted_sim, axis=1)
 
 
 # Function to Create a character-sparse tensor from strings
@@ -86,7 +87,7 @@ def sparse_from_word_vec(word_vec):
     num_words = len(word_vec)
     indices = [[xi, 0, yi] for xi,x in enumerate(word_vec) for yi,y in enumerate(x)]
     chars = list(''.join(word_vec))
-    return tf.SparseTensorValue(indices, chars, [num_words,1,1])
+    return tf.compat.v1.SparseTensorValue(indices, chars, [num_words,1,1])
 
 # Loop through test indices
 reference_addresses = [x[0] for x in reference_data]

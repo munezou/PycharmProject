@@ -1,12 +1,8 @@
-# k-Nearest Neighbor
+# Mixed Distance Functions for  k-Nearest Neighbor
 #----------------------------------
 #
-# This function illustrates how to use
-# k-nearest neighbors in tensorflow
-#
-# We will use the 1970s Boston housing dataset
-# which is available through the UCI
-# ML data repository.
+# This function shows how to use different distance
+# metrics on different features for kNN.
 #
 # Data:
 #----------x-values-----------
@@ -26,15 +22,17 @@
 #------------y-value-----------
 # MEDV   : Median Value of homes in $1,000's
 
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import requests
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Load the data
 housing_url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data'
@@ -50,8 +48,12 @@ x_vals = np.array([[x for i,x in enumerate(y) if housing_header[i] in cols_used]
 ## Min-Max Scaling
 x_vals = (x_vals - x_vals.min(0)) / x_vals.ptp(0)
 
+## Create distance metric weight matrix weighted by standard deviation
+weight_diagonal = x_vals.std(0)
+weight_matrix = tf.cast(tf.linalg.tensor_diag(weight_diagonal), dtype=tf.float32)
+
 # Split the data into train and test sets
-np.random.seed(13)  #make results reproducible
+np.random.seed(13)   # reproducible results
 train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
 test_indices = np.array(list(set(range(len(x_vals))) - set(train_indices)))
 x_vals_train = x_vals[train_indices]
@@ -64,31 +66,29 @@ k = 4
 batch_size=len(x_vals_test)
 
 # Placeholders
-x_data_train = tf.placeholder(shape=[None, num_features], dtype=tf.float32)
-x_data_test = tf.placeholder(shape=[None, num_features], dtype=tf.float32)
-y_target_train = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target_test = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data_train = tf.compat.v1.placeholder(shape=[None, num_features], dtype=tf.float32)
+x_data_test = tf.compat.v1.placeholder(shape=[None, num_features], dtype=tf.float32)
+y_target_train = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target_test = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
-# Declare distance metric
-# L1
-distance = tf.reduce_sum(tf.abs(tf.subtract(x_data_train, tf.expand_dims(x_data_test,1))), axis=2)
-
-# L2
-#distance = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(x_data_train, tf.expand_dims(x_data_test,1))), reduction_indices=1))
+# Declare weighted distance metric
+# Weighted L2 = sqrt((x-y)^T * A * (x-y))
+subtraction_term =  tf.subtract(x_data_train, tf.expand_dims(x_data_test,1))
+first_product = tf.matmul(subtraction_term, tf.tile(tf.expand_dims(weight_matrix,0), [batch_size,1,1]))
+second_product = tf.matmul(first_product, tf.transpose(a=subtraction_term, perm=[0,2,1]))
+distance = tf.sqrt(tf.linalg.diag_part(second_product))
 
 # Predict: Get min distance index (Nearest neighbor)
-#prediction = tf.arg_min(distance, 0)
 top_k_xvals, top_k_indices = tf.nn.top_k(tf.negative(distance), k=k)
-top_k_xvals = tf.truediv(1.0, top_k_xvals)
-x_sums = tf.expand_dims(tf.reduce_sum(top_k_xvals, 1),1)
+x_sums = tf.expand_dims(tf.reduce_sum(input_tensor=top_k_xvals, axis=1),1)
 x_sums_repeated = tf.matmul(x_sums,tf.ones([1, k], tf.float32))
-x_val_weights = tf.expand_dims(tf.div(top_k_xvals,x_sums_repeated), 1)
+x_val_weights = tf.expand_dims(tf.compat.v1.div(top_k_xvals,x_sums_repeated), 1)
 
 top_k_yvals = tf.gather(y_target_train, top_k_indices)
 prediction = tf.squeeze(tf.matmul(x_val_weights,top_k_yvals), axis=[1])
 
 # Calculate MSE
-mse = tf.div(tf.reduce_sum(tf.square(tf.subtract(prediction, y_target_test))), batch_size)
+mse = tf.compat.v1.div(tf.reduce_sum(input_tensor=tf.square(tf.subtract(prediction, y_target_test))), batch_size)
 
 # Calculate how many loops over training data
 num_loops = int(np.ceil(len(x_vals_test)/batch_size))
@@ -115,4 +115,3 @@ plt.xlabel('Med Home Value in $1,000s')
 plt.ylabel('Frequency')
 plt.legend(loc='upper right')
 plt.show()
-

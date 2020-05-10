@@ -6,8 +6,9 @@
 # in TensorFlow.
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 #----------------------------------
 # First compute the edit distance between 'bear' and 'beers'
