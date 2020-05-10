@@ -3,18 +3,21 @@
 import os
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Create the data and variables
 my_array = np.array([[1., 3., 5., 7., 9.],
                    [-2., 0., 2., 4., 6.],
                    [-6., -3., 0., 3., 6.]])
 x_vals = np.array([my_array, my_array + 1])
-x_data = tf.placeholder(tf.float32, shape=(3, 5))
+x_data = tf.compat.v1.placeholder(tf.float32, shape=(3, 5))
 
 # Constants for matrix multiplication:
 m1 = tf.constant([[1.], [0.], [-1.], [2.], [4.]])
@@ -33,8 +36,8 @@ for x_val in x_vals:
 # View the tensorboard graph by running the following code and then
 #    going to the terminal and typing:
 #    $ tensorboard --logdir=tensorboard_logs
-merged = tf.summary.merge_all()
+merged = tf.compat.v1.summary.merge_all()
 if not os.path.exists('tensorboard_logs/'):
     os.makedirs('tensorboard_logs/')
 
-my_writer = tf.summary.FileWriter('tensorboard_logs/', sess.graph)
+my_writer = tf.compat.v1.summary.FileWriter('tensorboard_logs/', sess.graph)

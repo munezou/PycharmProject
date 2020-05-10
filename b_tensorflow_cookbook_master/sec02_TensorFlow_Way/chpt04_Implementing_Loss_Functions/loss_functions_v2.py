@@ -3,14 +3,17 @@
 #
 #  This python script illustrates the different
 #  loss functions for regression and classification.
-
+import  os
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 ###### Numerical Predictions ######
 x_vals = tf.linspace(-1., 1., 500)
@@ -61,7 +64,7 @@ hinge_y_out = sess.run(hinge_y_vals)
 
 # Cross entropy loss
 # L = -actual * (log(pred)) - (1-actual)(log(1-pred))
-xentropy_y_vals = - tf.multiply(target, tf.log(x_vals)) - tf.multiply((1. - target), tf.log(1. - x_vals))
+xentropy_y_vals = - tf.multiply(target, tf.math.log(x_vals)) - tf.multiply((1. - target), tf.math.log(1. - x_vals))
 xentropy_y_out = sess.run(xentropy_y_vals)
 
 # L = -actual * (log(sigmoid(pred))) - (1-actual)(log(1-sigmoid(pred)))
@@ -79,7 +82,7 @@ xentropy_sigmoid_y_out = sess.run(xentropy_sigmoid_y_vals)
 # L = (1 - pred) * actual + (1 + (weights - 1) * pred) * log(1 + exp(-actual))
 weight = tf.constant(0.5)
 xentropy_weighted_y_vals = tf.nn.weighted_cross_entropy_with_logits(logits=x_vals,
-                                                                    targets=targets,
+                                                                    labels=targets,
                                                                     pos_weight=weight)
 xentropy_weighted_y_out = sess.run(xentropy_weighted_y_vals)
 
@@ -99,7 +102,7 @@ plt.show()
 # L = -actual * (log(softmax(pred))) - (1-actual)(log(1-softmax(pred)))
 unscaled_logits = tf.constant([[1., -3., 10.]])
 target_dist = tf.constant([[0.1, 0.02, 0.88]])
-softmax_xentropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=unscaled_logits,
+softmax_xentropy = tf.nn.softmax_cross_entropy_with_logits(logits=unscaled_logits,
                                                               labels=target_dist)
 print(sess.run(softmax_xentropy))
 
