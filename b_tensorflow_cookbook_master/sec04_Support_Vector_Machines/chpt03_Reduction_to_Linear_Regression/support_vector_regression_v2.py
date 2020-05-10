@@ -13,12 +13,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Load the data
 # iris.data = [(Sepal Length, Sepal Width, Petal Length, Petal Width)]
@@ -38,12 +39,12 @@ y_vals_test = y_vals[test_indices]
 batch_size = 50
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random_normal(shape=[1,1]))
-b = tf.Variable(tf.random_normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1,1]))
+b = tf.Variable(tf.random.normal(shape=[1,1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
@@ -53,14 +54,14 @@ model_output = tf.add(tf.matmul(x_data, A), b)
 # 1/2 margin width parameter = epsilon
 epsilon = tf.constant([0.5])
 # Margin term in loss
-loss = tf.reduce_mean(tf.maximum(0., tf.subtract(tf.abs(tf.subtract(model_output, y_target)), epsilon)))
+loss = tf.reduce_mean(input_tensor=tf.maximum(0., tf.subtract(tf.abs(tf.subtract(model_output, y_target)), epsilon)))
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.075)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.075)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Training loop

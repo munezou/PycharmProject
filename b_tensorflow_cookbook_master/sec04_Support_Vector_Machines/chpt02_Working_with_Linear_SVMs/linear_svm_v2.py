@@ -16,16 +16,17 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Set random seeds
 np.random.seed(7)
-tf.set_random_seed(7)
+tf.compat.v1.set_random_seed(7)
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Load the data
 # iris.data = [(Sepal Length, Sepal Width, Petal Length, Petal Width)]
@@ -47,38 +48,38 @@ y_vals_test = y_vals[test_indices]
 batch_size = 135
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 2], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 2], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random_normal(shape=[2, 1]))
-b = tf.Variable(tf.random_normal(shape=[1, 1]))
+A = tf.Variable(tf.random.normal(shape=[2, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Declare model operations
 model_output = tf.subtract(tf.matmul(x_data, A), b)
 
 # Declare vector L2 'norm' function squared
-l2_norm = tf.reduce_sum(tf.square(A))
+l2_norm = tf.reduce_sum(input_tensor=tf.square(A))
 
 # Declare loss function
 # Loss = max(0, 1-pred*actual) + alpha * L2_norm(A)^2
 # L2 regularization parameter, alpha
 alpha = tf.constant([0.01])
 # Margin term in loss
-classification_term = tf.reduce_mean(tf.maximum(0., tf.subtract(1., tf.multiply(model_output, y_target))))
+classification_term = tf.reduce_mean(input_tensor=tf.maximum(0., tf.subtract(1., tf.multiply(model_output, y_target))))
 # Put terms together
 loss = tf.add(classification_term, tf.multiply(alpha, l2_norm))
 
 # Declare prediction function
 prediction = tf.sign(model_output)
-accuracy = tf.reduce_mean(tf.cast(tf.equal(prediction, y_target), tf.float32))
+accuracy = tf.reduce_mean(input_tensor=tf.cast(tf.equal(prediction, y_target), tf.float32))
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.01)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.01)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Training loop
