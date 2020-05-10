@@ -22,26 +22,34 @@ import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from io import BytesIO
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Start a graph session
 graph = tf.Graph()
-sess = tf.InteractiveSession(graph=graph)
+sess = tf.compat.v1.InteractiveSession(graph=graph)
 
-os.chdir('~/Documents/tensorflow/inception-v1-model/')
+#os.chdir('~/Documents/tensorflow/inception-v1-model/')
+# Change Directory
+try:
+    abspath = os.path.abspath(__file__)
+except NameError:
+    abspath = os.getcwd()
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 # Model filename
 model_fn = 'tensorflow_inception_graph.pb'
 
 # Load graph parameters
-with tf.gfile.FastGFile(model_fn, 'rb') as f:
-    graph_def = tf.GraphDef()
+with tf.compat.v1.gfile.FastGFile(model_fn, 'rb') as f:
+    graph_def = tf.compat.v1.GraphDef()
     graph_def.ParseFromString(f.read())
 
 # Create placeholder for input
-t_input = tf.placeholder(np.float32, name='input')
+t_input = tf.compat.v1.placeholder(np.float32, name='input')
 
 # Imagenet average bias to subtract off images
 imagenet_mean = 117.0
@@ -72,7 +80,8 @@ def showarray(a, fmt='jpeg'):
     # Pick an in-memory format for image display
     f = BytesIO()
     # Create the in memory image
-    PIL.Image.fromarray(a).save(f, fmt)
+    PIL.Image.fromarray(a).save(f, fmt, save_format='h5')
+
     # Show image
     plt.imshow(a)
 
@@ -88,7 +97,7 @@ def tffunc(*argtypes):
     '''Helper that transforms TF-graph generating function into a regular one.
     See "resize" function below.
     '''
-    placeholders = list(map(tf.placeholder, argtypes))
+    placeholders = list(map(tf.compat.v1.placeholder, argtypes))
     def wrap(f):
         out = f(*placeholders)
         def wrapper(*args, **kw):
@@ -99,9 +108,13 @@ def tffunc(*argtypes):
 
 # Helper function that uses TF to resize an image
 def resize(img, size):
-    img = tf.expand_dims(img, 0)
-    # Change 'img' size by linear interpolation
-    return tf.image.resize_bilinear(img, size)[0, :, :, :]
+    try:
+        img = tf.expand_dims(img, 0)
+        # Change 'img' size by linear interpolation
+        return tf.image.resize(img, size)[0, :, :, :]
+    except Exception as ex:
+        print(ex)
+        pass
 
 
 def calc_grad_tiled(img, t_grad, tile_size=512):
@@ -133,11 +146,11 @@ def calc_grad_tiled(img, t_grad, tile_size=512):
 def render_deepdream(t_obj, img0=img_noise,
                      iter_n=10, step=1.5, octave_n=4, octave_scale=1.4):
     # defining the optimization objective, the objective is the mean of the feature
-    t_score = tf.reduce_mean(t_obj)
+    t_score = tf.reduce_mean(input_tensor=t_obj)
     # Our gradients will be defined as changing the t_input to get closer to
     # the values of t_score.  Here, t_score is the mean of the feature we select,
     # and t_input will be the image octave (starting with the last)
-    t_grad = tf.gradients(t_score, t_input)[0] # behold the power of automatic differentiation!
+    t_grad = tf.gradients(ys=t_score, xs=t_input)[0] # behold the power of automatic differentiation!
 
     # Store the image
     img = img0

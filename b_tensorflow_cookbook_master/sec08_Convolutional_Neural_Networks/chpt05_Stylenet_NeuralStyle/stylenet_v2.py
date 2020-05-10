@@ -19,8 +19,17 @@ from operator import mul
 from functools import reduce
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+# Change Directory
+try:
+    abspath = os.path.abspath(__file__)
+except NameError:
+    abspath = os.getcwd()
+dname = os.path.dirname(abspath)
+os.chdir(dname)
 
 # Image Files
 original_image_file = 'images/book_cover.jpg'
@@ -86,12 +95,12 @@ def vgg_network(network_weights, init_image):
             weights, bias = network_weights[i][0][0][0][0]
             weights = np.transpose(weights, (1, 0, 2, 3))
             bias = bias.reshape(-1)
-            conv_layer = tf.nn.conv2d(image, tf.constant(weights), (1, 1, 1, 1), 'SAME')
+            conv_layer = tf.nn.conv2d(input=image, filters=tf.constant(weights), strides=(1, 1, 1, 1), padding='SAME')
             image = tf.nn.bias_add(conv_layer, bias)
         elif layer[0] == 'r':
             image = tf.nn.relu(image)
         else:  # pooling
-            image = tf.nn.max_pool(image, (1, 2, 2, 1), (1, 2, 2, 1), 'SAME')
+            image = tf.nn.max_pool2d(input=image, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1), padding='SAME')
         network[layer] = image
     return network
 
@@ -112,8 +121,8 @@ style_weights = {l: 1./(len(style_layers)) for l in style_layers}
 
 # Computer feature layers with original image
 g_original = tf.Graph()
-with g_original.as_default(), tf.Session() as sess1:
-    image = tf.placeholder('float', shape=shape)
+with g_original.as_default(), tf.compat.v1.Session() as sess1:
+    image = tf.compat.v1.placeholder('float', shape=shape)
     vgg_net = vgg_network(network_weights, image)
     original_minus_mean = original_image - normalization_mean
     original_norm = np.array([original_minus_mean])
@@ -122,8 +131,8 @@ with g_original.as_default(), tf.Session() as sess1:
 
 # Get style image network
 g_style = tf.Graph()
-with g_style.as_default(), tf.Session() as sess2:
-    image = tf.placeholder('float', shape=style_shape)
+with g_style.as_default(), tf.compat.v1.Session() as sess2:
+    image = tf.compat.v1.placeholder('float', shape=style_shape)
     vgg_net = vgg_network(network_weights, image)
     style_minus_mean = style_image - normalization_mean
     style_norm = np.array([style_minus_mean])
@@ -136,7 +145,7 @@ with g_style.as_default(), tf.Session() as sess2:
 # Make Combined Image via loss function
 with tf.Graph().as_default():
     # Get network parameters
-    initial = tf.random_normal(shape) * 0.256
+    initial = tf.random.normal(shape) * 0.256
     init_image = tf.Variable(initial)
     vgg_net = vgg_network(network_weights, init_image)
 
@@ -156,12 +165,12 @@ with tf.Graph().as_default():
         feats, height, width, channels = [x.value for x in layer.get_shape()]
         size = height * width * channels
         features = tf.reshape(layer, (-1, channels))
-        style_gram_matrix = tf.matmul(tf.transpose(features), features) / size
+        style_gram_matrix = tf.matmul(tf.transpose(a=features), features) / size
         style_expected = style_features[style_layer]
         style_losses.append(style_weights[style_layer] * 2 *
                             tf.nn.l2_loss(style_gram_matrix - style_expected) /
                             style_expected.size)
-    style_loss += style_image_weight * tf.reduce_sum(style_losses)
+    style_loss += style_image_weight * tf.reduce_sum(input_tensor=style_losses)
 
     # To Smooth the results, we add in total variation loss
     total_var_x = reduce(mul, init_image[:, 1:, :, :].get_shape().as_list(), 1)
@@ -176,12 +185,12 @@ with tf.Graph().as_default():
     loss = original_loss + style_loss + total_variation_loss
 
     # Declare Optimization Algorithm
-    optimizer = tf.train.AdamOptimizer(learning_rate, beta1, beta2)
+    optimizer = tf.compat.v1.train.AdamOptimizer(learning_rate, beta1, beta2)
     train_step = optimizer.minimize(loss)
 
     # Initialize variables and start training
-    with tf.Session() as sess:
-        tf.global_variables_initializer().run()
+    with tf.compat.v1.Session() as sess:
+        tf.compat.v1.global_variables_initializer().run()
         for i in range(generations):
 
             train_step.run()
