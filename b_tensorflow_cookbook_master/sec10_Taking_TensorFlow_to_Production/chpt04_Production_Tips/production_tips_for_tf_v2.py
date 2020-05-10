@@ -12,9 +12,13 @@
 ############################################
 
 # Also you can clear the default graph from memory
+import os
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Saving Models
 # File types created from saving:    
@@ -41,7 +45,7 @@ with open('vocab2ix_dict.json', 'r') as file_conn:
     vocab2ix_dict = json.load(file_conn)
 
 # After model declaration, add a saving operations
-saver = tf.train.Saver()
+saver = tf.compat.v1.train.Saver()
 # Then during training, save every so often, referencing the training generation
 for i in range(generations):
     ...
@@ -49,15 +53,15 @@ for i in range(generations):
         saver.save(sess, 'my_model', global_step=step)
 
 # Can also save only specific variables:
-saver = tf.train.Saver({"my_var": my_variable})
+saver = tf.compat.v1.train.Saver({"my_var": my_variable})
 
 
 # other options for saver are 'keep checkpoint_every_n_hours'
 #      also 'max_to_keep'= default 5.
         
 # Be sure to name operations, and variables for easy loading for referencing later
-conv_weights = tf.Variable(tf.random_normal(), name='conv_weights')
-loss = tf.reduce_mean(... , name='loss')
+conv_weights = tf.Variable(tf.random.normal(), name='conv_weights')
+loss = tf.reduce_mean(input_tensor=... , name='loss')
 
 # Instead of tyring argparse and main(), TensorFlow provides an 'app' function
 #  to handle running and loading of arguments
@@ -79,16 +83,16 @@ def main(_):
 # Run the TensorFlow app
 if __name__ == "__main__":
     # The following is looking for a "main()" function to run and will pass.
-    tf.app.run()
+    tf.compat.v1.app.run()
     # Can modify this to be more custom:
-    tf.app.run(main=my_main_function(), argv=my_arguments)
+    tf.compat.v1.app.run(main=my_main_function(), argv=my_arguments)
 
 
 # Use of TensorFlow's built in logging:
 # Five levels: DEBUG, INFO, WARN, ERROR, and FATAL
-tf.logging.set_verbosity(tf.logging.WARN)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.WARN)
 # WARN is the default value, but to see more information, you can set it to
 #    INFO or DEBUG
-tf.logging.set_verbosity(tf.logging.DEBUG)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.DEBUG)
 # Note: 'DEBUG' is quite verbose.
 

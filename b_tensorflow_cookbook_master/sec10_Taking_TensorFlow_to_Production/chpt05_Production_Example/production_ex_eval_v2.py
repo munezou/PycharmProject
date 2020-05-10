@@ -12,8 +12,11 @@ import os
 import re
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 tf.flags.DEFINE_string("storage_folder", "temp", "Where to store model and data.")
 tf.flags.DEFINE_bool('model_file', False, 'Model file location.')
@@ -77,10 +80,10 @@ def main(args):
     # Load model
     graph = tf.Graph()
     with graph.as_default():
-        sess = tf.Session()
+        sess = tf.compat.v1.Session()
         with sess.as_default():
             # Load the saved meta graph and restore variables
-            saver = tf.train.import_meta_graph("{}.meta".format(os.path.join(storage_folder, "model.ckpt")))
+            saver = tf.compat.v1.train.import_meta_graph("{}.meta".format(os.path.join(storage_folder, "model.ckpt")))
             saver.restore(sess, os.path.join(storage_folder, "model.ckpt"))
 
             # Get the placeholders from the graph by name
@@ -90,7 +93,7 @@ def main(args):
 
             # Make the prediction
             eval_feed_dict = {x_data_ph: x_data, dropout_keep_prob: 1.0}
-            probability_prediction = sess.run(tf.reduce_mean(probability_outputs, 0), eval_feed_dict)
+            probability_prediction = sess.run(tf.reduce_mean(input_tensor=probability_outputs, axis=0), eval_feed_dict)
             
             # Print output (Or save to file or DB connection?)
             print('Probability of Spam: {:.4}'.format(probability_prediction[1]))
@@ -103,4 +106,4 @@ if __name__ == "__main__":
         tf.test.main()
     else:
         # Run evaluation
-        tf.app.run()
+        tf.compat.v1.app.run()

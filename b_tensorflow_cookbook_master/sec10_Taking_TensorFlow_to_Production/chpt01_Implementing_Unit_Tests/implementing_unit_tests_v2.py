@@ -4,15 +4,18 @@
 #
 # Here, we will show how to implement different unit tests
 #  on the MNIST example
-
+import os
 import sys
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Load data
 data_dir = 'temp'
@@ -40,21 +43,21 @@ dropout_prob = 0.75
 
 # Declare model placeholders
 x_input_shape = (batch_size, image_width, image_height, num_channels)
-x_input = tf.placeholder(tf.float32, shape=x_input_shape)
-y_target = tf.placeholder(tf.int32, shape=(batch_size))
+x_input = tf.compat.v1.placeholder(tf.float32, shape=x_input_shape)
+y_target = tf.compat.v1.placeholder(tf.int32, shape=(batch_size))
 eval_input_shape = (evaluation_size, image_width, image_height, num_channels)
-eval_input = tf.placeholder(tf.float32, shape=eval_input_shape)
-eval_target = tf.placeholder(tf.int32, shape=(evaluation_size))
+eval_input = tf.compat.v1.placeholder(tf.float32, shape=eval_input_shape)
+eval_target = tf.compat.v1.placeholder(tf.int32, shape=(evaluation_size))
 
 # Dropout placeholder
-dropout = tf.placeholder(tf.float32, shape=())
+dropout = tf.compat.v1.placeholder(tf.float32, shape=())
 
 # Declare model parameters
-conv1_weight = tf.Variable(tf.truncated_normal([4, 4, num_channels, conv1_features],
+conv1_weight = tf.Variable(tf.random.truncated_normal([4, 4, num_channels, conv1_features],
                                                stddev=0.1, dtype=tf.float32))
 conv1_bias = tf.Variable(tf.zeros([conv1_features], dtype=tf.float32))
 
-conv2_weight = tf.Variable(tf.truncated_normal([4, 4, conv1_features, conv2_features],
+conv2_weight = tf.Variable(tf.random.truncated_normal([4, 4, conv1_features, conv2_features],
                                                stddev=0.1, dtype=tf.float32))
 conv2_bias = tf.Variable(tf.zeros([conv2_features], dtype=tf.float32))
 
@@ -62,25 +65,25 @@ conv2_bias = tf.Variable(tf.zeros([conv2_features], dtype=tf.float32))
 resulting_width = image_width // (max_pool_size1 * max_pool_size2)
 resulting_height = image_height // (max_pool_size1 * max_pool_size2)
 full1_input_size = resulting_width * resulting_height * conv2_features
-full1_weight = tf.Variable(tf.truncated_normal([full1_input_size, fully_connected_size1], stddev=0.1, dtype=tf.float32))
-full1_bias = tf.Variable(tf.truncated_normal([fully_connected_size1], stddev=0.1, dtype=tf.float32))
-full2_weight = tf.Variable(tf.truncated_normal([fully_connected_size1, target_size],
+full1_weight = tf.Variable(tf.random.truncated_normal([full1_input_size, fully_connected_size1], stddev=0.1, dtype=tf.float32))
+full1_bias = tf.Variable(tf.random.truncated_normal([fully_connected_size1], stddev=0.1, dtype=tf.float32))
+full2_weight = tf.Variable(tf.random.truncated_normal([fully_connected_size1, target_size],
                                                stddev=0.1, dtype=tf.float32))
-full2_bias = tf.Variable(tf.truncated_normal([target_size], stddev=0.1, dtype=tf.float32))
+full2_bias = tf.Variable(tf.random.truncated_normal([target_size], stddev=0.1, dtype=tf.float32))
 
 
 # Initialize Model Operations
 def my_conv_net(input_data):
     # First Conv-ReLU-MaxPool Layer
-    conv1 = tf.nn.conv2d(input_data, conv1_weight, strides=[1, 1, 1, 1], padding='SAME')
+    conv1 = tf.nn.conv2d(input=input_data, filters=conv1_weight, strides=[1, 1, 1, 1], padding='SAME')
     relu1 = tf.nn.relu(tf.nn.bias_add(conv1, conv1_bias))
-    max_pool1 = tf.nn.max_pool(relu1, ksize=[1, max_pool_size1, max_pool_size1, 1],
+    max_pool1 = tf.nn.max_pool2d(input=relu1, ksize=[1, max_pool_size1, max_pool_size1, 1],
                                strides=[1, max_pool_size1, max_pool_size1, 1], padding='SAME')
 
     # Second Conv-ReLU-MaxPool Layer
-    conv2 = tf.nn.conv2d(max_pool1, conv2_weight, strides=[1, 1, 1, 1], padding='SAME')
+    conv2 = tf.nn.conv2d(input=max_pool1, filters=conv2_weight, strides=[1, 1, 1, 1], padding='SAME')
     relu2 = tf.nn.relu(tf.nn.bias_add(conv2, conv2_bias))
-    max_pool2 = tf.nn.max_pool(relu2, ksize=[1, max_pool_size2, max_pool_size2, 1],
+    max_pool2 = tf.nn.max_pool2d(input=relu2, ksize=[1, max_pool_size2, max_pool_size2, 1],
                                strides=[1, max_pool_size2, max_pool_size2, 1], padding='SAME')
 
     # Transform Output into a 1xN layer for next fully connected layer
@@ -95,7 +98,7 @@ def my_conv_net(input_data):
     final_model_output = tf.add(tf.matmul(fully_connected1, full2_weight), full2_bias)
     
     # Add dropout
-    final_model_output = tf.nn.dropout(final_model_output, dropout)
+    final_model_output = tf.nn.dropout(final_model_output, 1 - (dropout))
     
     return final_model_output
 
@@ -104,7 +107,7 @@ model_output = my_conv_net(x_input)
 test_model_output = my_conv_net(eval_input)
 
 # Declare Loss Function (softmax cross entropy)
-loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model_output, labels=y_target))
+loss = tf.reduce_mean(input_tensor=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model_output, labels=y_target))
 
 # Create a prediction function
 prediction = tf.nn.softmax(model_output)
@@ -119,11 +122,11 @@ def get_accuracy(logits, targets):
 
 
 # Create an optimizer
-my_optimizer = tf.train.MomentumOptimizer(learning_rate, 0.9)
+my_optimizer = tf.compat.v1.train.MomentumOptimizer(learning_rate, 0.9)
 train_step = my_optimizer.minimize(loss)
 
 # Initialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 
@@ -196,4 +199,4 @@ if __name__ == '__main__':
         tf.test.main(argv=cmd_args[1:])
     else:
         # Run TF App
-        tf.app.run(main=None, argv=cmd_args)
+        tf.compat.v1.app.run(main=None, argv=cmd_args)

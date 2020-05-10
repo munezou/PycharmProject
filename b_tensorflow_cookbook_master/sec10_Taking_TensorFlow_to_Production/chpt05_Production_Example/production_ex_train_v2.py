@@ -15,9 +15,12 @@ import sys
 import requests
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from zipfile import ZipFile
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Define App Flags
 tf.flags.DEFINE_string("storage_folder", "temp", "Where to store model and data.")
@@ -92,19 +95,19 @@ class clean_test(tf.test.TestCase):
 # Define RNN Model
 def rnn_model(x_data_ph, vocab_size, embedding_size, rnn_size, dropout_keep_prob):
     # Create embedding
-    embedding_mat = tf.Variable(tf.random_uniform([vocab_size, embedding_size], -1.0, 1.0))
-    embedding_output = tf.nn.embedding_lookup(embedding_mat, x_data_ph)
+    embedding_mat = tf.Variable(tf.random.uniform([vocab_size, embedding_size], -1.0, 1.0))
+    embedding_output = tf.nn.embedding_lookup(params=embedding_mat, ids=x_data_ph)
 
     # Define the RNN cell
-    cell = tf.contrib.rnn.BasicRNNCell(num_units=rnn_size)
-    output, state = tf.nn.dynamic_rnn(cell, embedding_output, dtype=tf.float32)
-    output = tf.nn.dropout(output, dropout_keep_prob)
+    cell = tf.compat.v1.nn.rnn_cell.BasicRNNCell(num_units=rnn_size)
+    output, state = tf.compat.v1.nn.dynamic_rnn(cell, embedding_output, dtype=tf.float32)
+    output = tf.nn.dropout(output, 1 - (dropout_keep_prob))
 
     # Get output of RNN sequence
-    output = tf.transpose(output, [1, 0, 2])
+    output = tf.transpose(a=output, perm=[1, 0, 2])
     last = tf.gather(output, int(output.get_shape()[0]) - 1)
 
-    weight = tf.Variable(tf.truncated_normal([rnn_size, 2], stddev=0.1))
+    weight = tf.Variable(tf.random.truncated_normal([rnn_size, 2], stddev=0.1))
     bias = tf.Variable(tf.constant(0.1, shape=[2]))
     logits_out = tf.matmul(last, weight) + bias
     
@@ -114,7 +117,7 @@ def rnn_model(x_data_ph, vocab_size, embedding_size, rnn_size, dropout_keep_prob
 # Define accuracy function
 def get_accuracy(logits, actuals):
     # Calulate if each output is correct
-    batch_acc = tf.equal(tf.argmax(logits, 1), tf.cast(actuals, tf.int64))
+    batch_acc = tf.equal(tf.argmax(input=logits, axis=1), tf.cast(actuals, tf.int64))
     # Convert logical to float
     batch_acc = tf.cast(batch_acc, tf.float32)
     return batch_acc
@@ -123,10 +126,10 @@ def get_accuracy(logits, actuals):
 # Define main program
 def main(args):
     # Set verbosity to get more information from TensorFlow
-    tf.logging.set_verbosity(tf.logging.INFO)
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
     
     # Create a visualizer object for Tensorboard viewing
-    summary_writer = tf.summary.FileWriter('tensorboard', tf.get_default_graph())
+    summary_writer = tf.compat.v1.summary.FileWriter('tensorboard', tf.compat.v1.get_default_graph())
     # Create tensorboard folder if not exists
     if not os.path.exists('tensorboard'):
         os.makedirs('tensorboard')
@@ -172,11 +175,11 @@ def main(args):
     vocab_size = len(vocab_processor.vocabulary_)
 
     with tf.Graph().as_default():
-        sess = tf.Session()
+        sess = tf.compat.v1.Session()
         # Define placeholders
-        x_data_ph = tf.placeholder(tf.int32, [None, max_sequence_length], name='x_data_ph')
-        y_output_ph = tf.placeholder(tf.int32, [None], name='y_output_ph')
-        dropout_keep_prob = tf.placeholder(tf.float32, name='dropout_keep_prob')
+        x_data_ph = tf.compat.v1.placeholder(tf.int32, [None, max_sequence_length], name='x_data_ph')
+        y_output_ph = tf.compat.v1.placeholder(tf.int32, [None], name='y_output_ph')
+        dropout_keep_prob = tf.compat.v1.placeholder(tf.float32, name='dropout_keep_prob')
 
         # Define Model
         rnn_model_outputs = rnn_model(x_data_ph, vocab_size, embedding_size, rnn_size, dropout_keep_prob)
@@ -189,27 +192,27 @@ def main(args):
         # Loss function
         losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=rnn_model_outputs, labels=y_output_ph)
         # Remember that for this loss function, logits=float32, labels=int32
-        loss = tf.reduce_mean(losses, name="loss")
+        loss = tf.reduce_mean(input_tensor=losses, name="loss")
 
         # Model Accuracy Operation
-        accuracy = tf.reduce_mean(get_accuracy(rnn_model_outputs, y_output_ph), name="accuracy")
+        accuracy = tf.reduce_mean(input_tensor=get_accuracy(rnn_model_outputs, y_output_ph), name="accuracy")
     
         # Add scalar summaries for Tensorboard
-        with tf.name_scope('Scalar_Summaries'):
-                tf.summary.scalar('Loss', loss)
-                tf.summary.scalar('Accuracy', accuracy)
+        with tf.compat.v1.name_scope('Scalar_Summaries'):
+                tf.compat.v1.summary.scalar('Loss', loss)
+                tf.compat.v1.summary.scalar('Accuracy', accuracy)
     
         # Declare Optimizer/train step
-        optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+        optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate)
         train_step = optimizer.minimize(loss)
         
         # Declare summary merging operation
-        summary_op = tf.summary.merge_all()
+        summary_op = tf.compat.v1.summary.merge_all()
     
         # Create a graph/Variable saving/loading operations
-        saver = tf.train.Saver()    
+        saver = tf.compat.v1.train.Saver()    
     
-        init = tf.global_variables_initializer()
+        init = tf.compat.v1.global_variables_initializer()
         sess.run(init)
     
         # Start training
@@ -234,7 +237,7 @@ def main(args):
                               dropout_keep_prob: 0.5}
                 _, summary = sess.run([train_step, summary_op], feed_dict=train_dict)
                 
-                summary_writer = tf.summary.FileWriter('tensorboard')
+                summary_writer = tf.compat.v1.summary.FileWriter('tensorboard')
                 summary_writer.add_summary(summary, i)
         
             # Run loss and accuracy for training
@@ -259,4 +262,4 @@ if __name__ == "__main__":
         tf.test.main(argv=cmd_args[1:])
     else:
         # Run TF App
-        tf.app.run(main=None, argv=cmd_args)
+        tf.compat.v1.app.run(main=None, argv=cmd_args)

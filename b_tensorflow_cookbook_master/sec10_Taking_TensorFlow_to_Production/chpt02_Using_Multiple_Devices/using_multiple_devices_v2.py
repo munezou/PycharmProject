@@ -4,13 +4,16 @@
 #
 # This function gives us the ways to use
 #  multiple devices (executors) in TensorFlow.
-
+import os
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # To find out where placement occurs, set 'log_device_placement'
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
+sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(log_device_placement=True))
 
 a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[2, 3], name='a')
 b = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], shape=[3, 2], name='b')
@@ -22,9 +25,9 @@ print(sess.run(c))
 
 # If we load a graph and want device placement to be forgotten,
 #  we set a parameter in our session:
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.allow_soft_placement = True
-sess_soft = tf.Session(config=config)
+sess_soft = tf.compat.v1.Session(config=config)
 
 # GPUs
 #---------------------------------
@@ -37,11 +40,11 @@ sess_soft = tf.Session(config=config)
 # option setting:
 
 config.gpu_options.allow_growth = True
-sess_grow = tf.Session(config=config)
+sess_grow = tf.compat.v1.Session(config=config)
 
 # Also, we can limit the size of GPU memory used, with the following option
 config.gpu_options.per_process_gpu_memory_fraction = 0.4
-sess_limited = tf.Session(config=config)
+sess_limited = tf.compat.v1.Session(config=config)
 
 
 # How to set placements on multiple devices.

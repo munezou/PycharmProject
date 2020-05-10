@@ -15,9 +15,12 @@ import re
 import grpc
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 
 from tensorflow_serving.apis import predict_pb2
 from tensorflow_serving.apis import prediction_service_pb2
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 tf.flags.DEFINE_string('server', '9000', 'PredictionService host')
 tf.flags.DEFINE_string('port', '0.0.0.0', 'PredictionService port')
@@ -84,4 +87,4 @@ if __name__ == '__main__':
                  'Text 444 now to see the top users in your area',
                  'drive safe, and thanks for visiting again!']
 
-    tf.app.run(argv=test_data)
+    tf.compat.v1.app.run(argv=test_data)
