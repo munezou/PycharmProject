@@ -15,6 +15,7 @@ We will generate two different data sets for this
 """
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import numpy as np
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
@@ -24,7 +25,7 @@ ops.reset_default_graph()
 # ---------------------------------------------------|
 
 # Create graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # parameters for the run
 data_size = 25
@@ -35,13 +36,13 @@ stride_size = 1
 # ensure reproducibility
 seed = 13
 np.random.seed(seed)
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 
 # Generate 1D data
 data_1d = np.random.normal(size=data_size)
 
 # Placeholder
-x_input_1d = tf.placeholder(dtype=tf.float32, shape=[data_size])
+x_input_1d = tf.compat.v1.placeholder(dtype=tf.float32, shape=[data_size])
 
 
 # --------Convolution--------
@@ -61,8 +62,8 @@ def conv_layer_1d(input_1d, input_filter, stride):
     input_4d = tf.expand_dims(input_3d, 3)
     # Perform convolution with stride = 1, if we wanted to increase the stride,
     # to say '2', then strides=[1,1,2,1]
-    convolution_output = tf.nn.conv2d(input_4d,
-                                      filter=input_filter,
+    convolution_output = tf.nn.conv2d(input=input_4d,
+                                      filters=input_filter,
                                       strides=[1, 1, stride, 1],
                                       padding="VALID")
     # Get rid of extra dimensions
@@ -70,7 +71,7 @@ def conv_layer_1d(input_1d, input_filter, stride):
     return conv_output_1d
 
 # Create filter for convolution.
-my_filter = tf.Variable(tf.random_normal(shape=[1, conv_size, 1, 1]))
+my_filter = tf.Variable(tf.random.normal(shape=[1, conv_size, 1, 1]))
 # Create convolution layer
 my_convolution_output = conv_layer_1d(x_input_1d, my_filter, stride=stride_size)
 
@@ -100,7 +101,7 @@ def max_pool(input_1d, width, stride):
     # If we wanted to increase the stride on our data dimension, say by
     # a factor of '2', we put strides = [1, 1, 2, 1]
     # We will also need to specify the width of the max-window ('width')
-    pool_output = tf.nn.max_pool(input_4d, ksize=[1, 1, width, 1],
+    pool_output = tf.nn.max_pool2d(input=input_4d, ksize=[1, 1, width, 1],
                                  strides=[1, 1, stride, 1],
                                  padding='VALID')
     # Get rid of extra dimensions
@@ -114,11 +115,11 @@ my_maxpool_output = max_pool(my_activation_output, width=maxpool_size, stride=st
 def fully_connected(input_layer, num_outputs):
     # First we find the needed shape of the multiplication weight matrix:
     # The dimension will be (length of input) by (num_outputs)
-    weight_shape = tf.squeeze(tf.stack([tf.shape(input_layer), [num_outputs]]))
+    weight_shape = tf.squeeze(tf.stack([tf.shape(input=input_layer), [num_outputs]]))
     # Initialize such weight
-    weight = tf.random_normal(weight_shape, stddev=0.1)
+    weight = tf.random.normal(weight_shape, stddev=0.1)
     # Initialize the bias
-    bias = tf.random_normal(shape=[num_outputs])
+    bias = tf.random.normal(shape=[num_outputs])
     # Make the 1D input array into a 2D array for matrix multiplication
     input_layer_2d = tf.expand_dims(input_layer, 0)
     # Perform the matrix multiplication and add the bias
@@ -130,7 +131,7 @@ def fully_connected(input_layer, num_outputs):
 my_full_output = fully_connected(my_maxpool_output, 5)
 
 # Initialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 feed_dict = {x_input_1d: data_1d}
@@ -171,7 +172,7 @@ print(sess.run(my_full_output, feed_dict=feed_dict))
 
 # Reset Graph
 ops.reset_default_graph()
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Parameters for the run
 row_size = 10
@@ -184,14 +185,14 @@ maxpool_stride_size = 1
 # Set seed to ensure reproducibility
 seed = 13
 np.random.seed(seed)
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 
 # Generate 2D data
 data_size = [row_size, col_size]
 data_2d = np.random.normal(size=data_size)
 
 # --------Placeholder--------
-x_input_2d = tf.placeholder(dtype=tf.float32, shape=data_size)
+x_input_2d = tf.compat.v1.placeholder(dtype=tf.float32, shape=data_size)
 
 
 # Convolution
@@ -209,8 +210,8 @@ def conv_layer_2d(input_2d, conv_filter, conv_stride):
     input_3d = tf.expand_dims(input_2d, 0)
     input_4d = tf.expand_dims(input_3d, 3)
     # Note the stride difference below!
-    convolution_output = tf.nn.conv2d(input_4d,
-                                      filter=conv_filter,
+    convolution_output = tf.nn.conv2d(input=input_4d,
+                                      filters=conv_filter,
                                       strides=[1, conv_stride, conv_stride, 1],
                                       padding="VALID")
     # Get rid of unnecessary dimensions
@@ -218,7 +219,7 @@ def conv_layer_2d(input_2d, conv_filter, conv_stride):
     return conv_output_2d
 
 # Create Convolutional Filter
-my_filter = tf.Variable(tf.random_normal(shape=[conv_size, conv_size, 1, 1]))
+my_filter = tf.Variable(tf.random.normal(shape=[conv_size, conv_size, 1, 1]))
 # Create Convolutional Layer
 my_convolution_output = conv_layer_2d(x_input_2d, my_filter, conv_stride=conv_stride_size)
 
@@ -247,7 +248,7 @@ def max_pool(input_2d, width, height, stride):
     # Perform the max pooling with strides = [1,1,1,1]
     # If we wanted to increase the stride on our data dimension, say by
     # a factor of '2', we put strides = [1, 2, 2, 1]
-    pool_output = tf.nn.max_pool(input_4d, ksize=[1, height, width, 1],
+    pool_output = tf.nn.max_pool2d(input=input_4d, ksize=[1, height, width, 1],
                                  strides=[1, stride, stride, 1],
                                  padding='VALID')
     # Get rid of unnecessary dimensions
@@ -273,11 +274,11 @@ def fully_connected(input_layer, num_outputs):
     flat_input = tf.reshape(input_layer, [-1])
     # We then find out how long it is, and create an array for the shape of
     # the multiplication weight = (WxH) by (num_outputs)
-    weight_shape = tf.squeeze(tf.stack([tf.shape(flat_input), [num_outputs]]))
+    weight_shape = tf.squeeze(tf.stack([tf.shape(input=flat_input), [num_outputs]]))
     # Initialize the weight
-    weight = tf.random_normal(weight_shape, stddev=0.1)
+    weight = tf.random.normal(weight_shape, stddev=0.1)
     # Initialize the bias
-    bias = tf.random_normal(shape=[num_outputs])
+    bias = tf.random.normal(shape=[num_outputs])
     # Now make the flat 1D array into a 2D array for multiplication
     input_2d = tf.expand_dims(flat_input, 0)
     # Multiply and add the bias
@@ -291,7 +292,7 @@ my_full_output = fully_connected(my_maxpool_output, 5)
 
 # Run graph
 # Initialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 feed_dict = {x_input_2d: data_2d}

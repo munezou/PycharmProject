@@ -11,24 +11,25 @@ functions.
 """
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Start Graph Session
-sess = tf.Session()
-tf.set_random_seed(5)
+sess = tf.compat.v1.Session()
+tf.compat.v1.set_random_seed(5)
 np.random.seed(42)
 
 batch_size = 50
 
-a1 = tf.Variable(tf.random_normal(shape=[1, 1]))
-b1 = tf.Variable(tf.random_uniform(shape=[1, 1]))
-a2 = tf.Variable(tf.random_normal(shape=[1, 1]))
-b2 = tf.Variable(tf.random_uniform(shape=[1, 1]))
+a1 = tf.Variable(tf.random.normal(shape=[1, 1]))
+b1 = tf.Variable(tf.random.uniform(shape=[1, 1]))
+a2 = tf.Variable(tf.random.normal(shape=[1, 1]))
+b2 = tf.Variable(tf.random.uniform(shape=[1, 1]))
 x = np.random.normal(2, 0.1, 500)
-x_data = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 sigmoid_activation = tf.sigmoid(tf.add(tf.matmul(x_data, a1), b1))
 
@@ -36,15 +37,15 @@ relu_activation = tf.nn.relu(tf.add(tf.matmul(x_data, a2), b2))
 
 # Declare the loss function as the difference between
 # the output and a target value, 0.75.
-loss1 = tf.reduce_mean(tf.square(tf.subtract(sigmoid_activation, 0.75)))
-loss2 = tf.reduce_mean(tf.square(tf.subtract(relu_activation, 0.75)))
+loss1 = tf.reduce_mean(input_tensor=tf.square(tf.subtract(sigmoid_activation, 0.75)))
+loss2 = tf.reduce_mean(input_tensor=tf.square(tf.subtract(relu_activation, 0.75)))
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.01)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.01)
 train_step_sigmoid = my_opt.minimize(loss1)
 train_step_relu = my_opt.minimize(loss2)
 

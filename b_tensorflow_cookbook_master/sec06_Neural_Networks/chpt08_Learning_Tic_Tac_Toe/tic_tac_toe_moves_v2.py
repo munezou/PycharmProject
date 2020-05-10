@@ -8,6 +8,7 @@ We will build a one-hidden layer neural network
 """
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import csv
 import numpy as np
@@ -111,6 +112,7 @@ def get_moves_from_csv(csv_file):
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             play_moves.append(([int(x) for x in row[0:9]], int(row[9])))
+    
     return play_moves
 
 
@@ -129,7 +131,7 @@ def get_rand_move(play_moves, rand_transforms=2):
     return board, play_response
 
 # Get list of optimal moves w/ responses
-moves = get_moves_from_csv('base_tic_tac_toe_moves.csv')
+moves = get_moves_from_csv('Python/lect_tensorflow/tensorflow_cookbook_master/sec06_Neural_Networks/chpt08_Learning_Tic_Tac_Toe/base_tic_tac_toe_moves.csv')
 
 # Create a train set:
 train_length = 500
@@ -146,7 +148,7 @@ train_set = [x for x in train_set if x[0] != test_board]
 
 
 def init_weights(shape):
-    return tf.Variable(tf.random_normal(shape))
+    return tf.Variable(tf.random.normal(shape))
 
 
 def model(X, A1, A2, bias1, bias2):
@@ -155,8 +157,8 @@ def model(X, A1, A2, bias1, bias2):
     # Note: we don't take the softmax at the end because our cost function does that for us
     return layer2
 
-X = tf.placeholder(dtype=tf.float32, shape=[None, 9])
-Y = tf.placeholder(dtype=tf.int32, shape=[None])
+X = tf.compat.v1.placeholder(dtype=tf.float32, shape=[None, 9])
+Y = tf.compat.v1.placeholder(dtype=tf.int32, shape=[None])
 
 A1 = init_weights([9, 81])
 bias1 = init_weights([81])
@@ -165,12 +167,12 @@ bias2 = init_weights([9])
 
 model_output = model(X, A1, A2, bias1, bias2)
 
-loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model_output, labels=Y))
-train_step = tf.train.GradientDescentOptimizer(0.025).minimize(loss)
-prediction = tf.argmax(model_output, 1)
+loss = tf.reduce_mean(input_tensor=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model_output, labels=Y))
+train_step = tf.compat.v1.train.GradientDescentOptimizer(0.025).minimize(loss)
+prediction = tf.argmax(input=model_output, axis=1)
 
-sess = tf.Session()
-init = tf.global_variables_initializer()
+sess = tf.compat.v1.Session()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 loss_vec = []

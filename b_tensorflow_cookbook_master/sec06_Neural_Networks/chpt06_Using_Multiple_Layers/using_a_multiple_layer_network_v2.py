@@ -25,6 +25,7 @@ three fully connected hidden layers, with node sizes 50, 25, and 5
 
 """
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import csv
 import os
@@ -33,7 +34,7 @@ import requests
 from tensorflow.python.framework import ops
 
 # name of data file
-birth_weight_file = 'birth_weight.csv'
+birth_weight_file = 'Python/lect_tensorflow/tensorflow_cookbook_master/sec06_Neural_Networks/chpt06_Using_Multiple_Layers/birth_weight.csv'
 birthdata_url = 'https://github.com/nfmcclure/tensorflow_cookbook/raw/master' \
                 '/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
 
@@ -71,7 +72,7 @@ x_vals = np.array([[x[ix] for ix, feature in enumerate(birth_header) if feature 
 ops.reset_default_graph()
 
 # Create graph session 
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # set batch size for training
 batch_size = 100
@@ -79,7 +80,7 @@ batch_size = 100
 # Set random seed to make results reproducible
 seed = 4
 np.random.seed(seed)
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 
 # Split data into train/test = 80%/20%
 train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
@@ -107,17 +108,17 @@ x_vals_test = np.nan_to_num(normalize_cols(x_vals_test, train_max, train_min))
 
 # Define Variable Functions (weights and bias)
 def init_weight(shape, st_dev):
-    weight = tf.Variable(tf.random_normal(shape, stddev=st_dev))
+    weight = tf.Variable(tf.random.normal(shape, stddev=st_dev))
     return weight
 
 
 def init_bias(shape, st_dev):
-    bias = tf.Variable(tf.random_normal(shape, stddev=st_dev))
+    bias = tf.Variable(tf.random.normal(shape, stddev=st_dev))
     return bias
 
 # Create Placeholders
-x_data = tf.placeholder(shape=[None, 7], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 7], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 
 # Create a fully connected layer:
@@ -148,14 +149,14 @@ bias_4 = init_bias(shape=[1], st_dev=10.0)
 final_output = fully_connected(layer_3, weight_4, bias_4)
 
 # Declare loss function (L1)
-loss = tf.reduce_mean(tf.abs(y_target - final_output))
+loss = tf.reduce_mean(input_tensor=tf.abs(y_target - final_output))
 
 # Declare optimizer
-my_opt = tf.train.AdamOptimizer(0.05)
+my_opt = tf.compat.v1.train.AdamOptimizer(0.05)
 train_step = my_opt.minimize(loss)
 
 # Initialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Training loop

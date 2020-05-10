@@ -13,6 +13,7 @@ We will build a one-hidden layer neural network
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
@@ -22,11 +23,11 @@ x_vals = np.array([x[0:3] for x in iris.data])
 y_vals = np.array([x[3] for x in iris.data])
 
 # Create graph session 
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # make results reproducible
 seed = 2
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 np.random.seed(seed)  
 
 # Split data into train/test = 80%/20%
@@ -51,29 +52,29 @@ x_vals_test = np.nan_to_num(normalize_cols(x_vals_test))
 batch_size = 50
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 3], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 3], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for both NN layers
 hidden_layer_nodes = 10
-A1 = tf.Variable(tf.random_normal(shape=[3, hidden_layer_nodes]))  # inputs -> hidden nodes
-b1 = tf.Variable(tf.random_normal(shape=[hidden_layer_nodes]))  # one biases for each hidden node
-A2 = tf.Variable(tf.random_normal(shape=[hidden_layer_nodes, 1]))  # hidden inputs -> 1 output
-b2 = tf.Variable(tf.random_normal(shape=[1]))   # 1 bias for the output
+A1 = tf.Variable(tf.random.normal(shape=[3, hidden_layer_nodes]))  # inputs -> hidden nodes
+b1 = tf.Variable(tf.random.normal(shape=[hidden_layer_nodes]))  # one biases for each hidden node
+A2 = tf.Variable(tf.random.normal(shape=[hidden_layer_nodes, 1]))  # hidden inputs -> 1 output
+b2 = tf.Variable(tf.random.normal(shape=[1]))   # 1 bias for the output
 
 # Declare model operations
 hidden_output = tf.nn.relu(tf.add(tf.matmul(x_data, A1), b1))
 final_output = tf.nn.relu(tf.add(tf.matmul(hidden_output, A2), b2))
 
 # Declare loss function (MSE)
-loss = tf.reduce_mean(tf.square(y_target - final_output))
+loss = tf.reduce_mean(input_tensor=tf.square(y_target - final_output))
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.005)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.005)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Training loop

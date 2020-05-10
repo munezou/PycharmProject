@@ -14,6 +14,7 @@ We will use the low birth weight data, specifically:
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import requests
 import os.path
 import csv
@@ -23,7 +24,7 @@ from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Name of data file
-birth_weight_file = 'birth_weight.csv'
+birth_weight_file = 'Python/lect_tensorflow/tensorflow_cookbook_master/sec06_Neural_Networks/chpt07_Improving_Linear_Regression/birth_weight.csv'
 birthdata_url = 'https://github.com/nfmcclure/tensorflow_cookbook/raw/master' \
                 '/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
 
@@ -57,7 +58,7 @@ x_vals = np.array([x[1:8] for x in birth_data])
 # Set random seed for reproducible results
 seed = 99
 np.random.seed(seed)
-tf.set_random_seed(seed)
+tf.compat.v1.set_random_seed(seed)
 
 # Declare batch size
 batch_size = 90
@@ -84,16 +85,16 @@ x_vals_train, train_min, train_max = np.nan_to_num(normalize_cols(x_vals_train))
 x_vals_test, _, _ = np.nan_to_num(normalize_cols(x_vals_test, train_min, train_max))
 
 # Create graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Initialize placeholders
-x_data = tf.placeholder(shape=[None, 7], dtype=tf.float32)
-y_target = tf.placeholder(shape=[None, 1], dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(shape=[None, 7], dtype=tf.float32)
+y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 
 # Create variable definition
 def init_variable(shape):
-    return tf.Variable(tf.random_normal(shape=shape))
+    return tf.Variable(tf.random.normal(shape=shape))
 
 
 # Create a logistic layer definition
@@ -122,20 +123,20 @@ b3 = init_variable(shape=[1])
 final_output = logistic(logistic_layer2, A3, b3, activation=False)
 
 # Declare loss function (Cross Entropy loss)
-loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=final_output, labels=y_target))
+loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=final_output, labels=y_target))
 
 # Declare optimizer
-my_opt = tf.train.AdamOptimizer(learning_rate=0.002)
+my_opt = tf.compat.v1.train.AdamOptimizer(learning_rate=0.002)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Actual Prediction
 prediction = tf.round(tf.nn.sigmoid(final_output))
 predictions_correct = tf.cast(tf.equal(prediction, y_target), tf.float32)
-accuracy = tf.reduce_mean(predictions_correct)
+accuracy = tf.reduce_mean(input_tensor=predictions_correct)
 
 # Training loop
 loss_vec = []

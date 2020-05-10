@@ -10,11 +10,12 @@
 # variable based on our loss function
 
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 # Start Graph Session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 #----------------------------------
 # Create a multiplication gate:
@@ -28,7 +29,7 @@ sess = tf.Session()
 
 a = tf.Variable(tf.constant(4.))
 x_val = 5.
-x_data = tf.placeholder(dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(dtype=tf.float32)
 
 multiplication = tf.multiply(a, x_data)
 
@@ -37,11 +38,11 @@ multiplication = tf.multiply(a, x_data)
 loss = tf.square(tf.subtract(multiplication, 50.))
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.01)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.01)
 train_step = my_opt.minimize(loss)
 
 # Run loop across gate
@@ -67,12 +68,12 @@ Create a nested gate:
 
 # Start a New Graph Session
 ops.reset_default_graph()
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 a = tf.Variable(tf.constant(1.))
 b = tf.Variable(tf.constant(1.))
 x_val = 5.
-x_data = tf.placeholder(dtype=tf.float32)
+x_data = tf.compat.v1.placeholder(dtype=tf.float32)
 
 two_gate = tf.add(tf.multiply(a, x_data), b)
 
@@ -81,11 +82,11 @@ two_gate = tf.add(tf.multiply(a, x_data), b)
 loss = tf.square(tf.subtract(two_gate, 50.))
 
 # Initialize variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Declare optimizer
-my_opt = tf.train.GradientDescentOptimizer(0.01)
+my_opt = tf.compat.v1.train.GradientDescentOptimizer(0.01)
 train_step = my_opt.minimize(loss)
 
 # Run loop across gate
