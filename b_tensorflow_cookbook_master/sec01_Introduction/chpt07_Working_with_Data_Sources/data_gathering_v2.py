@@ -5,11 +5,14 @@
 # the various data sets we will need
 
 # Data Gathering
+import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Iris Data
 from sklearn import datasets
