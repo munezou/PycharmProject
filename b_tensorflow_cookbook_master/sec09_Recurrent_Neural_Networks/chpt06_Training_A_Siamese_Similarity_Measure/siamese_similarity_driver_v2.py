@@ -4,19 +4,22 @@
 #
 # Here, we show how to perform address matching
 #   with a Siamese RNN model
-
+import ossaudiodev
 import random
 import string
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
 import siamese_similarity_model as model
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Start a graph session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Model parameters
 batch_size = 200
@@ -90,16 +93,16 @@ def address2onehot(address,
 
 
 # Define placeholders
-address1_ph = tf.placeholder(tf.int32, [None, max_address_len], name="address1_ph")
-address2_ph = tf.placeholder(tf.int32, [None, max_address_len], name="address2_ph")
+address1_ph = tf.compat.v1.placeholder(tf.int32, [None, max_address_len], name="address1_ph")
+address2_ph = tf.compat.v1.placeholder(tf.int32, [None, max_address_len], name="address2_ph")
     
-y_target_ph = tf.placeholder(tf.int32, [None], name="y_target_ph")
-dropout_keep_prob_ph = tf.placeholder(tf.float32, name="dropout_keep_prob")
+y_target_ph = tf.compat.v1.placeholder(tf.int32, [None], name="y_target_ph")
+dropout_keep_prob_ph = tf.compat.v1.placeholder(tf.float32, name="dropout_keep_prob")
 
 # Create embedding lookup
-identity_mat = tf.diag(tf.ones(shape=[vocab_length]))
-address1_embed = tf.nn.embedding_lookup(identity_mat, address1_ph)
-address2_embed = tf.nn.embedding_lookup(identity_mat, address2_ph)
+identity_mat = tf.linalg.tensor_diag(tf.ones(shape=[vocab_length]))
+address1_embed = tf.nn.embedding_lookup(params=identity_mat, ids=address1_ph)
+address2_embed = tf.nn.embedding_lookup(params=identity_mat, ids=address2_ph)
 
 # Define Model
 text_snn = model.snn(address1_embed, address2_embed, dropout_keep_prob_ph,
@@ -113,12 +116,12 @@ batch_loss = model.loss(text_snn, y_target_ph, margin)
 predictions = model.get_predictions(text_snn)
 
 # Declare optimizer
-optimizer = tf.train.AdamOptimizer(0.01)
+optimizer = tf.compat.v1.train.AdamOptimizer(0.01)
 # Apply gradients
 train_op = optimizer.minimize(batch_loss)
 
 # Initialize Variables
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 # Train loop

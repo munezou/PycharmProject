@@ -11,12 +11,15 @@ import requests
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from zipfile import ZipFile
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 # Start a graph
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Set RNN parameters
 epochs = 20
@@ -26,7 +29,7 @@ rnn_size = 10
 embedding_size = 50
 min_word_frequency = 10
 learning_rate = 0.0005
-dropout_keep_prob = tf.placeholder(tf.float32)
+dropout_keep_prob = tf.compat.v1.placeholder(tf.float32)
 
 
 # Download or open data
@@ -93,41 +96,41 @@ print("Vocabulary Size: {:d}".format(vocab_size))
 print("80-20 Train Test split: {:d} -- {:d}".format(len(y_train), len(y_test)))
 
 # Create placeholders
-x_data = tf.placeholder(tf.int32, [None, max_sequence_length])
-y_output = tf.placeholder(tf.int32, [None])
+x_data = tf.compat.v1.placeholder(tf.int32, [None, max_sequence_length])
+y_output = tf.compat.v1.placeholder(tf.int32, [None])
 
 # Create embedding
-embedding_mat = tf.Variable(tf.random_uniform([vocab_size, embedding_size], -1.0, 1.0))
-embedding_output = tf.nn.embedding_lookup(embedding_mat, x_data)
+embedding_mat = tf.Variable(tf.random.uniform([vocab_size, embedding_size], -1.0, 1.0))
+embedding_output = tf.nn.embedding_lookup(params=embedding_mat, ids=x_data)
 
 # Define the RNN cell
 # tensorflow change >= 1.0, rnn is put into tensorflow.contrib directory. Prior version not test.
 if tf.__version__[0] >= '1':
-    cell = tf.contrib.rnn.BasicRNNCell(num_units=rnn_size)
+    cell = tf.compat.v1.nn.rnn_cell.BasicRNNCell(num_units=rnn_size)
 else:
-    cell = tf.nn.rnn_cell.BasicRNNCell(num_units=rnn_size)
+    cell = tf.compat.v1.nn.rnn_cell.BasicRNNCell(num_units=rnn_size)
 
-output, state = tf.nn.dynamic_rnn(cell, embedding_output, dtype=tf.float32)
-output = tf.nn.dropout(output, dropout_keep_prob)
+output, state = tf.compat.v1.nn.dynamic_rnn(cell, embedding_output, dtype=tf.float32)
+output = tf.nn.dropout(output, 1 - (dropout_keep_prob))
 
 # Get output of RNN sequence
-output = tf.transpose(output, [1, 0, 2])
+output = tf.transpose(a=output, perm=[1, 0, 2])
 last = tf.gather(output, int(output.get_shape()[0]) - 1)
 
-weight = tf.Variable(tf.truncated_normal([rnn_size, 2], stddev=0.1))
+weight = tf.Variable(tf.random.truncated_normal([rnn_size, 2], stddev=0.1))
 bias = tf.Variable(tf.constant(0.1, shape=[2]))
 logits_out = tf.matmul(last, weight) + bias
 
 # Loss function
 losses = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits_out, labels=y_output)
-loss = tf.reduce_mean(losses)
+loss = tf.reduce_mean(input_tensor=losses)
 
-accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits_out, 1), tf.cast(y_output, tf.int64)), tf.float32))
+accuracy = tf.reduce_mean(input_tensor=tf.cast(tf.equal(tf.argmax(input=logits_out, axis=1), tf.cast(y_output, tf.int64)), tf.float32))
 
-optimizer = tf.train.RMSPropOptimizer(learning_rate)
+optimizer = tf.compat.v1.train.RMSPropOptimizer(learning_rate)
 train_step = optimizer.minimize(loss)
 
-init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 sess.run(init)
 
 train_loss = []

@@ -4,9 +4,12 @@
 #-------------------------------------
 #  Here we implement the Seq2Seq class for modeling language translation
 #
-
+import os
 import numpy as np
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 # Declare Seq2seq translation model
@@ -22,8 +25,8 @@ class Seq2Seq(object):
         self.lr_decay = self.learning_rate.assign(self.learning_rate * lr_decay_rate)
         self.global_step = tf.Variable(0, trainable=False)
         
-        cell = tf.nn.rnn_cell.BasicLSTMCell(rnn_size)
-        cell = tf.nn.rnn_cell.MultiRNNCell([cell] * num_layers)
+        cell = tf.compat.v1.nn.rnn_cell.BasicLSTMCell(rnn_size)
+        cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([cell] * num_layers)
         
         # Decoding function
         def decode_wrapper(x, y, forward_only):
@@ -44,13 +47,13 @@ class Seq2Seq(object):
         self.decoder_inputs = []
         self.target_weights = []
         for i in range(x_buckets[-1]):  # Last bucket is the biggest one.
-            self.encoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
+            self.encoder_inputs.append(tf.compat.v1.placeholder(tf.int32, shape=[None],
                                                       name="encoder{}".format(i)))
                                                       
         for i in range(x_buckets[-1] + 1):
-            self.decoder_inputs.append(tf.placeholder(tf.int32, shape=[None],
+            self.decoder_inputs.append(tf.compat.v1.placeholder(tf.int32, shape=[None],
                                                       name="decoder{}".format(i)))
-            self.target_weights.append(tf.placeholder(tf.float32, shape=[None],
+            self.target_weights.append(tf.compat.v1.placeholder(tf.float32, shape=[None],
                                                       name="weight{}".format(i)))
         
         
@@ -74,19 +77,19 @@ class Seq2Seq(object):
             self.gradient_norms = []
             self.update_funs = []
             # Create a optimizer to use for each data bucket
-            my_optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+            my_optimizer = tf.compat.v1.train.GradientDescentOptimizer(self.learning_rate)
             for b in range(len(xy_buckets)):
                 # For each bucket, get the gradients
-                gradients = tf.gradients(self.losses[b], tf.trainable_variables())
+                gradients = tf.gradients(ys=self.losses[b], xs=tf.compat.v1.trainable_variables())
                 # Clip the gradients
                 clipped_gradients, norm = tf.clip_by_global_norm(gradients, max_gradient)
                 self.gradient_norms.append(norm)
                 # Get the gradient update step for each variable
-                temp_optimizer = my_optimizer.apply_gradients(zip(clipped_gradients, tf.trainable_variables()),
+                temp_optimizer = my_optimizer.apply_gradients(zip(clipped_gradients, tf.compat.v1.trainable_variables()),
                                                               global_step=self.global_step)
                 self.update_funs.append(temp_optimizer)
 
-        self.saver = tf.train.Saver(tf.global_variables())
+        self.saver = tf.compat.v1.train.Saver(tf.compat.v1.global_variables())
         
     # Define how to step forward (or backward) in the model
     def step(self, session, encoder_inputs, decoder_inputs, target_weights,

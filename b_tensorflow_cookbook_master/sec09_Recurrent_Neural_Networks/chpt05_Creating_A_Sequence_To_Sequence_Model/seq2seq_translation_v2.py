@@ -22,11 +22,14 @@ import pickle
 import string
 import matplotlib.pyplot as plt
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 from zipfile import ZipFile
 from collections import Counter
 from tensorflow.python.ops import lookup_ops
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 local_repository = 'temp/seq2seq'
 
@@ -49,7 +52,7 @@ import temp.seq2seq.nmt.utils.misc_utils as utils
 import temp.seq2seq.nmt.train as train
 
 # Start a session
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 
 # Model Parameters
 vocab_size = 10000
@@ -240,8 +243,8 @@ hparams.add_hparam('tgt_vocab_size', vocab_size)
 # Add out-directory
 out_dir = 'temp/seq2seq/nmt_out'
 hparams.add_hparam('out_dir', out_dir)
-if not tf.gfile.Exists(out_dir):
-    tf.gfile.MakeDirs(out_dir)
+if not tf.io.gfile.exists(out_dir):
+    tf.io.gfile.makedirs(out_dir)
 
 
 class TrainGraph(collections.namedtuple("TrainGraph", ("graph", "model", "iterator", "skip_count_placeholder"))):
@@ -257,7 +260,7 @@ def create_train_graph(scope=None):
 
         src_dataset = tf.data.TextLineDataset(hparams.src_file)
         tgt_dataset = tf.data.TextLineDataset(hparams.tgt_file)
-        skip_count_placeholder = tf.placeholder(shape=(), dtype=tf.int64)
+        skip_count_placeholder = tf.compat.v1.placeholder(shape=(), dtype=tf.int64)
 
         iterator = iterator_utils.get_iterator(src_dataset, tgt_dataset, src_vocab_table, tgt_vocab_table,
                                                batch_size=hparams.batch_size,
@@ -293,8 +296,8 @@ def create_eval_graph(scope=None):
     with graph.as_default():
         src_vocab_table, tgt_vocab_table = vocab_utils.create_vocab_tables(
             hparams.src_vocab_file, hparams.tgt_vocab_file, hparams.share_vocab)
-        src_file_placeholder = tf.placeholder(shape=(), dtype=tf.string)
-        tgt_file_placeholder = tf.placeholder(shape=(), dtype=tf.string)
+        src_file_placeholder = tf.compat.v1.placeholder(shape=(), dtype=tf.string)
+        tgt_file_placeholder = tf.compat.v1.placeholder(shape=(), dtype=tf.string)
         src_dataset = tf.data.TextLineDataset(src_file_placeholder)
         tgt_dataset = tf.data.TextLineDataset(tgt_file_placeholder)
         iterator = iterator_utils.get_iterator(
@@ -340,8 +343,8 @@ def create_infer_graph(scope=None):
         reverse_tgt_vocab_table = lookup_ops.index_to_string_table_from_file(hparams.tgt_vocab_file,
                                                                              default_value=vocab_utils.UNK)
 
-        src_placeholder = tf.placeholder(shape=[None], dtype=tf.string)
-        batch_size_placeholder = tf.placeholder(shape=[], dtype=tf.int64)
+        src_placeholder = tf.compat.v1.placeholder(shape=[None], dtype=tf.string)
+        batch_size_placeholder = tf.compat.v1.placeholder(shape=[], dtype=tf.int64)
         src_dataset = tf.data.Dataset.from_tensor_slices(src_placeholder)
         iterator = iterator_utils.get_infer_iterator(src_dataset,
                                                      src_vocab_table,
@@ -372,9 +375,9 @@ sample_tgt_data = [' '.join(german_sentence[x]) for x in sample_ix]
 
 config_proto = utils.get_config_proto()
 
-train_sess = tf.Session(config=config_proto, graph=train_graph.graph)
-eval_sess = tf.Session(config=config_proto, graph=eval_graph.graph)
-infer_sess = tf.Session(config=config_proto, graph=infer_graph.graph)
+train_sess = tf.compat.v1.Session(config=config_proto, graph=train_graph.graph)
+eval_sess = tf.compat.v1.Session(config=config_proto, graph=eval_graph.graph)
+infer_sess = tf.compat.v1.Session(config=config_proto, graph=infer_graph.graph)
 
 # Load the training graph
 with train_graph.graph.as_default():
@@ -384,13 +387,13 @@ with train_graph.graph.as_default():
                                                                         "train")
 
 
-summary_writer = tf.summary.FileWriter(os.path.join(hparams.out_dir, 'Training'), train_graph.graph)
+summary_writer = tf.compat.v1.summary.FileWriter(os.path.join(hparams.out_dir, 'Training'), train_graph.graph)
 
 for metric in hparams.metrics:
     hparams.add_hparam("best_" + metric, 0)
     best_metric_dir = os.path.join(hparams.out_dir, "best_" + metric)
     hparams.add_hparam("best_" + metric + "_dir", best_metric_dir)
-    tf.gfile.MakeDirs(best_metric_dir)
+    tf.io.gfile.makedirs(best_metric_dir)
 
 
 eval_output = train.run_full_eval(hparams.out_dir, infer_graph, infer_sess, eval_graph, eval_sess,

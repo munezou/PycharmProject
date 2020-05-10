@@ -4,8 +4,11 @@
 #
 # Here, we show how to perform address matching
 #   with a Siamese RNN model
-
+import os
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 def snn(address1, address2, dropout_keep_prob,
@@ -13,7 +16,7 @@ def snn(address1, address2, dropout_keep_prob,
     
     # Define the siamese double RNN with a fully connected layer at the end
     def siamese_nn(input_vector, num_hidden):
-        cell_unit = tf.contrib.rnn.BasicLSTMCell#tf.nn.rnn_cell.BasicLSTMCell
+        cell_unit = tf.compat.v1.nn.rnn_cell.BasicLSTMCell#tf.nn.rnn_cell.BasicLSTMCell
         
         # Forward direction cell
         lstm_forward_cell = cell_unit(num_hidden, forget_bias=1.0)
@@ -29,12 +32,12 @@ def snn(address1, address2, dropout_keep_prob,
         
         # Create bidirectional layer
         try:
-            outputs, _, _ = tf.contrib.rnn.static_bidirectional_rnn(lstm_forward_cell,
+            outputs, _, _ = tf.compat.v1.nn.static_bidirectional_rnn(lstm_forward_cell,
                                                                     lstm_backward_cell,
                                                                     input_embed_split,
                                                                     dtype=tf.float32)
         except Exception:
-            outputs = tf.contrib.rnn.static_bidirectional_rnn(lstm_forward_cell,
+            outputs = tf.compat.v1.nn.static_bidirectional_rnn(lstm_forward_cell,
                                                               lstm_backward_cell,
                                                               input_embed_split,
                                                               dtype=tf.float32)
@@ -43,20 +46,20 @@ def snn(address1, address2, dropout_keep_prob,
         
         # Fully connected layer
         output_size = 10
-        A = tf.get_variable(name="A", shape=[2*num_hidden, output_size],
+        A = tf.compat.v1.get_variable(name="A", shape=[2*num_hidden, output_size],
                             dtype=tf.float32,
-                            initializer=tf.random_normal_initializer(stddev=0.1))
-        b = tf.get_variable(name="b", shape=[output_size], dtype=tf.float32,
-                            initializer=tf.random_normal_initializer(stddev=0.1))
+                            initializer=tf.compat.v1.random_normal_initializer(stddev=0.1))
+        b = tf.compat.v1.get_variable(name="b", shape=[output_size], dtype=tf.float32,
+                            initializer=tf.compat.v1.random_normal_initializer(stddev=0.1))
         
         final_output = tf.matmul(temporal_mean, A) + b
-        final_output = tf.nn.dropout(final_output, dropout_keep_prob)
+        final_output = tf.nn.dropout(final_output, 1 - (dropout_keep_prob))
         
         return(final_output)
         
     output1 = siamese_nn(address1, num_features)
     # Declare that we will use the same variables on the second string
-    with tf.variable_scope(tf.get_variable_scope(), reuse=True):
+    with tf.compat.v1.variable_scope(tf.compat.v1.get_variable_scope(), reuse=True):
         output2 = siamese_nn(address2, num_features)
     
     # Unit normalize the outputs
@@ -64,7 +67,7 @@ def snn(address1, address2, dropout_keep_prob,
     output2 = tf.nn.l2_normalize(output2, 1)
     # Return cosine distance
     #   in this case, the dot product of the norms is the same.
-    dot_prod = tf.reduce_sum(tf.multiply(output1, output2), 1)
+    dot_prod = tf.reduce_sum(input_tensor=tf.multiply(output1, output2), axis=1)
     
     return dot_prod
 
@@ -113,7 +116,7 @@ def loss(scores, y_target, margin):
     total_loss = tf.multiply(loss, multiplicative_factor)
     
     # Average loss over batch
-    avg_loss = tf.reduce_mean(total_loss)
+    avg_loss = tf.reduce_mean(input_tensor=total_loss)
     return avg_loss
 
 
@@ -126,5 +129,5 @@ def accuracy(scores, y_target):
     #y_target_int = tf.sub(tf.mul(y_target_int, 2), 1)
     predictions_int = tf.cast(tf.sign(predictions), tf.int32)
     correct_predictions = tf.equal(predictions_int, y_target_int)
-    accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+    accuracy = tf.reduce_mean(input_tensor=tf.cast(correct_predictions, tf.float32))
     return accuracy
