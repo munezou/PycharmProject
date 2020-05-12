@@ -5,9 +5,10 @@
 # tensors in TensorFlow
 import os
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+tf.compat.v1.disable_eager_execution()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -16,10 +17,16 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 # Get graph handle
 sess = tf.compat.v1.Session()
 
-my_tensor = tf.zeros([1,20])
+my_tensor = tf.zeros([1, 20])
 
 # Declare a variable
-my_var = tf.Variable(tf.zeros([1,20]))
+my_var = tf.Variable(tf.zeros([1, 20]))
+
+my_tensor_value = sess.run(my_tensor)
+my_var_value = sess.run(my_tensor)
+
+print('my_tensor = {0}\n'.format(my_tensor_value))
+print('my_var = {0}\n'.format(my_var_value))
 
 # Different kinds of variables
 row_dim = 2
@@ -32,13 +39,8 @@ zero_var = tf.Variable(tf.zeros([row_dim, col_dim]))
 ones_var = tf.Variable(tf.ones([row_dim, col_dim]))
 
 # shaped like other variable
-sess.run(zero_var.initializer)
-sess.run(ones_var.initializer)
 zero_similar = tf.Variable(tf.zeros_like(zero_var))
 ones_similar = tf.Variable(tf.ones_like(ones_var))
-
-sess.run(ones_similar.initializer)
-sess.run(zero_similar.initializer)
 
 # Fill shape with a constant
 fill_var = tf.Variable(tf.fill([row_dim, col_dim], -1))
@@ -63,9 +65,3 @@ merged = tf.compat.v1.summary.merge_all()
 
 # Initialize graph writer:
 writer = tf.compat.v1.summary.FileWriter("/tmp/variable_logs", graph=sess.graph)
-
-# Initialize operation
-initialize_op = tf.compat.v1.global_variables_initializer()
-
-# Run initialization of variable
-sess.run(initialize_op)
