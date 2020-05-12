@@ -13,9 +13,11 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 sess = tf.compat.v1.Session()
 
 # Create the data and variables
-my_array = np.array([[1., 3., 5., 7., 9.],
-                   [-2., 0., 2., 4., 6.],
-                   [-6., -3., 0., 3., 6.]])
+my_array = np.array(
+                [[1., 3., 5., 7., 9.],
+                 [-2., 0., 2., 4., 6.],
+                 [-6., -3., 0., 3., 6.]]
+            )
 x_vals = np.array([my_array, my_array + 1])
 x_data = tf.compat.v1.placeholder(tf.float32, shape=(3, 5))
 

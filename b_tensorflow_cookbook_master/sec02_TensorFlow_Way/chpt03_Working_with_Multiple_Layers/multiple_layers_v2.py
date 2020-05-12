@@ -2,10 +2,11 @@
 
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import os
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
+
+tf.compat.v1.disable_eager_execution()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
