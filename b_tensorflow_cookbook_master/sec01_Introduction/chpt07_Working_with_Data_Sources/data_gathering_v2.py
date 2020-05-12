@@ -7,7 +7,7 @@
 # Data Gathering
 import os
 import io
-from zipfile import ZipFile
+import zipfile
 import requests
 import tarfile
 import input_data
@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.python.framework import ops
 from sklearn import datasets
-from keras.datasets import boston_housing
 ops.reset_default_graph()
 
 tf.compat.v1.disable_eager_execution()
@@ -40,7 +39,7 @@ print('len(birth_data) = {0}'.format(len(birth_data)))
 print('len(birth_data[0]) = {0}\n'.format(len(birth_data[0])))
 
 # Housing Price Data
-(x_train, y_train), (x_test, y_test) = boston_housing.load_data()
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.boston_housing.load_data()
 housing_header = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
 print('x_train.shape[0] = {0}'.format(x_train.shape[0]))
 print('x_train.shape[1] = {0}\n'.format(x_train.shape[1]))
@@ -73,7 +72,7 @@ plt.imshow(img)
 # Get/read zip file
 zip_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
 r = requests.get(zip_url)
-z = ZipFile(io.BytesIO(r.content))
+z = zipfile.ZipFile(io.BytesIO(r.content))
 file = z.read('SMSSpamCollection')
 # Format Data
 text_data = file.decode()
@@ -135,9 +134,11 @@ shakespeare_text = shakespeare_text[7675:]
 print('len(shakespeare_text) = {0}\n'.format(len(shakespeare_text)))
 
 # English-German Sentence Translation Data
-sentence_url = 'http://www.manythings.org/anki/deu-eng.zip'
-r = requests.get(sentence_url)
-z = ZipFile(io.BytesIO(r.content))
+'''
+---< no work >---
+sent_url = 'http://www.manythings.org/anki/deu-eng.zip'
+r = requests.get(sent_url)
+z = zipfile.ZipFile(io.BytesIO(r.content))
 file = z.read('deu.txt')
 
 # Format Data
@@ -146,6 +147,20 @@ eng_ger_data = eng_ger_data.encode('ascii', errors='ignore')
 eng_ger_data = eng_ger_data.decode().split('\n')
 eng_ger_data = [x.split('\t') for x in eng_ger_data if len(x)>=1]
 [english_sentence, german_sentence] = [list(x) for x in zip(*eng_ger_data)]
+'''
+# Display current path
+PROJECT_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+file_path = str(os.path.join(PROJECT_ROOT_DIR, 'deu_eng', 'deu.txt'))
+
+with open(file_path, encoding='utf-8') as f:
+    eng_ger_data = f.readlines()
+    english_sentence = []
+    german_sentence = []
+    for tmpStr in eng_ger_data:
+        tmp = tmpStr.split('\t')
+        english_sentence.append(tmp[0])
+        german_sentence.append(tmp[1])
 
 print('len(english_sentence) = {0}'.format(len(english_sentence)))
 print('len(german_sentence) = {0}'.format(len(german_sentence)))
