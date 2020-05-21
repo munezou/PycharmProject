@@ -1,14 +1,23 @@
 # Working with Multiple Layers
 
+import os
+import datetime
+from packaging import version
 import numpy as np
 import tensorflow as tf
-import os
+
 from tensorflow.python.framework import ops
-ops.reset_default_graph()
 
 tf.compat.v1.disable_eager_execution()
 
+ops.reset_default_graph()
+
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+"This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -55,3 +64,20 @@ if not os.path.exists('tensorboard_logs/'):
     os.makedirs('tensorboard_logs/')
 
 my_writer = tf.compat.v1.summary.FileWriter('tensorboard_logs/', sess.graph)
+
+date_today = datetime.date.today()
+
+print   (
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         multiple_layers_v2.py                             ({0})             \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()

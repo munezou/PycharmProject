@@ -3,14 +3,24 @@
 #
 #  This python script illustrates the different
 #  loss functions for regression and classification.
-import  os
+import os
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+"This notebook requires TensorFlow 2.0 or above."
+
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -104,7 +114,7 @@ unscaled_logits = tf.constant([[1., -3., 10.]])
 target_dist = tf.constant([[0.1, 0.02, 0.88]])
 softmax_xentropy = tf.nn.softmax_cross_entropy_with_logits(logits=unscaled_logits,
                                                               labels=target_dist)
-print(sess.run(softmax_xentropy))
+print('softmax_xentropy = {0}\n'.format(sess.run(softmax_xentropy)))
 
 # Sparse entropy loss
 # Use when classes and targets have to be mutually exclusive
@@ -113,4 +123,21 @@ unscaled_logits = tf.constant([[1., -3., 10.]])
 sparse_target_dist = tf.constant([2])
 sparse_xentropy =  tf.nn.sparse_softmax_cross_entropy_with_logits(logits=unscaled_logits,
                                                                   labels=sparse_target_dist)
-print(sess.run(sparse_xentropy))
+print('sparse_xentropy = {0}\n'.format(sess.run(sparse_xentropy)))
+
+date_today = datetime.date.today()
+
+print   (
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         loss_function_v2.py                             ({0})             \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()

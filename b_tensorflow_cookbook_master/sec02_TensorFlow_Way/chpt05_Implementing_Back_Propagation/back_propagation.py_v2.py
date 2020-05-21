@@ -3,14 +3,23 @@
 #
 # This python function shows how to implement back propagation
 # in regression and classification models.
-import  os
+import os
+import datetime
+from packaging import version
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+"This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -120,3 +129,20 @@ for i in range(len(x_vals)):
     
 accuracy = sum(x==y for x,y in zip(predictions, y_vals))/100.
 print('Ending Accuracy = ' + str(np.round(accuracy, 2)))
+
+date_today = datetime.date.today()
+
+print   (
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         back_propagation_v2.py                             ({0})             \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()
