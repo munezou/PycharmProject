@@ -1,19 +1,32 @@
-# Batch and Stochastic Training
+
+'''# Batch and Stochastic Training
 #----------------------------------
 #
 #  This python function illustrates two different training methods:
 #  batch and stochastic training.  For each model, we will use
 #  a regression model that predicts one model variable.
+'''
 
 import os
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+"This notebook requires TensorFlow 2.0 or above."
 
 # We will implement a regression example in stochastic and batch training
 
@@ -106,3 +119,20 @@ plt.plot(range(0, 100, 5), loss_stochastic, 'b-', label='Stochastic Loss')
 plt.plot(range(0, 100, 5), loss_batch, 'r--', label='Batch Loss, size=20')
 plt.legend(loc='upper right', prop={'size': 11})
 plt.show()
+
+date_today = datetime.date.today()
+
+print   (
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         loss_function_v2.py                             ({0})             \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()

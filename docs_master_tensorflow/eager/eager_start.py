@@ -14,6 +14,7 @@ print(__doc__)
 # common library
 import time
 import os
+import datetime
 import platform
 import shutil
 import subprocess
@@ -23,22 +24,27 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 
-
 import tensorflow as tf
-import cProfile
 
-print("TensorFlow version: ", tf.__version__)
-assert version.parse(tf.__version__).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+'''
+-----------------------------------------------------------------------------------------------
+base operation of Eager_Execution
+-----------------------------------------------------------------------------------------------
+'''
+print(__doc__)
+
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+    "This notebook requires TensorFlow 2.0 or above."
 
 pf = platform.system()
 PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Start eager execution                                                                          \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Start eager execution                                                                          \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 x = [[2.]]
 m = tf.matmul(x, x)
@@ -57,21 +63,23 @@ print('a * b = \n{0}\n'.format(a * b))
 c = np.matmul(a, b)
 print('c = \n{0}\n'.format(c))
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Dynamic control flow                                                                           \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Dynamic control flow                                                                           \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ---------------------------------------------------------------------------------------------------------------
 The main advantage of Eager Execution is that all the functionality of the host language is available when executing the model. 
 For example, you can easily write fizzbuzz:
 ---------------------------------------------------------------------------------------------------------------
 '''
+
+
 def fizzbuzz(max_num):
     counter = tf.constant(0)
     max_num = tf.convert_to_tensor(max_num)
-    for num in range(1, max_num.numpy()+1):
+    for num in range(1, max_num.numpy() + 1):
         num = tf.constant(num)
         if int(num % 3) == 0 and int(num % 5) == 0:
             print('FizzBuzz')
@@ -81,22 +89,23 @@ def fizzbuzz(max_num):
             print('Buzz')
         else:
             print(num.numpy())
-        
+
         counter += 1
+
 
 print('fizzbuzz(15) = {0}\n'.format(fizzbuzz(15)))
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Eager training                                                                                 \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Eager training                                                                                 \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Computing gradients                                                                            \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Computing gradients                                                                            \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ---------------------------------------------------------------------------------------------------------------
 Automatic differentiation is useful for implementing machine learning algorithms such as backpropagation for training neural networks. 
@@ -112,16 +121,16 @@ A particular tf.GradientTape can only compute one gradient; subsequent calls thr
 '''
 w = tf.Variable([[1.0]])
 with tf.GradientTape() as tape:
-  loss = w * w
+    loss = w * w
 
 grad = tape.gradient(loss, w)
 print('grad = {0}\n'.format(grad))  # => tf.Tensor([[ 2.]], shape=(1, 1), dtype=float32)
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Train a model                                                                                  \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Train a model                                                                                  \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 -----------------------------------------------------------------------------------------------------------------
 The following example creates a multi-layer model that classifies the standard MNIST handwritten digits. 
@@ -132,26 +141,26 @@ It demonstrates the optimizer and layer APIs to build trainable graphs in an eag
 (mnist_images, mnist_labels), _ = tf.keras.datasets.mnist.load_data()
 
 dataset = tf.data.Dataset.from_tensor_slices((
-                                            tf.cast(mnist_images[...,tf.newaxis]/255, tf.float32),
-                                            tf.cast(mnist_labels,tf.int64)
-                                            ))
+    tf.cast(mnist_images[..., tf.newaxis] / 255, tf.float32),
+    tf.cast(mnist_labels, tf.int64)
+))
 
 dataset = dataset.shuffle(1000).batch(32)
 
 # Build the model
-mnist_model = tf.keras.Sequential   ([
-                                    tf.keras.layers.Conv2D(16,[3,3], activation='relu', input_shape=(None, None, 1)),
-                                    tf.keras.layers.Conv2D(16,[3,3], activation='relu'),
-                                    tf.keras.layers.GlobalAveragePooling2D(),
-                                    tf.keras.layers.Dense(10)
-                                    ])
+mnist_model = tf.keras.Sequential([
+    tf.keras.layers.Conv2D(16, [3, 3], activation='relu', input_shape=(None, None, 1)),
+    tf.keras.layers.Conv2D(16, [3, 3], activation='relu'),
+    tf.keras.layers.GlobalAveragePooling2D(),
+    tf.keras.layers.Dense(10)
+])
 
 '''
 --------------------------------------------------------------------------------------------------------------------
 Even without training, call the model and inspect the output in eager execution:
 --------------------------------------------------------------------------------------------------------------------
 '''
-for images,labels in dataset.take(1):
+for images, labels in dataset.take(1):
     print("Logits: \n{0}\n".format(mnist_model(images[0:1]).numpy()))
 
 '''
@@ -174,27 +183,31 @@ Use the assert functions in tf.debugging to check if a condition holds up.
 This works in eager and graph execution.
 --------------------------------------------------------------------------------------------------------------------
 '''
+
+
 def train_step(images, labels):
     with tf.GradientTape() as tape:
         logits = mnist_model(images, training=True)
-    
+
         # Add asserts to check the shape of the output.
         tf.debugging.assert_equal(logits.shape, (32, 10))
-        
+
         loss_value = loss_object(labels, logits)
 
     loss_history.append(loss_value.numpy().mean())
     grads = tape.gradient(loss_value, mnist_model.trainable_variables)
     optimizer.apply_gradients(zip(grads, mnist_model.trainable_variables))
 
+
 def train(epochs):
     for epoch in range(epochs):
         for (batch, (images, labels)) in enumerate(dataset):
             train_step(images, labels)
-            
-        print ('Epoch {} finished'.format(epoch))
 
-train(epochs = 3)
+        print('Epoch {} finished'.format(epoch))
+
+
+train(epochs=3)
 
 plt.figure(figsize=(8, 6))
 plt.title("Relationship diagram between bach and loss")
@@ -206,11 +219,11 @@ plt.ylabel('Loss [entropy]')
 plt.grid(True)
 plt.show()
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Variables and optimizers                                                                       \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Variables and optimizers                                                                       \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ----------------------------------------------------------------------------------------------------------------
 tf.Variable objects store mutable tf.Tensor-like values accessed during training to make automatic differentiation easier.
@@ -220,15 +233,18 @@ See Custom Keras layers and models for details.
 The main difference between layers and models is that models add methods like Model.fit, Model.evaluate, and Model.save.
 ----------------------------------------------------------------------------------------------------------------
 '''
+
+
 # For example, the automatic differentiation example above can be rewritten:
 class Linear(tf.keras.Model):
     def __init__(self):
         super(Linear, self).__init__()
         self.W = tf.Variable(5., name='weight')
         self.B = tf.Variable(10., name='bias')
-        
+
     def call(self, inputs):
         return inputs * self.W + self.B
+
 
 # A toy dataset of points around 3 * x + 2
 NUM_EXAMPLES = 2000
@@ -239,21 +255,24 @@ training_outputs = training_inputs * 3 + 2 + noise
 # disply raw datas(3 * x + 2)
 plt.figure(figsize=(8, 6))
 plt.title("raw datas for 3 * x + 2")
-plt.scatter(training_inputs, training_outputs, c = 'blue')
+plt.scatter(training_inputs, training_outputs, c='blue')
 plt.grid(True)
 plt.xlabel("training_inputs")
 plt.ylabel("training_outputs")
 plt.show()
 
+
 # The loss function to be optimized
 def loss(model, inputs, targets):
     error = model(inputs) - targets
-    return tf.reduce_mean(tf.square(error))
+    return tf.math.reduce_mean(tf.math.square(error))
+
 
 def grad(model, inputs, targets):
     with tf.GradientTape() as tape:
         loss_value = loss(model, inputs, targets)
     return tape.gradient(loss_value, [model.W, model.B])
+
 
 '''
 --------------------------------------------------------------------------------------------------------------------
@@ -280,6 +299,18 @@ print("Final loss: {:.3f}".format(loss(model, training_inputs, training_outputs)
 
 print("W = {}, B = {}".format(model.W.numpy(), model.B.numpy()))
 
+result_caluculate = model.W.numpy() * training_inputs + model.B.numpy()
+
+# disply raw datas(3 * x + 2)
+plt.figure(figsize=(8, 6))
+plt.title("raw datas for 3 * x + 2")
+plt.scatter(training_inputs, training_outputs, c='blue')
+plt.plot(training_inputs, result_caluculate, color='red')
+plt.grid(True)
+plt.xlabel("training_inputs")
+plt.ylabel("training_outputs")
+plt.show()
+
 '''
 --------------------------------------------------------------------------------------------------------------------
 Note: 
@@ -287,11 +318,11 @@ Variables persist until the last reference to the python object is removed, and 
 --------------------------------------------------------------------------------------------------------------------
 '''
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Object-based saving                                                                            \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Object-based saving                                                                            \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 # A tf.keras.Model includes a covienient save_weights method allowing you to easily create a checkpoint:
 model.save_weights('weights')
@@ -306,7 +337,7 @@ Using tf.train.Checkpoint you can take full control over this process.
 x = tf.Variable(10.)
 checkpoint = tf.train.Checkpoint(x=x)
 
-x.assign(2.)   # Assign a new value to the variables and save.
+x.assign(2.)  # Assign a new value to the variables and save.
 checkpoint_path = os.path.join(PROJECT_ROOT_DIR, "ckpt", "")
 checkpoint.save(checkpoint_path)
 
@@ -323,11 +354,11 @@ To save and load models, tf.train.Checkpoint stores the internal state of object
 To record the state of a model, an optimizer, and a global step, pass them to a tf.train.Checkpoint:
 -------------------------------------------------------------------------------------------------------------------
 '''
-model = tf.keras.Sequential ([
-                            tf.keras.layers.Conv2D(16,[3,3], activation='relu'),
-                            tf.keras.layers.GlobalAveragePooling2D(),
-                            tf.keras.layers.Dense(10)
-                            ])
+model = tf.keras.Sequential([
+    tf.keras.layers.Conv2D(16, [3, 3], activation='relu'),
+    tf.keras.layers.GlobalAveragePooling2D(),
+    tf.keras.layers.Dense(10)
+])
 
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 
@@ -351,11 +382,11 @@ See the guide to training checkpoints for details.
 --------------------------------------------------------------------------------------------------------------------
 '''
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Object-oriented metrics                                                                        \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Object-oriented metrics                                                                        \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 '''
 -------------------------------------------------------------------------------------------------------------------
@@ -367,16 +398,16 @@ and retrieve the result using the tf.keras.metrics.result method, for example:
 m = tf.keras.metrics.Mean("loss")
 m(0)
 m(5)
-print('m.result() = {0}\n'.format(m.result())) # => 2.5
+print('m.result() = {0}\n'.format(m.result()))  # => 2.5
 
 m([8, 9])
 print('m.result() = {0}\n'.format(m.result()))  # => 5.5
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Summaries and TensorBoard                                                                      \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Summaries and TensorBoard                                                                      \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ----------------------------------------------------------------------------------------------------------------
 TensorBoard is a visualization tool for understanding, debugging and optimizing the model training process. 
@@ -393,7 +424,7 @@ try:
         runcmd = subprocess.call(["rm", "-rf", pathLogs])
     elif pf == 'Windows':
         runcmd = shutil.rmtree(pathLogs)
-    
+
     print(runcmd)
     pass
 except Exception as ex:
@@ -414,17 +445,17 @@ with writer.as_default():  # or call writer.set_as_default() before the loop.
         if step % 100 == 0:
             tf.summary.scalar('loss', loss, step=step)
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Advanced automatic differentiation topics                                                      \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Advanced automatic differentiation topics                                                      \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Dynamic models                                                                                 \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Dynamic models                                                                                 \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ---------------------------------------------------------------------------------------------------------------
 tf.GradientTape can also be used in dynamic models. 
@@ -432,6 +463,8 @@ This example for a backtracking line search algorithm looks like normal NumPy co
 except there are gradients and is differentiable, despite the complex control flow:
 ---------------------------------------------------------------------------------------------------------------
 '''
+
+
 def line_search_step(fn, init_x, rate=1.0):
     with tf.GradientTape() as tape:
         # Variables are automatically tracked.
@@ -447,11 +480,12 @@ def line_search_step(fn, init_x, rate=1.0):
         rate /= 2.0
     return x, value
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Custom gradients                                                                               \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Custom gradients                                                                               \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ---------------------------------------------------------------------------------------------------------------
 Custom gradients are an easy way to override gradients. 
@@ -459,26 +493,35 @@ Within the forward function, define the gradient with respect to the inputs, out
 For example, here's an easy way to clip the norm of the gradients in the backward pass:
 ---------------------------------------------------------------------------------------------------------------
 '''
+
+
 @tf.custom_gradient
 def clip_gradient_by_norm(x, norm):
     y = tf.identity(x)
+
     def grad_fn(dresult):
         return [tf.clip_by_norm(dresult, norm), None]
+
     return y, grad_fn
+
 
 '''
 ----------------------------------------------------------------------------------------------------------------
 Custom gradients are commonly used to provide a numerically stable gradient for a sequence of operations:
 ----------------------------------------------------------------------------------------------------------------
 '''
+
+
 def log1pexp(x):
     return tf.math.log(1 + tf.exp(x))
+
 
 def grad_log1pexp(x):
     with tf.GradientTape() as tape:
         tape.watch(x)
         value = log1pexp(x)
     return tape.gradient(value, x)
+
 
 # The gradient computation works fine at x = 0.
 grad_log1_0 = grad_log1pexp(tf.constant(0.)).numpy()
@@ -495,12 +538,17 @@ The implementation below reuses the value for tf.exp(x) that is computed
 during the forward pass—making it more efficient by eliminating redundant calculations:
 ----------------------------------------------------------------------------------------------------------------
 '''
+
+
 @tf.custom_gradient
 def log1pexp(x):
     e = tf.exp(x)
+
     def grad(dy):
         return dy * (1 - 1 / (1 + e))
+
     return tf.math.log(1 + e), grad
+
 
 def grad_log1pexp(x):
     with tf.GradientTape() as tape:
@@ -508,34 +556,38 @@ def grad_log1pexp(x):
         value = log1pexp(x)
     return tape.gradient(value, x)
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-        '       Performance                                                                                    \n'
-        '------------------------------------------------------------------------------------------------------\n'
-        )
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    '       Performance                                                                                    \n'
+    '------------------------------------------------------------------------------------------------------\n'
+)
 '''
 ---------------------------------------------------------------------------------------------------------------
 Computation is automatically offloaded to GPUs during eager execution. 
 If you want control over where a computation runs you can enclose it in a tf.device('/gpu:0') block (or the CPU equivalent):
 ---------------------------------------------------------------------------------------------------------------
 '''
+
+
 def measure(x, steps):
     # TensorFlow initializes a GPU the first time it's used, exclude from timing.
     tf.matmul(x, x)
     start = time.time()
     for i in range(steps):
         x = tf.matmul(x, x)
-        
+
     # tf.matmul can return before completing the matrix multiplication
     # (e.g., can return after enqueing the operation on a CUDA stream).
     # The x.numpy() call below will ensure that all enqueued operations
     # have completed (and will also copy the result to host memory,
     # so we're including a little more than just the matmul operation
     # time).
-    
+
     _ = x.numpy()
     end = time.time()
     return end - start
+
 
 shape = (1000, 1000)
 steps = 200
@@ -559,7 +611,7 @@ if tf.config.experimental.list_physical_devices("GPU"):
     x_gpu0 = x.gpu()
     x_cpu = x.cpu()
 
-    _ = tf.matmul(x_cpu, x_cpu)    # Runs on CPU
+    _ = tf.matmul(x_cpu, x_cpu)  # Runs on CPU
     _ = tf.matmul(x_gpu0, x_gpu0)  # Runs on GPU:0
 
 '''
@@ -574,3 +626,20 @@ TensorFlow 1.x style graph execution has advantages for distributed training, pe
 To bridge this gap, TensorFlow 2.0 introduces functions via the tf.function API. For more information, see the tf.function guide.
 --------------------------------------------------------------------------------------------------------
 '''
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         eager_start.py                              ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

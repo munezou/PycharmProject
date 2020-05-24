@@ -5,7 +5,7 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
-print(tf.__version__)
+print(tf.version.VERSION)
 
 
 mnist = tf.keras.datasets.mnist
@@ -22,9 +22,9 @@ Data observation
 print('train_images.shape = {0}'.format(train_images.shape))
 print('len(train_labels) = {0}'.format(len(train_labels)))
 
-print ('---------< train_labels.head() >-------')
+print('---------< train_labels.head() >-------')
 for i in range(10):
-    print('train_labels[{0}] = {1}'. format(i, train_labels[i]))
+    print('train_labels[{0}] = {1}'.format(i, train_labels[i]))
 print()
 
 print('----------< tran_labels.tail() >---------')
@@ -36,9 +36,9 @@ print()
 print('test_images.shape = {0}'.format(test_images.shape))
 print('len(test_labels) = {0}'.format(len(test_labels)))
 
-print ('---------< test_labels.head() >-------')
+print('---------< test_labels.head() >-------')
 for i in range(10):
-    print('test_labels[{0}] = {1}'. format(i, test_labels[i]))
+    print('test_labels[{0}] = {1}'.format(i, test_labels[i]))
 print()
 
 print('----------< test_labels.tail() >---------')
@@ -176,7 +176,9 @@ def plot_image(i, predictions_array, true_label, img):
     else:
         color = 'red'
 
-    plt.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label], 100 * np.max(predictions_array), class_names[true_label]), color=color)
+    plt.xlabel("{} {:2.0f}% ({})".format(class_names[predicted_label], 100 * np.max(predictions_array),
+                                         class_names[true_label]), color=color)
+
 
 def plot_value_array(i, predictions_array, true_label):
     predictions_array, true_label = predictions_array[i], true_label[i]
@@ -189,6 +191,7 @@ def plot_value_array(i, predictions_array, true_label):
 
     thisplot[predicted_label].set_color('red')
     thisplot[true_label].set_color('blue')
+
 
 # Let's look at the 0th image and the prediction and prediction array.
 i = 0
@@ -249,7 +252,6 @@ print(predictions_single)
 
 print('predictions value of test_images[10] = {0}'.format(np.argmax(predictions_single)))
 
-
 plot_value_array(0, predictions_single, test_labels)
 _ = plt.xticks(range(10), class_names, rotation=45)
 plt.show()
@@ -265,6 +267,3 @@ plt.imshow(test_images[10])
 plt.colorbar()
 plt.gca().grid(False)
 plt.show()
-
-
-

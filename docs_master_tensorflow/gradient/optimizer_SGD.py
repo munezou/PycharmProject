@@ -51,11 +51,12 @@ x = tf.Variable(1.0)
 opt = tf.keras.optimizers.SGD(lr=0.1)
 
 @tf.function
-def step():
+def step(i):
     with tf.GradientTape() as tape:
         square_x = x ** 2
         L = square_x
 
+    tf.print('i = {0} / 29'.format(i))
     grad = tape.gradient(L, x)
     tf.print('grad =')
     tf.print(grad)
@@ -65,7 +66,7 @@ def step():
     tf.print()
 
 for i in range(30):
-    step()
+    step(i)
 
 date_today = datetime.date.today()
 

@@ -6,8 +6,8 @@ import os
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
-from catch_ball import CatchBall
-from dqn_agent import DQNAgent
+from Tensorflow.Keras.tf_dqn_simple_master.catch_ball import CatchBall
+from Tensorflow.Keras.tf_dqn_simple_master.dqn_agent import DQNAgent
 
 
 def init():

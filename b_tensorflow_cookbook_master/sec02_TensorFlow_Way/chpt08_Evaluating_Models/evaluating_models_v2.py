@@ -1,3 +1,4 @@
+'''
 # Evaluating models in TensorFlow
 #
 # This code will implement two models.  The first
@@ -9,12 +10,26 @@
 #  model.  We will also show how to print percent
 #  classified correctly during training and after
 #  for both the test and training sets.
-
+'''
+import os
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
+print(__doc__)
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+"This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -156,3 +171,20 @@ plt.plot((A_result, A_result), (0, 8), 'k--', linewidth=3, label='A = '+ str(np.
 plt.legend(loc='upper right')
 plt.title('Binary Classifier, Accuracy=' + str(np.round(acc_value_test, 2)))
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         evaluating_models_v2.py                             ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

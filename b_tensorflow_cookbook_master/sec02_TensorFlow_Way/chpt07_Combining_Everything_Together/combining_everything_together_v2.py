@@ -1,3 +1,4 @@
+'''
 # Combining Everything Together
 #----------------------------------
 # This file will perform binary classification on the
@@ -10,14 +11,28 @@
 #
 # We will use batch training, but this can be easily
 # adapted to stochastic training.
-
+'''
+import os
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+"This notebook requires TensorFlow 2.0 or above."
 
 # Load the iris data
 # iris.target = {0, 1, 2}, where '0' is setosa
@@ -61,11 +76,11 @@ sess.run(init)
 # Run Loop
 for i in range(1000):
     rand_index = np.random.choice(len(iris_2d), size=batch_size)
-    #rand_x = np.transpose([iris_2d[rand_index]])
+
     rand_x = iris_2d[rand_index]
     rand_x1 = np.array([[x[0]] for x in rand_x])
     rand_x2 = np.array([[x[1]] for x in rand_x])
-    #rand_y = np.transpose([binary_target[rand_index]])
+
     rand_y = np.array([[y] for y in binary_target[rand_index]])
     sess.run(train_step, feed_dict={x1_data: rand_x1, x2_data: rand_x2, y_target: rand_y})
     if (i+1)%200==0:
@@ -81,7 +96,7 @@ for i in range(1000):
 x = np.linspace(0, 3, num=50)
 ablineValues = []
 for i in x:
-  ablineValues.append(slope*i+intercept)
+    ablineValues.append(slope*i+intercept)
 
 # Plot the fitted line over the data
 setosa_x = [a[1] for i,a in enumerate(iris_2d) if binary_target[i]==1]
@@ -98,3 +113,20 @@ plt.xlabel('Petal Length')
 plt.ylabel('Petal Width')
 plt.legend(loc='lower right')
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         combining_everything_together_v2.py                             ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

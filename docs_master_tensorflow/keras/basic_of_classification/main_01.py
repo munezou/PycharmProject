@@ -6,12 +6,30 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
-print(tf.__version__)
+print(tf.version.VERSION)
 
-fashion_mnist = keras.datasets.fashion_mnist
+'''
+------------------------------------
+proxy setting
+------------------------------------
+'''
+import urllib
+proxy_support = urllib.request.ProxyHandler({'https': 'http://proxy.kanto.sony.co.jp:10080'})
+opener = urllib.request.build_opener(proxy_support)
+urllib.request.install_opener(opener)
+'''
+---------------------------------------------------
+Load Fashion_mnist
+---------------------------------------------------
+'''
+
+fashion_mnist = tf.keras.datasets.fashion_mnist
 
 (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
+'''
+------------------------------------------------------------------------------------------------------------------------
+'''
 class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
                'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
 
@@ -89,10 +107,10 @@ model = keras.Sequential([
 Model compilation¶
 You will need to add some settings to be able to train the model. These settings are added at compile time of the model.
 
-*Loss function — Measures how accurate the model is during training. 
+*Loss function  Measures how accurate the model is during training. 
                  By minimizing the value of this function, you are aiming the model being trained in the right direction.
-*Optimizer     —The data that the model sees and the value of the loss function determine how to update the model.
-*Metrics       — used to monitor training and testing steps. 
+*Optimizer     The data that the model sees and the value of the loss function determine how to update the model.
+*Metrics        used to monitor training and testing steps. 
                 In the example below,
                 we use accuracy (accuracy rate), that is, the rate at which the image was correctly classified.
 ------------------------------------------------------------------------------------------------------------------------
@@ -104,9 +122,9 @@ model.compile(optimizer=tf.keras.optimizers.Adam(), loss='sparse_categorical_cro
 Model training
 Training a neural network involves the following steps:
 
-1. Populate the model with training data—in this example, two arrays, train_images and train_labels.
+1. Populate the model with training datain this example, two arrays, train_images and train_labels.
 2. The model learns the correspondence between images and labels.
-3. Let the model predict (classify) the test data set—in this example, the test_images array.
+3. Let the model predict (classify) the test data setin this example, the test_images array.
    Then match the test results with the test_labels array.
    
 Call the model.fit method to start training. It means "fit" the model to training data.
