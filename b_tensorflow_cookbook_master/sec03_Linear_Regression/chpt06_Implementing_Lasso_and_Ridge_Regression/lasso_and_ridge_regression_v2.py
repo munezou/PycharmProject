@@ -127,7 +127,7 @@ for i in range(1500):
 # Get best fit line
 best_fit = []
 for i in x_vals:
-  best_fit.append(slope*i+y_intercept)
+    best_fit.append(slope*i+y_intercept)
 
 
 ###

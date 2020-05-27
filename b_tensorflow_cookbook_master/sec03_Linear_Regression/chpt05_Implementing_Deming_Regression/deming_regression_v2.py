@@ -77,7 +77,7 @@ for i in range(1000):
 # Get best fit line
 best_fit = []
 for i in x_vals:
-  best_fit.append(slope*i+y_intercept)
+    best_fit.append(slope*i+y_intercept)
 
 # Plot the result
 plt.plot(x_vals, y_vals, 'o', label='Data Points')
