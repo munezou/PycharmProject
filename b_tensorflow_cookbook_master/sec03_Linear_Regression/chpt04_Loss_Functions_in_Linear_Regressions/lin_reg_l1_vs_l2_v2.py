@@ -1,16 +1,38 @@
+'''
 # Linear Regression: L1 vs L2
 #----------------------------------
 #
 # This function shows how to use TensorFlow to
 # solve linear regression via the matrix inverse.
-
+'''
+import os
+import datetime
+from packaging import version
+from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
+
+print(__doc__)
+
+tf.compat.v1.disable_eager_execution()
+
+ops.reset_default_graph()
+
+# Display current path
+basic_path = Path.cwd()
+PROJECT_ROOT_DIR = basic_path.joinpath('Normal', 'tensorflow')
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -110,3 +132,20 @@ plt.xlabel('Generation')
 plt.ylabel('L1 Loss')
 plt.legend(loc='upper right')
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         lin_reg_l1_vs_l2_v2.py                             ({0})             \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()

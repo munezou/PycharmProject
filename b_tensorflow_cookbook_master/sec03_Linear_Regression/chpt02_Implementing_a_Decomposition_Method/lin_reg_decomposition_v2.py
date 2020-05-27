@@ -1,3 +1,4 @@
+'''
 # Linear Regression: Decomposition Method
 #----------------------------------
 #
@@ -8,12 +9,29 @@
 #  A = L*L' then we can get solve for x via
 # 1) L*y=t(A)*b
 # 2) L'*x=y
-
+'''
+import os
+import datetime
+from packaging import version
+from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+basic_path = Path.cwd()
+PROJECT_ROOT_DIR = basic_path.joinpath('Normal', 'tensorflow')
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, \
+    "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
 ops.reset_default_graph()
 
 # Create graph
@@ -58,10 +76,28 @@ print('y_intercept: ' + str(y_intercept))
 # Get best fit line
 best_fit = []
 for i in x_vals:
-  best_fit.append(slope*i+y_intercept)
+    best_fit.append(slope*i+y_intercept)
 
 # Plot the results
 plt.plot(x_vals, y_vals, 'o', label='Data')
 plt.plot(x_vals, best_fit, 'r-', label='Best fit line', linewidth=3)
 plt.legend(loc='upper left')
 plt.show()
+
+
+date_today = datetime.date.today()
+
+print   (
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print   (
+    '       finished         lin_reg_decomposition.py                             ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

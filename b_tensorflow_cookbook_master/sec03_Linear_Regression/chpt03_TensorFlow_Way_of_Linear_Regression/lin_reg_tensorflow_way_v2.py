@@ -1,3 +1,4 @@
+'''
 # Linear Regression: TensorFlow Way
 #----------------------------------
 #
@@ -8,14 +9,32 @@
 # We will use the iris data, specifically:
 #  y = Sepal Length
 #  x = Petal Width
+'''
 
+import os
+import datetime
+from packaging import version
+from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from sklearn import datasets
-tf.compat.v1.disable_eager_execution()
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
+
+# Display current path
+basic_path = Path.cwd()
+PROJECT_ROOT_DIR = basic_path.joinpath('Normal', 'tensorflow')
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -71,7 +90,7 @@ for i in range(100):
 # Get best fit line
 best_fit = []
 for i in x_vals:
-  best_fit.append(slope*i+y_intercept)
+    best_fit.append(slope*i+y_intercept)
 
 # Plot the result
 plt.plot(x_vals, y_vals, 'o', label='Data Points')
@@ -88,3 +107,20 @@ plt.title('L2 Loss per Generation')
 plt.xlabel('Generation')
 plt.ylabel('L2 Loss')
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         lin_reg_tensorflow_way.py                             ({0})             \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()
