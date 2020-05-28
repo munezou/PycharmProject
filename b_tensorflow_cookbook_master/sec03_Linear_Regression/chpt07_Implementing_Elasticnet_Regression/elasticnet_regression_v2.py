@@ -1,3 +1,4 @@
+'''
 # Elastic Net Regression
 #----------------------------------
 #
@@ -8,13 +9,31 @@
 # We will use the iris data, specifically:
 #  y = Sepal Length
 #  x = Pedal Length, Petal Width, Sepal Width
+'''
 
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
+from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
 
 ###
 # Set up for TensorFlow
@@ -111,3 +130,19 @@ plt.xlabel('Generation')
 plt.ylabel('Loss')
 plt.show()
 
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         elasticnet_regression_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

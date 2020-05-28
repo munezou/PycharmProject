@@ -1,3 +1,4 @@
+'''
 # Logistic Regression
 #----------------------------------
 #
@@ -8,16 +9,32 @@
 # We will use the low birth weight data, specifically:
 #  y = 0 or 1 = low birth weight
 #  x = demographic and medical history data
+'''
 
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import requests
 from tensorflow.python.framework import ops
 import os.path
 import csv
 
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
 
 ops.reset_default_graph()
 
@@ -29,7 +46,7 @@ sess = tf.compat.v1.Session()
 ###
 
 # Set name of data file
-birth_weight_file = 'Python/lect_tensorflow/tensorflow_cookbook_master/sec03_Linear_Regression/chpt08_Implementing_Logistic_Regression/birth_weight.csv'
+birth_weight_file = os.path.join(PROJECT_ROOT_DIR, 'birth_weight.csv')
 
 # Download data and create data file if file does not exist in current directory
 if not os.path.exists(birth_weight_file):
@@ -37,7 +54,7 @@ if not os.path.exists(birth_weight_file):
     birth_file = requests.get(birthdata_url)
     birth_data = birth_file.text.split('\r\n')
     birth_header = birth_data[0].split('\t')
-    birth_data = [[float(x) for x in y.split('\t') if len(x)>=1] for y in birth_data[1:] if len(y)>=1]
+    birth_data = [[float(x) for x in y.split('\t') if len(x) >= 1] for y in birth_data[1:] if len(y) >= 1]
     with open(birth_weight_file, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(birth_header)
@@ -47,10 +64,10 @@ if not os.path.exists(birth_weight_file):
 # Read birth weight data into memory
 birth_data = []
 with open(birth_weight_file, newline='') as csvfile:
-     csv_reader = csv.reader(csvfile)
-     birth_header = next(csv_reader)
-     for row in csv_reader:
-         birth_data.append(row)
+    csv_reader = csv.reader(csvfile)
+    birth_header = next(csv_reader)
+    for row in csv_reader:
+        birth_data.append(row)
 
 birth_data = [[float(x) for x in row] for row in birth_data]
 
@@ -65,12 +82,13 @@ np.random.seed(seed)
 tf.compat.v1.set_random_seed(seed)
 
 # Split data into train/test = 80%/20%
-train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
+train_indices = np.random.choice(len(x_vals), round(len(x_vals) * 0.8), replace=False)
 test_indices = np.array(list(set(range(len(x_vals))) - set(train_indices)))
 x_vals_train = x_vals[train_indices]
 x_vals_test = x_vals[test_indices]
 y_vals_train = y_vals[train_indices]
 y_vals_test = y_vals[test_indices]
+
 
 # Normalize by column (min-max norm)
 def normalize_cols(m, col_min=np.array([None]), col_max=np.array([None])):
@@ -78,8 +96,9 @@ def normalize_cols(m, col_min=np.array([None]), col_max=np.array([None])):
         col_min = m.min(axis=0)
     if not col_max[0]:
         col_max = m.max(axis=0)
-    return (m-col_min) / (col_max - col_min), col_min, col_max
-    
+    return (m - col_min) / (col_max - col_min), col_min, col_max
+
+
 x_vals_train, train_min, train_max = np.nan_to_num(normalize_cols(x_vals_train))
 x_vals_test, _, _ = np.nan_to_num(normalize_cols(x_vals_test, train_min, train_max))
 
@@ -95,8 +114,8 @@ x_data = tf.compat.v1.placeholder(shape=[None, 7], dtype=tf.float32)
 y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random.normal(shape=[7,1]))
-b = tf.Variable(tf.random.normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[7, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
@@ -137,9 +156,8 @@ for i in range(1500):
     train_acc.append(temp_acc_train)
     temp_acc_test = sess.run(accuracy, feed_dict={x_data: x_vals_test, y_target: np.transpose([y_vals_test])})
     test_acc.append(temp_acc_test)
-    if (i+1)%300==0:
-        print('Loss = ' + str(temp_loss))
-        
+    if (i + 1) % 300 == 0:
+        print('Loss = {0}\n'.format(temp_loss))
 
 ###
 # Display model performance
@@ -161,3 +179,19 @@ plt.ylabel('Accuracy')
 plt.legend(loc='lower right')
 plt.show()
 
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         logistic_regression_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()
