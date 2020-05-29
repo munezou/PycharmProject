@@ -1,3 +1,4 @@
+'''
 # Nonlinear SVM Example
 #
 # This function wll illustrate how to
@@ -6,13 +7,31 @@
 #
 # Gaussian Kernel:
 # K(x1, x2) = exp(-gamma * abs(x1 - x2)^2)
+'''
 
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Create graph
@@ -40,7 +59,7 @@ prediction_grid = tf.compat.v1.placeholder(shape=[None, 2], dtype=tf.float32)
 b = tf.Variable(tf.random.normal(shape=[1, batch_size]))
 
 # Gaussian (RBF) kernel
-gamma = tf.constant(-25.0)
+gamma = tf.constant(-10.0)
 sq_dists = tf.multiply(2., tf.matmul(x_data, tf.transpose(a=x_data)))
 my_kernel = tf.exp(tf.multiply(gamma, tf.abs(sq_dists)))
 
@@ -127,3 +146,20 @@ plt.title('Loss per Generation')
 plt.xlabel('Generation')
 plt.ylabel('Loss')
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         nonlinear_svm_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

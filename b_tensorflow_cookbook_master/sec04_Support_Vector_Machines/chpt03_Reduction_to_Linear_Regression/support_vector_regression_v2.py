@@ -1,3 +1,4 @@
+'''
 # SVM Regression
 #----------------------------------
 #
@@ -9,13 +10,30 @@
 # We will use the iris data, specifically:
 #  y = Sepal Length
 #  x = Pedal Width
-
+'''
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Create graph
@@ -43,8 +61,8 @@ x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random.normal(shape=[1,1]))
-b = tf.Variable(tf.random.normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
@@ -119,3 +137,20 @@ plt.xlabel('Generation')
 plt.ylabel('L2 Loss')
 plt.legend(loc='upper right')
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         support_vector_regression_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

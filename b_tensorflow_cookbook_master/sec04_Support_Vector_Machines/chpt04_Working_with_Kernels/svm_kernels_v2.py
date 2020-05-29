@@ -1,3 +1,4 @@
+'''
 # Illustration of Various Kernels
 #----------------------------------
 #
@@ -9,13 +10,31 @@
 #
 # Gaussian Kernel (RBF):
 # K(x1, x2) = exp(-gamma * abs(x1 - x2)^2)
+'''
 
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Create graph
@@ -107,9 +126,14 @@ y_min, y_max = x_vals[:, 1].min() - 1, x_vals[:, 1].max() + 1
 xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
                      np.arange(y_min, y_max, 0.02))
 grid_points = np.c_[xx.ravel(), yy.ravel()]
-[grid_predictions] = sess.run(prediction, feed_dict={x_data: rand_x,
-                                                   y_target: rand_y,
-                                                   prediction_grid: grid_points})
+
+[grid_predictions] = sess.run(
+                            prediction,
+                            feed_dict={x_data: rand_x,
+                            y_target: rand_y,
+                           prediction_grid: grid_points}
+                        )
+
 grid_predictions = grid_predictions.reshape(xx.shape)
 
 # Plot points and grid
@@ -154,3 +178,20 @@ new_points = np.array([(-0.75, -0.75),
 
 for ix, p in enumerate(new_points):
     print('{} : class={}'.format(p, evaluations[ix]))
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         svm_kernels_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

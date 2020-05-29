@@ -1,3 +1,4 @@
+'''
 # Multi-class (Nonlinear) SVM Example
 #
 # This function wll illustrate how to
@@ -15,13 +16,31 @@
 #
 # The prediction of a point will be the category with
 # the largest margin or distance to boundary.
+'''
 
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 from sklearn import datasets
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Create graph
@@ -155,3 +174,19 @@ plt.show()
 
 # Evaluations on new/unseen data
 
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         multiclass_svm_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()
