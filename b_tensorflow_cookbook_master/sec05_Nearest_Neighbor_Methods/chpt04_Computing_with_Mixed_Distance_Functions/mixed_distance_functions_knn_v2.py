@@ -1,3 +1,4 @@
+'''
 # Mixed Distance Functions for  k-Nearest Neighbor
 #----------------------------------
 #
@@ -21,14 +22,30 @@
 # LSTAT  : % lower status of pop
 #------------y-value-----------
 # MEDV   : Median Value of homes in $1,000's
+'''
 
-
+# import required libraries
+import os
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import requests
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Create graph
@@ -82,13 +99,13 @@ distance = tf.sqrt(tf.linalg.diag_part(second_product))
 top_k_xvals, top_k_indices = tf.nn.top_k(tf.negative(distance), k=k)
 x_sums = tf.expand_dims(tf.reduce_sum(input_tensor=top_k_xvals, axis=1),1)
 x_sums_repeated = tf.matmul(x_sums,tf.ones([1, k], tf.float32))
-x_val_weights = tf.expand_dims(tf.compat.v1.div(top_k_xvals,x_sums_repeated), 1)
+x_val_weights = tf.expand_dims(tf.math.divide(top_k_xvals,x_sums_repeated), 1)
 
 top_k_yvals = tf.gather(y_target_train, top_k_indices)
 prediction = tf.squeeze(tf.matmul(x_val_weights,top_k_yvals), axis=[1])
 
 # Calculate MSE
-mse = tf.compat.v1.div(tf.reduce_sum(input_tensor=tf.square(tf.subtract(prediction, y_target_test))), batch_size)
+mse = tf.math.divide(tf.reduce_sum(input_tensor=tf.square(tf.subtract(prediction, y_target_test))), batch_size)
 
 # Calculate how many loops over training data
 num_loops = int(np.ceil(len(x_vals_test)/batch_size))
@@ -96,12 +113,29 @@ num_loops = int(np.ceil(len(x_vals_test)/batch_size))
 for i in range(num_loops):
     min_index = i*batch_size
     max_index = min((i+1)*batch_size,len(x_vals_train))
+
     x_batch = x_vals_test[min_index:max_index]
     y_batch = y_vals_test[min_index:max_index]
-    predictions = sess.run(prediction, feed_dict={x_data_train: x_vals_train, x_data_test: x_batch,
-                                         y_target_train: y_vals_train, y_target_test: y_batch})
-    batch_mse = sess.run(mse, feed_dict={x_data_train: x_vals_train, x_data_test: x_batch,
-                                         y_target_train: y_vals_train, y_target_test: y_batch})
+
+    predictions = sess.run(
+                        prediction,
+                        feed_dict={
+                                    x_data_train: x_vals_train,
+                                    x_data_test: x_batch,
+                                    y_target_train: y_vals_train,
+                                    y_target_test: y_batch
+                               }
+                   )
+
+    batch_mse = sess.run(
+                        mse,
+                        feed_dict={
+                                    x_data_train: x_vals_train,
+                                    x_data_test: x_batch,
+                                    y_target_train: y_vals_train,
+                                    y_target_test: y_batch
+                            }
+                    )
 
     print('Batch #' + str(i+1) + ' MSE: ' + str(np.round(batch_mse,3)))
 
@@ -115,3 +149,20 @@ plt.xlabel('Med Home Value in $1,000s')
 plt.ylabel('Frequency')
 plt.legend(loc='upper right')
 plt.show()
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished      mixed_distance_functions_knn_v2.py                        ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

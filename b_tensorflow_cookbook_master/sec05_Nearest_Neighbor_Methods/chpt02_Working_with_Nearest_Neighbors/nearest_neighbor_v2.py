@@ -1,4 +1,5 @@
 # k-Nearest Neighbor
+'''
 #----------------------------------
 #
 # This function illustrates how to use
@@ -25,13 +26,31 @@
 # LSTAT  : % lower status of pop
 #------------y-value-----------
 # MEDV   : Median Value of homes in $1,000's
+'''
 
+# import required libraries
+import os
+import sys
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import requests
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: ", tf.version.VERSION)
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Create graph
@@ -99,10 +118,26 @@ for i in range(num_loops):
     max_index = min((i+1)*batch_size,len(x_vals_train))
     x_batch = x_vals_test[min_index:max_index]
     y_batch = y_vals_test[min_index:max_index]
-    predictions = sess.run(prediction, feed_dict={x_data_train: x_vals_train, x_data_test: x_batch,
-                                         y_target_train: y_vals_train, y_target_test: y_batch})
-    batch_mse = sess.run(mse, feed_dict={x_data_train: x_vals_train, x_data_test: x_batch,
-                                         y_target_train: y_vals_train, y_target_test: y_batch})
+
+    predictions = sess.run(
+                        prediction,
+                        feed_dict={
+                                        x_data_train: x_vals_train,
+                                        x_data_test: x_batch,
+                                        y_target_train: y_vals_train,
+                                        y_target_test: y_batch
+                                    }
+                    )
+
+    batch_mse = sess.run(
+                    mse,
+                    feed_dict={
+                                    x_data_train: x_vals_train,
+                                    x_data_test: x_batch,
+                                    y_target_train: y_vals_train,
+                                    y_target_test: y_batch
+                                }
+                    )
 
     print('Batch #' + str(i+1) + ' MSE: ' + str(np.round(batch_mse,3)))
 
@@ -117,3 +152,19 @@ plt.ylabel('Frequency')
 plt.legend(loc='upper right')
 plt.show()
 
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         multiclass_svm_v2.py                         ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

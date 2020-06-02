@@ -1,4 +1,4 @@
-"""
+'''
 Implementing Different Layers
 
 We will illustrate how to use different types of layers in TensorFlow
@@ -12,13 +12,42 @@ The layers of interest are:
 We will generate two different data sets for this
  script, a 1-D data set (row of data) and
  a 2-D data set (similar to picture)
-"""
+'''
 
+# import required libraries
+import os
+from cpuinfo import get_cpu_info
+import datetime
+from packaging import version
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import numpy as np
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+print(
+    '--------------------------------------------------------------------------\n'
+    '                      cpu information                                     \n'
+    '--------------------------------------------------------------------------\n'
+)
+# display the using cpu information
+for key, value in get_cpu_info().items():
+    print("{0}: {1}".format(key, value))
+
+print()
+print()
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: {0}\n".format(tf.version.VERSION))
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
 ops.reset_default_graph()
+
+tf.compat.v1.disable_eager_execution()
 
 # ---------------------------------------------------|
 # -------------------1D-data-------------------------|
@@ -70,6 +99,7 @@ def conv_layer_1d(input_1d, input_filter, stride):
     conv_output_1d = tf.squeeze(convolution_output)
     return conv_output_1d
 
+
 # Create filter for convolution.
 my_filter = tf.Variable(tf.random.normal(shape=[1, conv_size, 1, 1]))
 # Create convolution layer
@@ -79,6 +109,7 @@ my_convolution_output = conv_layer_1d(x_input_1d, my_filter, stride=stride_size)
 # --------Activation--------
 def activation(input_1d):
     return tf.nn.relu(input_1d)
+
 
 # Create activation layer
 my_activation_output = activation(my_convolution_output)
@@ -102,11 +133,12 @@ def max_pool(input_1d, width, stride):
     # a factor of '2', we put strides = [1, 1, 2, 1]
     # We will also need to specify the width of the max-window ('width')
     pool_output = tf.nn.max_pool2d(input=input_4d, ksize=[1, 1, width, 1],
-                                 strides=[1, 1, stride, 1],
-                                 padding='VALID')
+                                   strides=[1, 1, stride, 1],
+                                   padding='VALID')
     # Get rid of extra dimensions
     pool_output_1d = tf.squeeze(pool_output)
     return pool_output_1d
+
 
 my_maxpool_output = max_pool(my_activation_output, width=maxpool_size, stride=stride_size)
 
@@ -127,6 +159,7 @@ def fully_connected(input_layer, num_outputs):
     # Get rid of extra dimensions
     full_output_1d = tf.squeeze(full_output)
     return full_output_1d
+
 
 my_full_output = fully_connected(my_maxpool_output, 5)
 
@@ -218,6 +251,7 @@ def conv_layer_2d(input_2d, conv_filter, conv_stride):
     conv_output_2d = tf.squeeze(convolution_output)
     return conv_output_2d
 
+
 # Create Convolutional Filter
 my_filter = tf.Variable(tf.random.normal(shape=[conv_size, conv_size, 1, 1]))
 # Create Convolutional Layer
@@ -227,6 +261,7 @@ my_convolution_output = conv_layer_2d(x_input_2d, my_filter, conv_stride=conv_st
 # --------Activation--------
 def activation(input_1d):
     return tf.nn.relu(input_1d)
+
 
 # Create Activation Layer
 my_activation_output = activation(my_convolution_output)
@@ -249,14 +284,15 @@ def max_pool(input_2d, width, height, stride):
     # If we wanted to increase the stride on our data dimension, say by
     # a factor of '2', we put strides = [1, 2, 2, 1]
     pool_output = tf.nn.max_pool2d(input=input_4d, ksize=[1, height, width, 1],
-                                 strides=[1, stride, stride, 1],
-                                 padding='VALID')
+                                   strides=[1, stride, stride, 1],
+                                   padding='VALID')
     # Get rid of unnecessary dimensions
     pool_output_2d = tf.squeeze(pool_output)
     return pool_output_2d
 
+
 # Create Max-Pool Layer
-my_maxpool_output = max_pool(my_activation_output, 
+my_maxpool_output = max_pool(my_activation_output,
                              width=maxpool_size,
                              height=maxpool_size,
                              stride=maxpool_stride_size)
@@ -286,6 +322,7 @@ def fully_connected(input_layer, num_outputs):
     # Get rid of extra dimension
     full_output_2d = tf.squeeze(full_output)
     return full_output_2d
+
 
 # Create Fully Connected Layer
 my_full_output = fully_connected(my_maxpool_output, 5)
@@ -327,3 +364,20 @@ print('Fully connected layer on all {} rows '
       'results in {} outputs:'.format(my_maxpool_output.shape.as_list()[0],
                                       my_full_output.shape.as_list()[0]))
 print(sess.run(my_full_output, feed_dict=feed_dict))
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '      finished      implementing_different_layers_v2.py          ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()
