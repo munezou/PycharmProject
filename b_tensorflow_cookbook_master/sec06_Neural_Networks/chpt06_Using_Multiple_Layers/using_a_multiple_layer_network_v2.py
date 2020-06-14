@@ -22,10 +22,14 @@ Birth Weight in Grams                                   BWT
 
 The multiple neural network layer we will create will be composed of
 three fully connected hidden layers, with node sizes 50, 25, and 5
-
 """
+
+# import required libraries
+import os
+from cpuinfo import get_cpu_info
+import datetime
+from packaging import version
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import csv
 import os
@@ -33,8 +37,38 @@ import numpy as np
 import requests
 from tensorflow.python.framework import ops
 
+print(__doc__)
+
+'''
+--------------------------------------------
+In casee of windows, os name is 'nt'.
+In case of linux, os name is 'posix'.
+--------------------------------------------
+'''
+
+if os.name == 'nt':
+    print(
+        '--------------------------------------------------------------------------\n'
+        '                      cpu information                                     \n'
+        '--------------------------------------------------------------------------\n'
+    )
+    # display the using cpu information
+    for key, value in get_cpu_info().items():
+        print("{0}: {1}".format(key, value))
+
+    print()
+    print()
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: {0}\n".format(tf.version.VERSION))
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
 # name of data file
-birth_weight_file = 'Python/lect_tensorflow/tensorflow_cookbook_master/sec06_Neural_Networks/chpt06_Using_Multiple_Layers/birth_weight.csv'
+birth_weight_file = os.path.join(PROJECT_ROOT_DIR, 'birth_weight.csv')
 birthdata_url = 'https://github.com/nfmcclure/tensorflow_cookbook/raw/master' \
                 '/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
 
@@ -56,7 +90,8 @@ with open(birth_weight_file, newline='') as csvfile:
     csv_reader = csv.reader(csvfile)
     birth_header = next(csv_reader)
     for row in csv_reader:
-        birth_data.append(row)
+        if len(row) > 0:
+            birth_data.append(row)
 
 birth_data = [[float(x) for x in row] for row in birth_data]
 
@@ -71,6 +106,8 @@ x_vals = np.array([[x[ix] for ix, feature in enumerate(birth_header) if feature 
 # Reset the graph for new run
 ops.reset_default_graph()
 
+tf.compat.v1.disable_eager_execution()
+
 # Create graph session 
 sess = tf.compat.v1.Session()
 
@@ -83,12 +120,13 @@ np.random.seed(seed)
 tf.compat.v1.set_random_seed(seed)
 
 # Split data into train/test = 80%/20%
-train_indices = np.random.choice(len(x_vals), round(len(x_vals)*0.8), replace=False)
+train_indices = np.random.choice(len(x_vals), round(len(x_vals) * 0.8), replace=False)
 test_indices = np.array(list(set(range(len(x_vals))) - set(train_indices)))
 x_vals_train = x_vals[train_indices]
 x_vals_test = x_vals[test_indices]
 y_vals_train = y_vals[train_indices]
 y_vals_test = y_vals[test_indices]
+
 
 # Normalize by column (min-max norm to be between 0 and 1)
 def normalize_cols(m, col_min=np.array([None]), col_max=np.array([None])):
@@ -102,8 +140,8 @@ def normalize_cols(m, col_min=np.array([None]), col_max=np.array([None])):
 x_vals_train, train_min, train_max = np.nan_to_num(normalize_cols(x_vals_train))
 x_vals_test, _, _ = np.nan_to_num(normalize_cols(x_vals_test, train_min, train_max))
 
-x_vals_train = np.nan_to_num(normalize_cols(x_vals_train, train_max, train_min))
-x_vals_test = np.nan_to_num(normalize_cols(x_vals_test, train_max, train_min))
+#x_vals_train = np.nan_to_num(normalize_cols(x_vals_train, train_max, train_min))
+#x_vals_test = np.nan_to_num(normalize_cols(x_vals_test, train_max, train_min))
 
 
 # Define Variable Functions (weights and bias)
@@ -116,6 +154,7 @@ def init_bias(shape, st_dev):
     bias = tf.Variable(tf.random.normal(shape, stddev=st_dev))
     return bias
 
+
 # Create Placeholders
 x_data = tf.compat.v1.placeholder(shape=[None, 7], dtype=tf.float32)
 y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
@@ -125,6 +164,7 @@ y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 def fully_connected(input_layer, weights, biases):
     layer = tf.add(tf.matmul(input_layer, weights), biases)
     return tf.nn.relu(layer)
+
 
 # -------Create the first layer (50 hidden nodes)--------
 weight_1 = init_weight(shape=[7, 25], st_dev=10.0)
@@ -136,12 +176,10 @@ weight_2 = init_weight(shape=[25, 10], st_dev=10.0)
 bias_2 = init_bias(shape=[10], st_dev=10.0)
 layer_2 = fully_connected(layer_1, weight_2, bias_2)
 
-
 # -------Create third layer (5 hidden nodes)--------
 weight_3 = init_weight(shape=[10, 3], st_dev=10.0)
 bias_3 = init_bias(shape=[3], st_dev=10.0)
 layer_3 = fully_connected(layer_2, weight_3, bias_3)
-
 
 # -------Create output layer (1 output value)--------
 weight_4 = init_weight(shape=[3, 1], st_dev=10.0)
@@ -162,19 +200,22 @@ sess.run(init)
 # Training loop
 loss_vec = []
 test_loss = []
+
 for i in range(200):
     rand_index = np.random.choice(len(x_vals_train), size=batch_size)
     rand_x = x_vals_train[rand_index]
     rand_y = np.transpose([y_vals_train[rand_index]])
-    sess.run(train_step, feed_dict={x_data: rand_x, y_target: rand_y})
+
+    sess.run(train_step, feed_dict={x_data: tf.cast(rand_x, dtype=tf.float32), y_target: tf.cast(rand_y, dtype=tf.float32)})
 
     temp_loss = sess.run(loss, feed_dict={x_data: rand_x, y_target: rand_y})
-    loss_vec.append(temp_loss)
-    
+    loss_vec.append(tf.make_ndarray(temp_loss))
+
     test_temp_loss = sess.run(loss, feed_dict={x_data: x_vals_test, y_target: np.transpose([y_vals_test])})
-    test_loss.append(test_temp_loss)
-    if (i+1) % 25 == 0:
-        print('Generation: ' + str(i+1) + '. Loss = ' + str(temp_loss))
+    test_loss.append(tf.make_ndarray(test_temp_loss))
+
+    if (i + 1) % 25 == 0:
+        print('Generation: {0}  Loss = {1}'.format(i + 1, tf.make_ndarray(temp_loss)))
 
 # Plot loss (MSE) over time
 plt.plot(loss_vec, 'k-', label='Train Loss')
@@ -209,3 +250,20 @@ new_logits = [x[0] for x in sess.run(final_output, feed_dict={x_data: new_data_s
 new_preds = np.array([1.0 if x < 2500.0 else 0.0 for x in new_logits])
 
 print('New Data Predictions: {}'.format(new_preds))
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished   using_a_multiple_layer_network_v2.py           ({0})           \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

@@ -7,13 +7,49 @@ We will build a one-hidden layer neural network
 
 """
 
+import os
+from cpuinfo import get_cpu_info
+import datetime
+from packaging import version
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import csv
 import numpy as np
 import random
 from tensorflow.python.framework import ops
+
+print(__doc__)
+
+'''
+--------------------------------------------
+In casee of windows, os name is 'nt'.
+In case of linux, os name is 'posix'.
+--------------------------------------------
+'''
+
+if os.name == 'nt':
+    print(
+        '--------------------------------------------------------------------------\n'
+        '                      cpu information                                     \n'
+        '--------------------------------------------------------------------------\n'
+    )
+    # display the using cpu information
+    for key, value in get_cpu_info().items():
+        print("{0}: {1}".format(key, value))
+
+    print()
+    print()
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: {0}\n".format(tf.version.VERSION))
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
+tf.compat.v1.disable_eager_execution()
+
 ops.reset_default_graph()
 
 # Definition of X's, O's, and empty spots:
@@ -112,7 +148,7 @@ def get_moves_from_csv(csv_file):
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
             play_moves.append(([int(x) for x in row[0:9]], int(row[9])))
-    
+
     return play_moves
 
 
@@ -130,8 +166,9 @@ def get_rand_move(play_moves, rand_transforms=2):
         (board, play_response) = get_symmetry(board, play_response, random_transform)
     return board, play_response
 
+
 # Get list of optimal moves w/ responses
-moves = get_moves_from_csv('Python/lect_tensorflow/tensorflow_cookbook_master/sec06_Neural_Networks/chpt08_Learning_Tic_Tac_Toe/base_tic_tac_toe_moves.csv')
+moves = get_moves_from_csv(os.path.join(PROJECT_ROOT_DIR, 'base_tic_tac_toe_moves.csv'))
 
 # Create a train set:
 train_length = 500
@@ -156,6 +193,7 @@ def model(X, A1, A2, bias1, bias2):
     layer2 = tf.add(tf.matmul(layer1, A2), bias2)
     # Note: we don't take the softmax at the end because our cost function does that for us
     return layer2
+
 
 X = tf.compat.v1.placeholder(dtype=tf.float32, shape=[None, 9])
 Y = tf.compat.v1.placeholder(dtype=tf.int32, shape=[None])
@@ -182,12 +220,11 @@ for i in range(10000):
     x_input = [x[0] for x in batch_data]
     y_target = np.array([y[1] for y in batch_data])
     sess.run(train_step, feed_dict={X: x_input, Y: y_target})
-    
+
     temp_loss = sess.run(loss, feed_dict={X: x_input, Y: y_target})
     loss_vec.append(temp_loss)
     if i % 500 == 0:
         print('Iteration: {}, Loss: {}'.format(i, temp_loss))
-
 
 # Print loss
 plt.plot(loss_vec, 'k-', label='Loss')
@@ -214,6 +251,7 @@ def check(board):
             return 1
     return 0
 
+
 # Let's play against our model
 game_tracker = [0., 0., 0., 0., 0., 0., 0., 0., 0.]
 win_logical = False
@@ -223,14 +261,14 @@ while not win_logical:
     num_moves += 1
     # Add player move to game
     game_tracker[int(player_index)] = 1.
-    
+
     # Get model's move by first getting all the logits for each index
     [potential_moves] = sess.run(model_output, feed_dict={X: [game_tracker]})
     # Now find allowed moves (where game tracker values = 0.0)
     allowed_moves = [ix for ix, x in enumerate(game_tracker) if x == 0.0]
     # Find best move by taking argmax of logits if they are in allowed moves
     model_move = np.argmax([x if ix in allowed_moves else -999.0 for ix, x in enumerate(potential_moves)])
-    
+
     # Add model move to game
     game_tracker[int(model_move)] = -1.
     print('Model has moved')
@@ -239,3 +277,20 @@ while not win_logical:
     if check(game_tracker) == 1 or num_moves >= 5:
         print('Game Over!')
         win_logical = True
+
+date_today = datetime.date.today()
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
+print(
+    '       finished         tic_tac_toe_moves_v2.py                ({0})   \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+print()
+print()
+print()

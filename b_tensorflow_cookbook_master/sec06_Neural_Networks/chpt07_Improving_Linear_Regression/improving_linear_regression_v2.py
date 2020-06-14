@@ -11,20 +11,55 @@ We will use the low birth weight data, specifically:
  x = demographic and medical history data
 """
 
+# import required libraries
+import os
+from cpuinfo import get_cpu_info
+import datetime
+from packaging import version
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import requests
 import os.path
 import csv
 from tensorflow.python.framework import ops
 
-# Reset computational graph
 ops.reset_default_graph()
 
+tf.compat.v1.disable_eager_execution()
+
+print(__doc__)
+
+'''
+--------------------------------------------
+In casee of windows, os name is 'nt'.
+In case of linux, os name is 'posix'.
+--------------------------------------------
+'''
+
+if os.name == 'nt':
+    print(
+        '--------------------------------------------------------------------------\n'
+        '                      cpu information                                     \n'
+        '--------------------------------------------------------------------------\n'
+    )
+    # display the using cpu information
+    for key, value in get_cpu_info().items():
+        print("{0}: {1}".format(key, value))
+
+    print()
+    print()
+
+# Display current path
+PROJECT_ROOT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)))
+print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
+
+# Display tensorflow version
+print("TensorFlow version: {0}\n".format(tf.version.VERSION))
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
+
 # Name of data file
-birth_weight_file = 'Python/lect_tensorflow/tensorflow_cookbook_master/sec06_Neural_Networks/chpt07_Improving_Linear_Regression/birth_weight.csv'
+birth_weight_file = os.path.join(PROJECT_ROOT_DIR, 'birth_weight.csv')
 birthdata_url = 'https://github.com/nfmcclure/tensorflow_cookbook/raw/master' \
                 '/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
 
@@ -46,7 +81,8 @@ with open(birth_weight_file, newline='') as csvfile:
     csv_reader = csv.reader(csvfile)
     birth_header = next(csv_reader)
     for row in csv_reader:
-        birth_data.append(row)
+        if len(row) >= 9:
+            birth_data.append(row)
 
 birth_data = [[float(x) for x in row] for row in birth_data]
 
@@ -126,7 +162,7 @@ final_output = logistic(logistic_layer2, A3, b3, activation=False)
 loss = tf.reduce_mean(input_tensor=tf.nn.sigmoid_cross_entropy_with_logits(logits=final_output, labels=y_target))
 
 # Declare optimizer
-my_opt = tf.compat.v1.train.AdamOptimizer(learning_rate=0.002)
+my_opt = tf.compat.v1.train.AdamOptimizer(learning_rate=0.001)
 train_step = my_opt.minimize(loss)
 
 # Initialize variables
@@ -164,6 +200,8 @@ plt.xlabel('Generation')
 plt.ylabel('Cross Entropy Loss')
 plt.show()
 
+plt.close()
+
 # Plot train and test accuracy
 plt.plot(train_acc, 'k-', label='Train Set Accuracy')
 plt.plot(test_acc, 'r--', label='Test Set Accuracy')
@@ -172,3 +210,21 @@ plt.xlabel('Generation')
 plt.ylabel('Accuracy')
 plt.legend(loc='lower right')
 plt.show()
+
+
+date_today = datetime.date.today()
+
+print   (
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+
+print   (
+        '       finished         improving_linear_regression_v2.py                 ({0})   \n'.format(date_today)
+    )
+
+print(
+        '------------------------------------------------------------------------------------------------------\n'
+    )
+print()
+print()
+print()

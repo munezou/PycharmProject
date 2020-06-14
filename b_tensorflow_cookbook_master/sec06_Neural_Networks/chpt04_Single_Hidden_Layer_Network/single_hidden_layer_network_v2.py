@@ -88,7 +88,7 @@ y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for both NN layers
 hidden_layer_nodes = 10
-A1 = tf.Variable(tf.random.normal(shape=[3, hidden_layer_nodes]))  # inputs -> hidden nodes
+A1 = tf.Variable(tf.random.normal(shape=[3, hidden_layer_nodes])) # inputs -> hidden nodes
 b1 = tf.Variable(tf.random.normal(shape=[hidden_layer_nodes]))  # one biases for each hidden node
 A2 = tf.Variable(tf.random.normal(shape=[hidden_layer_nodes, 1]))  # hidden inputs -> 1 output
 b2 = tf.Variable(tf.random.normal(shape=[1]))  # 1 bias for the output
