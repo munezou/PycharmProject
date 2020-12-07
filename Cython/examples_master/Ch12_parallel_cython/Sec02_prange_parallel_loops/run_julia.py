@@ -5,9 +5,11 @@ import matplotlib.pyplot as plt
 
 t1 = clock()
 jl = julia.calc_julia(1000, (0.322 + 0.05j))
-print "time:", clock() - t1
+print
+"time:", clock() - t1
 
-print "julia fraction:", julia.julia_fraction(jl)
+print
+"julia fraction:", julia.julia_fraction(jl)
 
 plt.imshow(np.log(jl))
 plt.show()
