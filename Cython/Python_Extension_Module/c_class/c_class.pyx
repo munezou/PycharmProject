@@ -1,6 +1,7 @@
 cdef class Particle:
-	cdef:
-		double mass, position, velocity
+	cdef public double mass
+	cdef readonly double position
+	cdef double velocity
 	
 	def __init__(self, mass, position, velocity):
 		self.mass = mass
