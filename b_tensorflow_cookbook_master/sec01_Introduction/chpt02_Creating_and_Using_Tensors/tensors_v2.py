@@ -18,7 +18,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
 assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+	"This notebook requires TensorFlow 2.0 or above."
 
 # Introduce tensors in tf
 
@@ -32,7 +32,7 @@ my_var = tf.Variable(tf.zeros([1, 20]))
 
 # Different kinds of variables
 row_dim = 2
-col_dim = 3 
+col_dim = 3
 
 # Zero initialized variable
 zero_var = tf.Variable(tf.zeros([row_dim, col_dim]))
@@ -81,17 +81,17 @@ sess.run(initialize_op)
 
 date_today = datetime.date.today()
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         tensors_v2.py                                  ({0})             \n'.format(date_today)
-    )
+print(
+	'------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+	'       finished         tensors_v2.py                                  ({0})             \n'.format(date_today)
+)
+
+print(
+	'------------------------------------------------------------------------------------------------------\n'
+)
 print()
 print()
 print()

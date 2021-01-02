@@ -1,5 +1,5 @@
 # Activation Functions
-#----------------------------------
+# ----------------------------------
 #
 # This function introduces activation
 # functions in TensorFlow
@@ -20,8 +20,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Open graph session
 sess = tf.compat.v1.Session()
@@ -75,17 +74,18 @@ plt.show()
 
 date_today = datetime.date.today()
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         Activation_function_v2.py                                  ({0})             \n'.format(date_today)
+print(
+    '------------------------------------------------------------------------------------------------------\n'
     )
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
+    '       finished         Activation_function_v2.py                                  ({0})    \n'.format(date_today)
     )
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+    )
+
 print()
 print()
 print()

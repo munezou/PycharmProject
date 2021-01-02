@@ -1,5 +1,5 @@
 # Data gathering
-#----------------------------------
+# ----------------------------------
 #
 # This function gives us the ways to access
 # the various data sets we will need
@@ -25,8 +25,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 
 # Iris Data
@@ -60,22 +59,22 @@ mnist = tf.keras.datasets.mnist
 x_train, x_test = x_train / 255.0, x_test / 255.0
 
 one_hot_y_train = tf.one_hot(
-                        indices=y_train[:],
-                        depth=10,
-                        on_value=1.0,
-                        off_value=0.0,
-                        axis=-1,
-                        dtype=tf.float32
-                    )
+    indices=y_train[:],
+    depth=10,
+    on_value=1.0,
+    off_value=0.0,
+    axis=-1,
+    dtype=tf.float32
+)
 
 one_hot_y_test = tf.one_hot(
-                        indices=y_test[:],
-                        depth=10,
-                        on_value=1.0,
-                        off_value=0.0,
-                        axis=-1,
-                        dtype=tf.float32
-                    )
+    indices=y_test[:],
+    depth=10,
+    on_value=1.0,
+    off_value=0.0,
+    axis=-1,
+    dtype=tf.float32
+)
 
 print('len(x_train) = {0}'.format(len(x_train)))
 print('len(y_train) = {0}'.format(len(y_train)))
@@ -171,11 +170,12 @@ sentence_url = 'http://www.manythings.org/anki/deu-eng.zip'
 r = requests.get(sentence_url)
 z = ZipFile(io.BytesIO(r.content))
 file = z.read('deu.txt')
+
 # Format Data
 eng_ger_data = file.decode()
-eng_ger_data = eng_ger_data.encode('ascii',errors='ignore')
+eng_ger_data = eng_ger_data.encode('ascii', errors='ignore')
 eng_ger_data = eng_ger_data.decode().split('\n')
-eng_ger_data = [x.split('\t') for x in eng_ger_data if len(x)>=1]
+eng_ger_data = [x.split('\t') for x in eng_ger_data if len(x) >= 1]
 [english_sentence, german_sentence] = [list(x) for x in zip(*eng_ger_data)]
 print('len(english_sentence) = {0}\n'.format(len(english_sentence)))
 print('len(german_sentence) = {0}\n'.format(len(german_sentence)))
@@ -183,17 +183,18 @@ print('eng_ger_data[10] = {0}\n'.format(eng_ger_data[10]))
 
 date_today = datetime.date.today()
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         data_gathering_v2.py                                  ({0})             \n'.format(date_today)
-    )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+    '       finished         data_gathering_v2.py                                  ({0})   \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
 print()
 print()
 print()
