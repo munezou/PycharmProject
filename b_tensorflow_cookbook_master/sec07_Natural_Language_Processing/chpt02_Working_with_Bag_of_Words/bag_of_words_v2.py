@@ -1,5 +1,6 @@
+"""
 # Working with Bag of Words
-#---------------------------------------
+# ---------------------------------------
 #
 # In this example, we will download and preprocess the ham/spam
 #  text data.  We will then use a one-hot-encoding to make a
@@ -7,19 +8,24 @@
 #
 # We will use these one-hot-vectors for logistic regression to
 #  predict if a text is spam or ham.
+"""
 
-import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
-import matplotlib.pyplot as plt
 import os
 import numpy as np
 import csv
 import string
 import requests
 import io
+import matplotlib.pyplot as plt
 from zipfile import ZipFile
+
+import tensorflow as tf
+
+tf.compat.v1.disable_eager_execution()
+
 from tensorflow.contrib import learn
 from tensorflow.python.framework import ops
+
 ops.reset_default_graph()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -28,33 +34,33 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 sess = tf.compat.v1.Session()
 
 # Check if data was downloaded, otherwise download it and save for future use
-save_file_name = os.path.join('temp','temp_spam_data.csv')
+save_file_name = os.path.join('temp', 'temp_spam_data.csv')
 
 # Create directory if it doesn't exist
 if not os.path.exists('temp'):
-    os.makedirs('temp')
+	os.makedirs('temp')
 
 if os.path.isfile(save_file_name):
-    text_data = []
-    with open(save_file_name, 'r') as temp_output_file:
-        reader = csv.reader(temp_output_file)
-        for row in reader:
-            text_data.append(row)
+	text_data = []
+	with open(save_file_name, 'r') as temp_output_file:
+		reader = csv.reader(temp_output_file)
+		for row in reader:
+			text_data.append(row)
 else:
-    zip_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
-    r = requests.get(zip_url)
-    z = ZipFile(io.BytesIO(r.content))
-    file = z.read('SMSSpamCollection')
-    # Format Data
-    text_data = file.decode()
-    text_data = text_data.encode('ascii',errors='ignore')
-    text_data = text_data.decode().split('\n')
-    text_data = [x.split('\t') for x in text_data if len(x)>=1]
-    
-    # And write to csv
-    with open(save_file_name, 'w') as temp_output_file:
-        writer = csv.writer(temp_output_file)
-        writer.writerows(text_data)
+	zip_url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip'
+	r = requests.get(zip_url)
+	z = ZipFile(io.BytesIO(r.content))
+	file = z.read('SMSSpamCollection')
+	# Format Data
+	text_data = file.decode()
+	text_data = text_data.encode('ascii', errors='ignore')
+	text_data = text_data.decode().split('\n')
+	text_data = [x.split('\t') for x in text_data if len(x) >= 1]
+	
+	# And write to csv
+	with open(save_file_name, 'w') as temp_output_file:
+		writer = csv.writer(temp_output_file)
+		writer.writerows(text_data)
 
 texts = [x[1] for x in text_data]
 target = [x[0] for x in text_data]
@@ -94,7 +100,7 @@ transformed_texts = np.array([x for x in vocab_processor.transform(texts)])
 embedding_size = len(np.unique(transformed_texts))
 
 # Split up data set into train/test
-train_indices = np.random.choice(len(texts), round(len(texts)*0.8), replace=False)
+train_indices = np.random.choice(len(texts), round(len(texts) * 0.8), replace=False)
 test_indices = np.array(list(set(range(len(texts))) - set(train_indices)))
 texts_train = [x for ix, x in enumerate(texts) if ix in train_indices]
 texts_test = [x for ix, x in enumerate(texts) if ix in test_indices]
@@ -105,8 +111,8 @@ target_test = [x for ix, x in enumerate(target) if ix in test_indices]
 identity_mat = tf.linalg.tensor_diag(tf.ones(shape=[embedding_size]))
 
 # Create variables for logistic regression
-A = tf.Variable(tf.random.normal(shape=[embedding_size,1]))
-b = tf.Variable(tf.random.normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[embedding_size, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Initialize placeholders
 x_data = tf.compat.v1.placeholder(shape=[sentence_size], dtype=tf.int32)
@@ -140,40 +146,40 @@ loss_vec = []
 train_acc_all = []
 train_acc_avg = []
 for ix, t in enumerate(vocab_processor.fit_transform(texts_train)):
-    y_data = [[target_train[ix]]]
-    
-    # Run through each observation for training
-    sess.run(train_step, feed_dict={x_data: t, y_target: y_data})
-    temp_loss = sess.run(loss, feed_dict={x_data: t, y_target: y_data})
-    loss_vec.append(temp_loss)
-    
-    if (ix + 1) % 10 == 0:
-        print('Training Observation #{}, Loss = {}'.format(ix+1, temp_loss))
-        
-    # Keep trailing average of past 50 observations accuracy
-    # Get prediction of single observation
-    [[temp_pred]] = sess.run(prediction, feed_dict={x_data: t, y_target: y_data})
-    # Get True/False if prediction is accurate
-    train_acc_temp = target_train[ix]==np.round(temp_pred)
-    train_acc_all.append(train_acc_temp)
-    if len(train_acc_all) >= 50:
-        train_acc_avg.append(np.mean(train_acc_all[-50:]))
+	y_data = [[target_train[ix]]]
+	
+	# Run through each observation for training
+	sess.run(train_step, feed_dict={x_data: t, y_target: y_data})
+	temp_loss = sess.run(loss, feed_dict={x_data: t, y_target: y_data})
+	loss_vec.append(temp_loss)
+	
+	if (ix + 1) % 10 == 0:
+		print('Training Observation #{}, Loss = {}'.format(ix + 1, temp_loss))
+	
+	# Keep trailing average of past 50 observations accuracy
+	# Get prediction of single observation
+	[[temp_pred]] = sess.run(prediction, feed_dict={x_data: t, y_target: y_data})
+	# Get True/False if prediction is accurate
+	train_acc_temp = target_train[ix] == np.round(temp_pred)
+	train_acc_all.append(train_acc_temp)
+	if len(train_acc_all) >= 50:
+		train_acc_avg.append(np.mean(train_acc_all[-50:]))
 
 # Get test set accuracy
 print('Getting Test Set Accuracy For {} Sentences.'.format(len(texts_test)))
 test_acc_all = []
 for ix, t in enumerate(vocab_processor.fit_transform(texts_test)):
-    y_data = [[target_test[ix]]]
-    
-    if (ix + 1) % 50 == 0:
-        print('Test Observation #{}'.format(str(ix+1)))
-    
-    # Keep trailing average of past 50 observations accuracy
-    # Get prediction of single observation
-    [[temp_pred]] = sess.run(prediction, feed_dict={x_data:t, y_target:y_data})
-    # Get True/False if prediction is accurate
-    test_acc_temp = target_test[ix]==np.round(temp_pred)
-    test_acc_all.append(test_acc_temp)
+	y_data = [[target_test[ix]]]
+	
+	if (ix + 1) % 50 == 0:
+		print('Test Observation #{}'.format(str(ix + 1)))
+	
+	# Keep trailing average of past 50 observations accuracy
+	# Get prediction of single observation
+	[[temp_pred]] = sess.run(prediction, feed_dict={x_data: t, y_target: y_data})
+	# Get True/False if prediction is accurate
+	test_acc_temp = target_test[ix] == np.round(temp_pred)
+	test_acc_all.append(test_acc_temp)
 
 print('\nOverall Test Accuracy: {}'.format(np.mean(test_acc_all)))
 

@@ -1,4 +1,4 @@
-'''
+"""
 # SVM Regression
 #----------------------------------
 #
@@ -10,7 +10,8 @@
 # We will use the iris data, specifically:
 #  y = Sepal Length
 #  x = Pedal Width
-'''
+"""
+
 # import required libraries
 import os
 import sys
@@ -145,12 +146,13 @@ print(
 )
 
 print(
-    '       finished         support_vector_regression_v2.py                         ({0})             \n'.format(date_today)
+    '       finished         support_vector_regression_v2.py                         ({0})    \n'.format(date_today)
 )
 
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

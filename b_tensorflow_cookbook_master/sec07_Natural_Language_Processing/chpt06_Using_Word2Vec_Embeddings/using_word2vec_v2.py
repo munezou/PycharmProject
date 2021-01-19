@@ -1,3 +1,4 @@
+"""
 # Using Word2Vec for prediction
 #---------------------------------------
 #
@@ -6,8 +7,9 @@
 #
 # From this data set we will compute/fit the CBOW model of
 #  the Word2Vec Algorithm
+"""
+
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -22,6 +24,8 @@ import urllib.request
 import text_helpers
 from nltk.corpus import stopwords
 from tensorflow.python.framework import ops
+
+tf.compat.v1.disable_eager_execution()
 ops.reset_default_graph()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))

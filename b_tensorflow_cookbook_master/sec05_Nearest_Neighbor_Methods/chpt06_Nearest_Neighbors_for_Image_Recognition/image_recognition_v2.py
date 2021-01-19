@@ -1,4 +1,4 @@
-'''
+"""
 # MNIST Digit Prediction with k-Nearest Neighbors
 #-----------------------------------------------
 #
@@ -11,7 +11,7 @@
 #
 # Integer images are represented as 28x8 matrices
 # of floating point numbers
-'''
+"""
 
 # import required libraries
 import os
@@ -177,6 +177,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

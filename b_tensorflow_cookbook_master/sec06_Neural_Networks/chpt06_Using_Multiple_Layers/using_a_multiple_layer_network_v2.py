@@ -39,12 +39,12 @@ from tensorflow.python.framework import ops
 
 print(__doc__)
 
-'''
+"""
 --------------------------------------------
 In casee of windows, os name is 'nt'.
 In case of linux, os name is 'posix'.
 --------------------------------------------
-'''
+"""
 
 if os.name == 'nt':
     print(
@@ -69,8 +69,8 @@ assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook require
 
 # name of data file
 birth_weight_file = os.path.join(PROJECT_ROOT_DIR, 'birth_weight.csv')
-birthdata_url = 'https://github.com/nfmcclure/tensorflow_cookbook/raw/master' \
-                '/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
+birthdata_url = \
+    'https://github.com/nfmcclure/tensorflow_cookbook/raw/master/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
 
 # Download data and create data file if file does not exist in current directory
 if not os.path.exists(birth_weight_file):
@@ -264,6 +264,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

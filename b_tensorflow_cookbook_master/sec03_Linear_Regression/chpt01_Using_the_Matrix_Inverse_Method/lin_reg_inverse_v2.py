@@ -1,4 +1,4 @@
-'''
+"""
 # Linear Regression: Inverse Matrix Method
 #----------------------------------
 #
@@ -8,7 +8,7 @@
 # Given Ax=b, solving for x:
 #  x = (t(A) * A)^(-1) * t(A) * b
 #  where t(A) is the transpose of A
-'''
+"""
 
 import os
 import datetime
@@ -29,8 +29,7 @@ ops.reset_default_graph()
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -69,7 +68,7 @@ print('y_intercept: ' + str(y_intercept))
 # Get best fit line
 best_fit = []
 for i in x_vals:
-  best_fit.append(slope*i+y_intercept)
+    best_fit.append(slope*i+y_intercept)
 
 # Plot the results
 plt.plot(x_vals, y_vals, 'o', label='Data')
@@ -80,16 +79,17 @@ plt.show()
 date_today = datetime.date.today()
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         lin_reg_inverse.py                             ({0})             \n'.format(date_today)
-    )
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+    '       finished         lin_reg_inverse.py                             ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
 print()
 print()
 print()

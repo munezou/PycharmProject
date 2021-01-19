@@ -1,4 +1,4 @@
-'''
+"""
 Combining Gates and Activation Functions
 
 This function shows how to implement
@@ -8,7 +8,7 @@ in TensorFlow
 This function is an extension of the
 prior gates, but with various activation
 functions.
-'''
+"""
 
 # import required libraries
 import os
@@ -22,12 +22,12 @@ from tensorflow.python.framework import ops
 
 print(__doc__)
 
-'''
+"""
 --------------------------------------------
 In casee of windows, os name is 'nt'.
 In case of linux, os name is 'posix'.
 --------------------------------------------
-'''
+"""
 
 if os.name == 'nt':
     print(
@@ -145,6 +145,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

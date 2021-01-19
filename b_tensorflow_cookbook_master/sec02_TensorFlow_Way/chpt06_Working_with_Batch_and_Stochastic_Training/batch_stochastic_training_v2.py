@@ -1,11 +1,11 @@
+"""
+ Batch and Stochastic Training
+----------------------------------
 
-'''# Batch and Stochastic Training
-#----------------------------------
-#
-#  This python function illustrates two different training methods:
-#  batch and stochastic training.  For each model, we will use
-#  a regression model that predicts one model variable.
-'''
+  This python function illustrates two different training methods:
+  batch and stochastic training.  For each model, we will use
+  a regression model that predicts one model variable.
+"""
 
 import os
 import datetime
@@ -25,8 +25,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # We will implement a regression example in stochastic and batch training
 
@@ -122,17 +121,18 @@ plt.show()
 
 date_today = datetime.date.today()
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         loss_function_v2.py                             ({0})             \n'.format(date_today)
-    )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+    '       finished         loss_function_v2.py                             ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
 print()
 print()
 print()

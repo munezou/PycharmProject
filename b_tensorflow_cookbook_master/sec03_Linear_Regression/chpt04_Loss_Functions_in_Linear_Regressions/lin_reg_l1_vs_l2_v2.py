@@ -1,10 +1,11 @@
-'''
+"""
 # Linear Regression: L1 vs L2
 #----------------------------------
 #
 # This function shows how to use TensorFlow to
 # solve linear regression via the matrix inverse.
-'''
+"""
+
 import os
 import datetime
 from packaging import version
@@ -53,8 +54,8 @@ x_data = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 y_target = tf.compat.v1.placeholder(shape=[None, 1], dtype=tf.float32)
 
 # Create variables for linear regression
-A = tf.Variable(tf.random.normal(shape=[1,1]))
-b = tf.Variable(tf.random.normal(shape=[1,1]))
+A = tf.Variable(tf.random.normal(shape=[1, 1]))
+b = tf.Variable(tf.random.normal(shape=[1, 1]))
 
 # Declare model operations
 model_output = tf.add(tf.matmul(x_data, A), b)
@@ -79,7 +80,7 @@ for i in range(iterations):
     sess.run(train_step_l1, feed_dict={x_data: rand_x, y_target: rand_y})
     temp_loss_l1 = sess.run(loss_l1, feed_dict={x_data: rand_x, y_target: rand_y})
     loss_vec_l1.append(temp_loss_l1)
-    if (i+1)%25==0:
+    if (i+1) % 25 == 0:
         print('Step #' + str(i+1) + ' A = ' + str(sess.run(A)) + ' b = ' + str(sess.run(b)))
 
 
@@ -120,7 +121,7 @@ for i in range(iterations):
     sess.run(train_step_l2, feed_dict={x_data: rand_x, y_target: rand_y})
     temp_loss_l2 = sess.run(loss_l2, feed_dict={x_data: rand_x, y_target: rand_y})
     loss_vec_l2.append(temp_loss_l2)
-    if (i+1)%25==0:
+    if (i+1) % 25 == 0:
         print('Step #' + str(i+1) + ' A = ' + str(sess.run(A)) + ' b = ' + str(sess.run(b)))
 
 
@@ -136,16 +137,17 @@ plt.show()
 date_today = datetime.date.today()
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         lin_reg_l1_vs_l2_v2.py                             ({0})             \n'.format(date_today)
-    )
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+    '       finished         lin_reg_l1_vs_l2_v2.py                             ({0})          \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
 print()
 print()
 print()

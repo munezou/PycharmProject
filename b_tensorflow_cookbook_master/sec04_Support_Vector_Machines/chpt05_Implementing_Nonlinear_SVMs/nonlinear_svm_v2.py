@@ -1,4 +1,4 @@
-'''
+"""
 # Nonlinear SVM Example
 #
 # This function wll illustrate how to
@@ -7,7 +7,7 @@
 #
 # Gaussian Kernel:
 # K(x1, x2) = exp(-gamma * abs(x1 - x2)^2)
-'''
+"""
 
 # import required libraries
 import os
@@ -112,12 +112,23 @@ for i in range(300):
 # Create a mesh to plot points in
 x_min, x_max = x_vals[:, 0].min() - 1, x_vals[:, 0].max() + 1
 y_min, y_max = x_vals[:, 1].min() - 1, x_vals[:, 1].max() + 1
-xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
-                     np.arange(y_min, y_max, 0.02))
+
+xx, yy = np.meshgrid(
+    np.arange(x_min, x_max, 0.02),
+    np.arange(y_min, y_max, 0.02)
+)
+
 grid_points = np.c_[xx.ravel(), yy.ravel()]
-[grid_predictions] = sess.run(prediction, feed_dict={x_data: x_vals,
-                                                     y_target: np.transpose([y_vals]),
-                                                     prediction_grid: grid_points})
+
+[grid_predictions] = sess.run(
+    prediction,
+    feed_dict={
+        x_data: x_vals,
+        y_target: np.transpose([y_vals]),
+        prediction_grid: grid_points
+    }
+)
+
 grid_predictions = grid_predictions.reshape(xx.shape)
 
 # Plot points and grid
@@ -160,6 +171,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

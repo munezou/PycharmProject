@@ -1,4 +1,4 @@
-'''
+"""
 # Implementing Gates
 #----------------------------------
 #
@@ -9,7 +9,7 @@
 # a variable and a placeholder.
 # We will ask TensorFlow to change the
 # variable based on our loss function
-'''
+"""
 
 # import required libraries
 import os
@@ -56,7 +56,7 @@ tf.compat.v1.disable_eager_execution()
 # Start Graph Session
 sess = tf.compat.v1.Session()
 
-#----------------------------------
+# ----------------------------------
 # Create a multiplication gate:
 #   f(x) = a * x
 #
@@ -92,7 +92,7 @@ for _ in range(10):
     mult_output = sess.run(multiplication, feed_dict={x_data: x_val})
     print(str(a_val) + ' * ' + str(x_val) + ' = ' + str(mult_output))
     
-'''
+"""
 Create a nested gate:
    f(x) = a * x + b
 
@@ -103,7 +103,7 @@ Create a nested gate:
                      |-- (add) --> output
                  b --|
 
-'''
+"""
 
 # Start a New Graph Session
 ops.reset_default_graph()
@@ -149,6 +149,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

@@ -1,3 +1,4 @@
+"""
 # Doc2Vec Model
 #---------------------------------------
 #
@@ -8,9 +9,9 @@
 # Document vectors.  From these document vectors, we will split the
 # documents into train/test and use these doc vectors to do sentiment
 # analysis on the movie review dataset.
+"""
 
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -25,6 +26,8 @@ import urllib.request
 import text_helpers
 from nltk.corpus import stopwords
 from tensorflow.python.framework import ops
+
+tf.compat.v1.disable_eager_execution()
 ops.reset_default_graph()
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -91,8 +94,13 @@ embeddings = tf.Variable(tf.random.uniform([vocabulary_size, embedding_size], -1
 doc_embeddings = tf.Variable(tf.random.uniform([len(texts), doc_embedding_size], -1.0, 1.0))
 
 # NCE loss parameters
-nce_weights = tf.Variable(tf.random.truncated_normal([vocabulary_size, concatenated_size],
-                                               stddev=1.0 / np.sqrt(concatenated_size)))
+nce_weights = tf.Variable(
+    tf.random.truncated_normal(
+        [vocabulary_size, concatenated_size],
+        stddev=1.0 / np.sqrt(concatenated_size)
+    )
+)
+
 nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
 
 # Create data/target placeholders
@@ -113,12 +121,16 @@ doc_embed = tf.nn.embedding_lookup(params=doc_embeddings,ids=doc_indices)
 final_embed = tf.concat(axis=1, values=[embed, tf.squeeze(doc_embed)])
 
 # Get loss from prediction
-loss = tf.reduce_mean(input_tensor=tf.nn.nce_loss(weights=nce_weights,
-                                     biases=nce_biases,
-                                     labels=y_target,
-                                     inputs=final_embed,
-                                     num_sampled=num_sampled,
-                                     num_classes=vocabulary_size))
+loss = tf.reduce_mean(
+    input_tensor=tf.nn.nce_loss(
+        weights=nce_weights,
+        biases=nce_biases,
+        labels=y_target,
+        inputs=final_embed,
+        num_sampled=num_sampled,
+        num_classes=vocabulary_size
+    )
+)
                                      
 # Create optimizer
 optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=model_learning_rate)

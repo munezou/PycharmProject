@@ -1,8 +1,10 @@
+"""
 # Implementing an RNN in TensorFlow
 #----------------------------------
 #
 # We implement an RNN in TensorFlow to predict spam/ham from texts
 #
+"""
 
 import os
 import re
@@ -11,11 +13,12 @@ import requests
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
+
 from zipfile import ZipFile
 from tensorflow.python.framework import ops
 ops.reset_default_graph()
 
+tf.compat.v1.disable_eager_execution()
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Start a graph

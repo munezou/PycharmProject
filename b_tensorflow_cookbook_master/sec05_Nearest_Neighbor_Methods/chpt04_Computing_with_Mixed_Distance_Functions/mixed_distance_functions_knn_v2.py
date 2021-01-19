@@ -1,4 +1,4 @@
-'''
+"""
 # Mixed Distance Functions for  k-Nearest Neighbor
 #----------------------------------
 #
@@ -22,7 +22,7 @@
 # LSTAT  : % lower status of pop
 #------------y-value-----------
 # MEDV   : Median Value of homes in $1,000's
-'''
+"""
 
 # import required libraries
 import os
@@ -62,10 +62,10 @@ housing_data = [[float(x) for x in y.split(' ') if len(x)>=1] for y in housing_f
 y_vals = np.transpose([np.array([y[13] for y in housing_data])])
 x_vals = np.array([[x for i,x in enumerate(y) if housing_header[i] in cols_used] for y in housing_data])
 
-## Min-Max Scaling
+# Min-Max Scaling
 x_vals = (x_vals - x_vals.min(0)) / x_vals.ptp(0)
 
-## Create distance metric weight matrix weighted by standard deviation
+# Create distance metric weight matrix weighted by standard deviation
 weight_diagonal = x_vals.std(0)
 weight_matrix = tf.cast(tf.linalg.tensor_diag(weight_diagonal), dtype=tf.float32)
 
@@ -118,24 +118,24 @@ for i in range(num_loops):
     y_batch = y_vals_test[min_index:max_index]
 
     predictions = sess.run(
-                        prediction,
-                        feed_dict={
-                                    x_data_train: x_vals_train,
-                                    x_data_test: x_batch,
-                                    y_target_train: y_vals_train,
-                                    y_target_test: y_batch
-                               }
-                   )
+        prediction,
+        feed_dict={
+            x_data_train: x_vals_train,
+            x_data_test: x_batch,
+            y_target_train: y_vals_train,
+            y_target_test: y_batch
+        }
+    )
 
     batch_mse = sess.run(
-                        mse,
-                        feed_dict={
-                                    x_data_train: x_vals_train,
-                                    x_data_test: x_batch,
-                                    y_target_train: y_vals_train,
-                                    y_target_test: y_batch
-                            }
-                    )
+        mse,
+        feed_dict={
+            x_data_train: x_vals_train,
+            x_data_test: x_batch,
+            y_target_train: y_vals_train,
+            y_target_test: y_batch
+        }
+    )
 
     print('Batch #' + str(i+1) + ' MSE: ' + str(np.round(batch_mse,3)))
 
@@ -163,6 +163,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

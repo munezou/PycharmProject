@@ -1,4 +1,4 @@
-'''
+"""
 # Combining Everything Together
 #----------------------------------
 # This file will perform binary classification on the
@@ -11,7 +11,8 @@
 #
 # We will use batch training, but this can be easily
 # adapted to stochastic training.
-'''
+"""
+
 import os
 import datetime
 from packaging import version
@@ -31,8 +32,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Load the iris data
 # iris.target = {0, 1, 2}, where '0' is setosa

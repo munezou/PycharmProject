@@ -1,4 +1,4 @@
-'''
+"""
 Implementing a one-layer Neural Network
 
 We will illustrate how to create a one hidden layer NN
@@ -8,7 +8,7 @@ We will use the iris data for this exercise
 We will build a one-hidden layer neural network
  to predict the fourth attribute, Petal Width from
  the other three (Sepal length, Sepal width, Petal length).
-'''
+"""
 
 # import required libraries
 import os
@@ -147,6 +147,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

@@ -1,3 +1,4 @@
+"""
 # Download/Saving CIFAR-10 images in Inception format
 #---------------------------------------
 #
@@ -6,6 +7,7 @@
 #
 # The end purpose of the files is for re-training the
 # Google Inception tensorflow model to work on the CIFAR-10.
+"""
 
 import os
 import tarfile

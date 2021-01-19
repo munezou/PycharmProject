@@ -1,4 +1,4 @@
-'''
+"""
 # Deming Regression
 #----------------------------------
 #
@@ -9,7 +9,8 @@
 # We will use the iris data, specifically:
 #  y = Sepal Length
 #  x = Petal Width
-'''
+"""
+
 import os
 import datetime
 from packaging import version

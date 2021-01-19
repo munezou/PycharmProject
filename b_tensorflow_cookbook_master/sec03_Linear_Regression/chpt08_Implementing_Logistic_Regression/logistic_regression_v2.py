@@ -1,4 +1,4 @@
-'''
+"""
 # Logistic Regression
 #----------------------------------
 #
@@ -9,7 +9,7 @@
 # We will use the low birth weight data, specifically:
 #  y = 0 or 1 = low birth weight
 #  x = demographic and medical history data
-'''
+"""
 
 # import required libraries
 import os
@@ -50,7 +50,9 @@ birth_weight_file = os.path.join(PROJECT_ROOT_DIR, 'birth_weight.csv')
 
 # Download data and create data file if file does not exist in current directory
 if not os.path.exists(birth_weight_file):
-    birthdata_url = 'https://github.com/nfmcclure/tensorflow_cookbook/raw/master/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
+    birthdata_url = \
+        'https://github.com/nfmcclure/tensorflow_cookbook/raw/master/01_Introduction/07_Working_with_Data_Sources/birthweight_data/birthweight.dat'
+    
     birth_file = requests.get(birthdata_url)
     birth_data = birth_file.text.split('\r\n')
     birth_header = birth_data[0].split('\t')
@@ -192,6 +194,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

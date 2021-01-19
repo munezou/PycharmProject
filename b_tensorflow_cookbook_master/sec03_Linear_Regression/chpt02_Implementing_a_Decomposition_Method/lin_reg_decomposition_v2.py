@@ -1,4 +1,4 @@
-'''
+"""
 # Linear Regression: Decomposition Method
 #----------------------------------
 #
@@ -9,7 +9,8 @@
 #  A = L*L' then we can get solve for x via
 # 1) L*y=t(A)*b
 # 2) L'*x=y
-'''
+"""
+
 import os
 import datetime
 from packaging import version
@@ -27,8 +28,7 @@ print('PROJECT_ROOT_DIR = \n{0}\n'.format(PROJECT_ROOT_DIR))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-    "This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 tf.compat.v1.disable_eager_execution()
 ops.reset_default_graph()
@@ -86,11 +86,11 @@ plt.show()
 
 date_today = datetime.date.today()
 
-print   (
+print(
     '------------------------------------------------------------------------------------------------------\n'
 )
 
-print   (
+print(
     '       finished         lin_reg_decomposition.py                             ({0})             \n'.format(date_today)
 )
 

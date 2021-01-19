@@ -1,5 +1,5 @@
+"""
 # k-Nearest Neighbor
-'''
 #----------------------------------
 #
 # This function illustrates how to use
@@ -26,7 +26,7 @@
 # LSTAT  : % lower status of pop
 #------------y-value-----------
 # MEDV   : Median Value of homes in $1,000's
-'''
+"""
 
 # import required libraries
 import os
@@ -120,24 +120,24 @@ for i in range(num_loops):
     y_batch = y_vals_test[min_index:max_index]
 
     predictions = sess.run(
-                        prediction,
-                        feed_dict={
-                                        x_data_train: x_vals_train,
-                                        x_data_test: x_batch,
-                                        y_target_train: y_vals_train,
-                                        y_target_test: y_batch
-                                    }
-                    )
+        prediction,
+        feed_dict={
+            x_data_train: x_vals_train,
+            x_data_test: x_batch,
+            y_target_train: y_vals_train,
+            y_target_test: y_batch
+        }
+    )
 
     batch_mse = sess.run(
-                    mse,
-                    feed_dict={
-                                    x_data_train: x_vals_train,
-                                    x_data_test: x_batch,
-                                    y_target_train: y_vals_train,
-                                    y_target_test: y_batch
-                                }
-                    )
+        mse,
+        feed_dict={
+            x_data_train: x_vals_train,
+            x_data_test: x_batch,
+            y_target_train: y_vals_train,
+            y_target_test: y_batch
+        }
+    )
 
     print('Batch #' + str(i+1) + ' MSE: ' + str(np.round(batch_mse,3)))
 
@@ -165,6 +165,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

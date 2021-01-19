@@ -1,5 +1,5 @@
 # Back Propagation
-#----------------------------------
+# ----------------------------------
 #
 # This python function shows how to implement back propagation
 # in regression and classification models.
@@ -18,8 +18,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()
@@ -132,17 +131,18 @@ print('Ending Accuracy = ' + str(np.round(accuracy, 2)))
 
 date_today = datetime.date.today()
 
-print   (
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         back_propagation_v2.py                             ({0})             \n'.format(date_today)
-    )
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+    '       finished         back_propagation_v2.py                             ({0})             \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
 print()
 print()
 print()

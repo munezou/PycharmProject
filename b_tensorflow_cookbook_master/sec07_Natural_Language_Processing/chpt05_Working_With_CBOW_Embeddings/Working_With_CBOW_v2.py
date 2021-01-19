@@ -1,3 +1,4 @@
+"""
 # Word2Vec: CBOW Model (Continuous Bag of Words)
 #---------------------------------------
 #
@@ -6,8 +7,10 @@
 #
 # From this data set we will compute/fit the CBOW model of
 #  the Word2Vec Algorithm
+"""
+
 import tensorflow as tf
-tf.compat.v1.disable_eager_execution()
+
 import matplotlib.pyplot as plt
 import numpy as np
 import random
@@ -22,6 +25,8 @@ import urllib.request
 import text_helpers
 from nltk.corpus import stopwords
 from tensorflow.python.framework import ops
+
+tf.compat.v1.disable_eager_execution()
 ops.reset_default_graph()
 
 # Set Random Seeds
@@ -86,8 +91,11 @@ print('Creating Model')
 embeddings = tf.Variable(tf.random.uniform([vocabulary_size, embedding_size], -1.0, 1.0))
 
 # NCE loss parameters
-nce_weights = tf.Variable(tf.random.truncated_normal([vocabulary_size, embedding_size],
-                                               stddev=1.0 / np.sqrt(embedding_size)))
+nce_weights = tf.Variable(
+    tf.random.truncated_normal(
+        [vocabulary_size, embedding_size], stddev=1.0 / np.sqrt(embedding_size)
+    )
+)
 nce_biases = tf.Variable(tf.zeros([vocabulary_size]))
 
 # Create data/target placeholders
@@ -102,12 +110,16 @@ for element in range(2*window_size):
     embed += tf.nn.embedding_lookup(params=embeddings, ids=x_inputs[:, element])
 
 # Get loss from prediction
-loss = tf.reduce_mean(input_tensor=tf.nn.nce_loss(weights=nce_weights,
-                                     biases=nce_biases,
-                                     labels=y_target,
-                                     inputs=embed,
-                                     num_sampled=num_sampled,
-                                     num_classes=vocabulary_size))
+loss = tf.reduce_mean(
+    input_tensor=tf.nn.nce_loss(
+        weights=nce_weights,
+        biases=nce_biases,
+        labels=y_target,
+        inputs=embed,
+        num_sampled=num_sampled,
+        num_classes=vocabulary_size
+    )
+)
                                      
 # Create optimizer
 optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate=model_learning_rate).minimize(loss)

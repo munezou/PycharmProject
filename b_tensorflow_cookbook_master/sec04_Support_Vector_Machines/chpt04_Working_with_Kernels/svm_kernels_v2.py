@@ -1,4 +1,4 @@
-'''
+"""
 # Illustration of Various Kernels
 #----------------------------------
 #
@@ -10,7 +10,7 @@
 #
 # Gaussian Kernel (RBF):
 # K(x1, x2) = exp(-gamma * abs(x1 - x2)^2)
-'''
+"""
 
 # import required libraries
 import os
@@ -128,11 +128,13 @@ xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.02),
 grid_points = np.c_[xx.ravel(), yy.ravel()]
 
 [grid_predictions] = sess.run(
-                            prediction,
-                            feed_dict={x_data: rand_x,
-                            y_target: rand_y,
-                           prediction_grid: grid_points}
-                        )
+    prediction,
+    feed_dict={
+        x_data: rand_x,
+        y_target: rand_y,
+        prediction_grid: grid_points
+    }
+)
 
 grid_predictions = grid_predictions.reshape(xx.shape)
 
@@ -165,16 +167,22 @@ plt.show()
 
 # Evaluate on new/unseen data points
 # New data points:
-new_points = np.array([(-0.75, -0.75),
-                       (-0.5, -0.5),
-                       (-0.25, -0.25),
-                       (0.25, 0.25),
-                       (0.5, 0.5),
-                       (0.75, 0.75)])
+new_points = np.array([
+    (-0.75, -0.75),
+    (-0.5, -0.5),
+    (-0.25, -0.25),
+    (0.25, 0.25),
+    (0.5, 0.5),
+    (0.75, 0.75)
+])
 
-[evaluations] = sess.run(prediction, feed_dict={x_data: x_vals,
-                                                y_target: np.transpose([y_vals]),
-                                                prediction_grid: new_points})
+[evaluations] = sess.run(
+    prediction, feed_dict={
+        x_data: x_vals,
+        y_target: np.transpose([y_vals]),
+        prediction_grid: new_points
+    }
+)
 
 for ix, p in enumerate(new_points):
     print('{} : class={}'.format(p, evaluations[ix]))
@@ -192,6 +200,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

@@ -1,4 +1,4 @@
-'''
+"""
 Implementing Different Layers
 
 We will illustrate how to use different types of layers in TensorFlow
@@ -12,7 +12,7 @@ The layers of interest are:
 We will generate two different data sets for this
  script, a 1-D data set (row of data) and
  a 2-D data set (similar to picture)
-'''
+"""
 
 # import required libraries
 import os
@@ -25,12 +25,12 @@ from tensorflow.python.framework import ops
 
 print(__doc__)
 
-'''
+"""
 --------------------------------------------
 In casee of windows, os name is 'nt'.
 In case of linux, os name is 'posix'.
 --------------------------------------------
-'''
+"""
 
 if os.name == 'nt':
     print(
@@ -181,10 +181,15 @@ print('>>>> 1D Data <<<<')
 
 # Convolution Output
 print('Input = array of length {}'.format(x_input_1d.shape.as_list()[0]))
-print('Convolution w/ filter, length = {}, stride size = {},'
-      'results in an array of length {}:'.format(conv_size,
-                                                 stride_size,
-                                                 my_convolution_output.shape.as_list()[0]))
+
+print(
+    'Convolution w/ filter, length = {}, stride size = {},'
+    'results in an array of length {}:'.format(
+        conv_size,
+        stride_size,
+        my_convolution_output.shape.as_list()[0]
+    )
+)
 print(sess.run(my_convolution_output, feed_dict=feed_dict))
 
 # Activation Output
@@ -195,16 +200,28 @@ print(sess.run(my_activation_output, feed_dict=feed_dict))
 
 # Max Pool Output
 print('\nInput = above array of length {}'.format(my_activation_output.shape.as_list()[0]))
-print('MaxPool, window length = {}, stride size = {},'
-      'results in the array of length {}'.format(maxpool_size,
-                                                 stride_size,
-                                                 my_maxpool_output.shape.as_list()[0]))
+
+print(
+    'MaxPool, window length = {}, stride size = {},'
+    'results in the array of length {}'.format(
+        maxpool_size,
+        stride_size,
+        my_maxpool_output.shape.as_list()[0]
+    )
+)
+
 print(sess.run(my_maxpool_output, feed_dict=feed_dict))
 
 # Fully Connected Output
 print('\nInput = above array of length {}'.format(my_maxpool_output.shape.as_list()[0]))
-print('Fully connected layer on all 4 rows '
-      'with {} outputs:'.format(my_full_output.shape.as_list()[0]))
+
+print(
+    'Fully connected layer on all 4 rows '
+    'with {} outputs:'.format(
+        my_full_output.shape.as_list()[0]
+    )
+)
+
 print(sess.run(my_full_output, feed_dict=feed_dict))
 
 # ---------------------------------------------------|
@@ -346,11 +363,17 @@ print('\n>>>> 2D Data <<<<')
 
 # Convolution Output
 print('Input = {} array'.format(x_input_2d.shape.as_list()))
-print('{} Convolution, stride size = [{}, {}], '
-      'results in the {} array'.format(my_filter.get_shape().as_list()[:2],
-                                       conv_stride_size,
-                                       conv_stride_size,
-                                       my_convolution_output.shape.as_list()))
+
+print(
+    '{} Convolution, stride size = [{}, {}], '
+    'results in the {} array'.format(
+        my_filter.get_shape().as_list()[:2],
+        conv_stride_size,
+        conv_stride_size,
+        my_convolution_output.shape.as_list()
+    )
+)
+
 print(sess.run(my_convolution_output, feed_dict=feed_dict))
 
 # Activation Output
@@ -360,17 +383,28 @@ print(sess.run(my_activation_output, feed_dict=feed_dict))
 
 # Max Pool Output
 print('\nInput = the above {} array'.format(my_activation_output.shape.as_list()))
-print('MaxPool, stride size = [{}, {}], '
-      'results in {} array'.format(maxpool_stride_size,
-                                   maxpool_stride_size,
-                                   my_maxpool_output.shape.as_list()))
+
+print(
+    'MaxPool, stride size = [{}, {}], '
+    'results in {} array'.format(
+        maxpool_stride_size,
+        maxpool_stride_size,
+        my_maxpool_output.shape.as_list()
+    )
+)
 print(sess.run(my_maxpool_output, feed_dict=feed_dict))
 
 # Fully Connected Output
 print('\nInput = the above {} array'.format(my_maxpool_output.shape.as_list()))
-print('Fully connected layer on all {} rows '
-      'results in {} outputs:'.format(my_maxpool_output.shape.as_list()[0],
-                                      my_full_output.shape.as_list()[0]))
+
+print(
+    'Fully connected layer on all {} rows '
+    'results in {} outputs:'.format(
+        my_maxpool_output.shape.as_list()[0],
+        my_full_output.shape.as_list()[0]
+    )
+)
+
 print(sess.run(my_full_output, feed_dict=feed_dict))
 
 date_today = datetime.date.today()
@@ -386,6 +420,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

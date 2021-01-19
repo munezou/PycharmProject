@@ -1,4 +1,4 @@
-'''
+"""
 # Multi-class (Nonlinear) SVM Example
 #
 # This function wll illustrate how to
@@ -16,7 +16,7 @@
 #
 # The prediction of a point will be the category with
 # the largest margin or distance to boundary.
-'''
+"""
 
 # import required libraries
 import os
@@ -187,6 +187,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

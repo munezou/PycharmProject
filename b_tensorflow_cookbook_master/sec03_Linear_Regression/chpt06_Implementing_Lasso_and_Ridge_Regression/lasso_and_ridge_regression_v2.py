@@ -1,4 +1,4 @@
-'''
+"""
 # LASSO and Ridge Regression
 # 
 # This function shows how to use TensorFlow to solve LASSO or 
@@ -8,7 +8,7 @@
 # We will use the iris data, specifically: 
 #   y = Sepal Length 
 #   x = Petal Width
-'''
+"""
 
 # import required libraries
 import os
@@ -173,12 +173,13 @@ print(
 )
 
 print(
-    '       finished         lasso_and_ridge_regression_v2.py                         ({0})             \n'.format(date_today)
+    '       finished         lasso_and_ridge_regression_v2.py                         ({0})     \n'.format(date_today)
 )
 
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

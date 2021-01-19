@@ -1,4 +1,4 @@
-'''
+"""
 # Linear Regression: TensorFlow Way
 #----------------------------------
 #
@@ -9,7 +9,7 @@
 # We will use the iris data, specifically:
 #  y = Sepal Length
 #  x = Petal Width
-'''
+"""
 
 import os
 import datetime
@@ -110,16 +110,17 @@ plt.show()
 date_today = datetime.date.today()
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
-
-print   (
-        '       finished         lin_reg_tensorflow_way.py                             ({0})             \n'.format(date_today)
-    )
+    '------------------------------------------------------------------------------------------------------\n'
+)
 
 print(
-        '------------------------------------------------------------------------------------------------------\n'
-    )
+    '       finished         lin_reg_tensorflow_way.py                             ({0})       \n'.format(date_today)
+)
+
+print(
+    '------------------------------------------------------------------------------------------------------\n'
+)
+
 print()
 print()
 print()

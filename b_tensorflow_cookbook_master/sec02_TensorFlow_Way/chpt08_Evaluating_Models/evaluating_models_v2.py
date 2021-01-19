@@ -1,4 +1,4 @@
-'''
+"""
 # Evaluating models in TensorFlow
 #
 # This code will implement two models.  The first
@@ -10,7 +10,8 @@
 #  model.  We will also show how to print percent
 #  classified correctly during training and after
 #  for both the test and training sets.
-'''
+"""
+
 import os
 import datetime
 from packaging import version
@@ -18,6 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework import ops
+
 print(__doc__)
 
 tf.compat.v1.disable_eager_execution()
@@ -28,8 +30,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 # Display tensorflow version
 print("TensorFlow version: ", tf.version.VERSION)
-assert version.parse(tf.version.VERSION).release[0] >= 2, \
-"This notebook requires TensorFlow 2.0 or above."
+assert version.parse(tf.version.VERSION).release[0] >= 2, "This notebook requires TensorFlow 2.0 or above."
 
 # Create graph
 sess = tf.compat.v1.Session()

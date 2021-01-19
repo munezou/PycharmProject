@@ -1,11 +1,11 @@
-'''
+"""
 # Text Distances
 #----------------------------------
 #
 # This function illustrates how to use
 # the Levenstein distance (edit distance)
 # in TensorFlow.
-'''
+"""
 
 # import required libraries
 import os
@@ -100,6 +100,7 @@ print(
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()

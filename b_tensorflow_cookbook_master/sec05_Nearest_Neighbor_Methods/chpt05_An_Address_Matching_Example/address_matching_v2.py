@@ -1,4 +1,4 @@
-'''
+"""
 # Address Matching with k-Nearest Neighbors
 #----------------------------------
 #
@@ -11,7 +11,7 @@
 # We will consider two distance functions:
 # 1) Edit distance for street number/name and
 # 2) Euclidian distance (L2) for the zip codes
-'''
+"""
 
 # import required libraries
 import os
@@ -137,10 +137,12 @@ for i in range(n):
     test_address_repeated = [test_address_entry] * n
     sparse_test_set = sparse_from_word_vec(test_address_repeated)
 
-    feeddict = {test_address: sparse_test_set,
-                test_zip: test_zip_entry,
-                ref_address: sparse_ref_set,
-                ref_zip: reference_zips}
+    feeddict = {
+        test_address: sparse_test_set,
+        test_zip: test_zip_entry,
+        ref_address: sparse_ref_set,
+        ref_zip: reference_zips
+    }
 
     best_match = sess.run(top_match_index, feed_dict=feeddict)
     best_street = reference_addresses[best_match[0]]
@@ -158,13 +160,13 @@ print(
 )
 
 print(
-    '       finished      address_matching_v2.py                          ({0})             \n'.format(
-        date_today)
+    '       finished      address_matching_v2.py                          ({0})             \n'.format(date_today)
 )
 
 print(
     '------------------------------------------------------------------------------------------------------\n'
 )
+
 print()
 print()
 print()
