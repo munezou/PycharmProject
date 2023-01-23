@@ -10,4 +10,4 @@ alternative-isg-analyze2/scoring_result.csv
 alternative-isg-analyze2/elect_info.csv
 alternative-isg-analyze2/clinic_tec.csv
 alternative-isg-analyze2/assets
-alternative-isg-analyze2/output_file
+alternative-isg-analyze2/output_file/*.*
