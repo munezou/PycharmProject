@@ -1,0 +1,10 @@
+
+*.xml
+*.iml
+*.pyc
+alternative-isg-analyze2/output_file/edf_filtered.edf
+alternative-isg-analyze2/output_file/result.csv
+alternative-isg-analyze2/scoring_result.csv
+alternative-isg-analyze2/elect_info.csv
+alternative-isg-analyze2/assets
+alternative-isg-analyze2/output_file
