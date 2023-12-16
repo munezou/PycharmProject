@@ -1,0 +1,46 @@
+   <ChannelConfig>
+      <Channels>
+         <Channel EdfSignal="0" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EEG Fp1-Pz</Label>
+         </Channel>
+         <Channel EdfSignal="1" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EEG Fp2-Pz</Label>
+         </Channel>
+         <Channel EdfSignal="2" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EOG LOC-A1</Label>
+         </Channel>
+         <Channel EdfSignal="3" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EMG おとがい</Label>
+         </Channel>
+         <Channel EdfSignal="4" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EEG FP1-Fz</Label>
+         </Channel>
+         <Channel EdfSignal="5" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EEG Fp2-Fz</Label>
+         </Channel>
+         <Channel EdfSignal="6" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EEG T3-Fz</Label>
+         </Channel>
+         <Channel EdfSignal="7" UseForAnalysis="true" DecimalDigits="1">
+            <Label>EEG T4-Fz</Label>
+         </Channel>
+         <Channel EdfSignal="8" UseForAnalysis="true" DecimalDigits="1">
+            <Label>Numeric Aux1</Label>
+         </Channel>
+         <Channel EdfSignal="9" UseForAnalysis="true" DecimalDigits="1">
+            <Label>Numeric Aux2</Label>
+         </Channel>
+         <Channel EdfSignal="10" UseForAnalysis="true" DecimalDigits="1">
+            <Label>Numeric Aux3</Label>
+         </Channel>
+         <Channel EdfSignal="11" UseForAnalysis="true" DecimalDigits="1">
+            <Label>Numeric Aux4</Label>
+         </Channel>
+         <Channel EdfSignal="12" UseForAnalysis="true" DecimalDigits="1">
+            <Label>Numeric Aux5</Label>
+         </Channel>
+         <Channel EdfSignal="13" UseForAnalysis="true" DecimalDigits="1">
+            <Label>Numeric Aux6</Label>
+         </Channel>
+      </Channels>
+   </ChannelConfig>

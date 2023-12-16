@@ -11,3 +11,8 @@ alternative-isg-analyze2/elect_info.csv
 alternative-isg-analyze2/clinic_tec.csv
 alternative-isg-analyze2/assets
 alternative-isg-analyze2/output_file/*.*
+*.csv
+*.rml
+*.edf
+*.png
+*.pkl
