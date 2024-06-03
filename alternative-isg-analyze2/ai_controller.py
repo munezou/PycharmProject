@@ -1,10 +1,7 @@
-import codecs
 import os
+import shutil
 from datetime import datetime, timedelta
 import traceback
-import ntpath
-import shutil
-from csv import writer
 
 import pyedflib as edf
 import numpy as np
@@ -13,6 +10,7 @@ from IPython.display import display
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score, cohen_kappa_score
 from xml.dom import minidom
+import csv
 import pandas as pd
 
 from ai_version import AiVersion
@@ -46,28 +44,23 @@ class AiController:
     __lightson: int
     __default_edf_filename: str = "template.edf"
     __clinic_tech_results: np.ndarray = np.array([])
+
     __electrode_instance: Electrode = Electrode()
-    __graphic_enable: bool
-    __store_enable: bool
     
     try:
         def __init__(self, config_parameter) -> None:
-            if len(config_parameter) != 6:
-                raise Exception("Syntax error: # of Input != 6")
+            if len(config_parameter) != 4:
+                raise Exception("Syntax error: # of Input != 4")
     
             self.__edf_file_names = os.path.join(os.getcwd(), 'assets', 'edf', config_parameter[0])
             self.__rml_file_names = os.path.join(os.getcwd(), 'assets', 'teacher_data', config_parameter[1])
             self.__user = config_parameter[2]
             self.__ai_version = config_parameter[3]
-            self.__graphic_enable = config_parameter[4]
-            self.__store_enable = config_parameter[5]
     
         def start(self) -> None:
             self.load_check_args()
     
-            preprocessor_result = PreProcessor().start(
-                self.__edf_file_names, self.__graphic_enable, self.__store_enable
-            )
+            preprocessor_result = PreProcessor().start(self.__edf_file_names)
     
             self.__lightsoff = preprocessor_result.light_off
             self.__lightson = preprocessor_result.light_on
@@ -122,8 +115,7 @@ class AiController:
             
             df_clinic_tech_results = pd.DataFrame(self.__clinic_tech_results)
 
-            if self.__store_enable:
-                df_clinic_tech_results.to_csv(clinic_tech_parse_stage_path)
+            df_clinic_tech_results.to_csv(clinic_tech_parse_stage_path)
             
             stage_clinical_tec = np.array([], dtype='uint16')
             
@@ -161,7 +153,7 @@ class AiController:
                     raise ValueError('No supported stage!')
             
             # confirm stage length
-            if len(scoring_result) < len(self.__clinic_tech_results):
+            if len(scoring_result) < len(stage_clinical_tec):
                 stage_clinical_tec_str = self.__clinic_tech_results[:, 1]
                 stage_clinical_tec = np.delete(stage_clinical_tec_str, -1)
             
@@ -169,43 +161,23 @@ class AiController:
             scoring_result_str_without_not_scored = np.array([])
             stage_clinical_tec_without_not_scored = np.array([])
             
-            stage_index = 0
             # Ignore NotScored.
-            for data_stage in stage_clinical_tec:
-                # confirm scoring_result value
-                confirm_scoring_data = scoring_result_str[stage_index]
-                if data_stage == 'NotScored' or confirm_scoring_data == 'NotScored':
-                    print(f"which stage either is NotScored(EPOCH:{stage_index + 1})")
-                else:
+            for index, data in np.ndenumerate(stage_clinical_tec):
+                if data != 'NotScored':
                     scoring_result_str_without_not_scored = np.append(
                         scoring_result_str_without_not_scored,
-                        scoring_result_str[stage_index]
+                        scoring_result_str[list(index)]
                     )
                     
                     stage_clinical_tec_without_not_scored = np.append(
                         stage_clinical_tec_without_not_scored,
-                        stage_clinical_tec[stage_index]
+                        stage_clinical_tec[list(index)]
                     )
-                
-                stage_index += 1
             
             scoring_result_str.tofile('scoring_result.csv', sep=',')
             stage_clinical_tec_str.tofile('clinic_tec.csv', sep=',')
             
             print()
-
-            arg_np = np.sum(preprocessor_result.elect_info[:, 1:6] >= 100, axis=0)
-
-            arg_np = np.concatenate([arg_np[0:2], arg_np[3:5]])
-
-            ratio = (arg_np / preprocessor_result.elect_info.shape[0])
-            print(f"ratio: R_A1={ratio[0]}, R_Fp1={ratio[1]}, R_Fp2={ratio[2]}, R_A2={ratio[3]}")
-
-            invalid_number_of_electrodes = 0
-            
-            for data in ratio:
-                if data >= 0.1:
-                    invalid_number_of_electrodes += 1
             
             # calculate accuracy
             accuracy = accuracy_score(stage_clinical_tec_without_not_scored, scoring_result_str_without_not_scored)
@@ -224,50 +196,8 @@ class AiController:
             
             cm = self.make_cm(matrix, ["Wake", "REM", "NonREM1", "NonREM2", "NonREM3"])
             print("           predict")
+            
             display(cm)
-
-            # prepare data
-            base_name, ext_rml = os.path.splitext(self.__edf_file_names)
-            edf_id = ntpath.basename(base_name)
-            
-            #
-            confusion_matrix_path = os.path.join(
-                os.getcwd(), 'output_file', f'{self.__ai_version.name}_confusion_matrix.csv'
-            )
-            
-            for i, data in enumerate(matrix):
-                if i == 0:
-                    print(f"{edf_id},,,,,", file=codecs.open(confusion_matrix_path, 'a', 'utf-8'))
-                    
-                    print(
-                        ", Wake, REM, NonREM1, NonREM2, NonREM3",
-                        file=codecs.open(confusion_matrix_path, 'a', 'utf-8')
-                    )
-                    
-                    print(
-                        f"Wake, {matrix[i][0]}, {matrix[i][1]}, {matrix[i][2]}, {matrix[i][3]}, {matrix[i][4]}",
-                        file=codecs.open(confusion_matrix_path, 'a', 'utf-8')
-                    )
-                elif i == 1:
-                    print(
-                        f"REM, {matrix[i][0]}, {matrix[i][1]}, {matrix[i][2]}, {matrix[i][3]}, {matrix[i][4]}",
-                        file=codecs.open(confusion_matrix_path, 'a', 'utf-8')
-                    )
-                elif i == 2:
-                    print(
-                        f"NonREM1, {matrix[i][0]}, {matrix[i][1]}, {matrix[i][2]}, {matrix[i][3]}, {matrix[i][4]}",
-                        file=codecs.open(confusion_matrix_path, 'a', 'utf-8')
-                    )
-                elif i == 3:
-                    print(
-                        f"NonREM2, {matrix[i][0]}, {matrix[i][1]}, {matrix[i][2]}, {matrix[i][3]}, {matrix[i][4]}",
-                        file=codecs.open(confusion_matrix_path, 'a', 'utf-8')
-                    )
-                elif i == 4:
-                    print(
-                        f"NonREM3, {matrix[i][0]}, {matrix[i][1]}, {matrix[i][2]}, {matrix[i][3]}, {matrix[i][4]}",
-                        file=codecs.open(confusion_matrix_path, 'a', 'utf-8')
-                    )
             
             print()
             print()
@@ -280,31 +210,12 @@ class AiController:
             )
             print(f"weighted kappa k: {k}\n\n")
             
-            acc_ka_list = [
-                edf_id,
-                ratio[0],
-                ratio[1],
-                ratio[2],
-                ratio[3],
-                invalid_number_of_electrodes,
-                accuracy,
-                k
-            ]
-
-            with open(
-                    os.path.join(os.getcwd(), 'output_file', f'{self.__ai_version.name}_accuracy_kappa.csv'),
-                    'a',
-                    newline=''
-            ) as f_object:
-                writer_object = writer(f_object)
-                writer_object.writerow(acc_ka_list)
-                f_object.close()
-
+            # この箇所で、A1_A2の値をotogaiで上書きする。
             preprocessor_result.eeg["m1_m2"] = preprocessor_result.chin
             
             if (
                 int(Constants.SAMPLING_FREQUENCE * preprocessor_result.duration) >
-                preprocessor_result.eeg['fp1'].shape[0]
+                    preprocessor_result.eeg['fp1'].shape[0]
             ):
                 preprocessor_result.duration = (
                     int(preprocessor_result.eeg['fp1'].shape[0] / Constants.SAMPLING_FREQUENCE)
@@ -330,20 +241,19 @@ class AiController:
             output_generator.generate_filtered_edf()
             output_generator.make_rml_file()
             output_generator.make_certainty_file()
-            
-            if self.__store_enable:
-                base_file = os.path.splitext(os.path.basename(self.__edf_file_names))[0]
-                destination_file = f'{base_file}_edf_filtered.edf'
-                destination_path = os.path.join(os.getcwd(), 'output_file', 'results', destination_file)
-                shutil.copyfile(self.__edffilter_names, destination_path)
-    
-                destination_file = f'{base_file}_rml.rml'
-                destination_path = os.path.join(os.getcwd(), 'output_file', 'results', destination_file)
-                shutil.copyfile(self.__rml_output_default_name, destination_path)
-    
-                destination_file = f'{base_file}_result.csv'
-                destination_path = os.path.join(os.getcwd(), 'output_file', 'results', destination_file)
-                shutil.copyfile(self.__certainty_output_default_name, destination_path)
+
+            base_file = os.path.splitext(os.path.basename(self.__edf_file_names))[0]
+            destination_file = f'{base_file}_edf_filtered.edf'
+            destination_path = os.path.join(os.getcwd(), 'output_file', 'results', destination_file)
+            shutil.copyfile(self.__edffilter_names, destination_path)
+
+            destination_file = f'{base_file}_rml.rml'
+            destination_path = os.path.join(os.getcwd(), 'output_file', 'results', destination_file)
+            shutil.copyfile(self.__rml_output_default_name, destination_path)
+
+            destination_file = f'{base_file}_result.csv'
+            destination_path = os.path.join(os.getcwd(), 'output_file', 'results', destination_file)
+            shutil.copyfile(self.__certainty_output_default_name, destination_path)
     
         def check_edf(self) -> None:
             edf_file = edf.EdfReader(self.__edf_file_names)
@@ -409,14 +319,15 @@ class AiController:
                 delta_time = int(start)
                 if delta_time != 0:
                     during_epoc = int((delta_time - past_delta_time) / 30)
-                    
+            
                     for i in range(during_epoc):
                         if i != 0:
                             input_time = past_delta_time + i * 30
                             measuring_time = start_time_object + input_time * timedelta(seconds=1)
                             time = np.append(time, str(measuring_time))
                             stage = np.append(stage, past_t)
-                
+                            
+            
                 measuring_time = start_time_object + delta_time * timedelta(seconds=1)
                 time = np.append(time, str(measuring_time))
                 stage = np.append(stage, t)

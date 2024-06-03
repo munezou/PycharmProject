@@ -2,14 +2,15 @@ import math
 from enum import Enum
 from dataclasses import dataclass
 import tensorflow as tf
-from tensorflow.keras import backend as K
-from tensorflow.keras import regularizers
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D
-from tensorflow.keras.layers import Input, Activation, Conv1D, ELU, concatenate
-from tensorflow.keras.layers import Flatten, Dense, BatchNormalization, MaxPool1D
+from keras import backend as K
+from keras import regularizers
+from keras.models import Model
+from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D
+from keras.layers import Input, Activation, Conv1D, ELU, concatenate
+from keras.layers import Flatten, Dense, BatchNormalization, MaxPool1D
 from tensorflow.python.keras.layers import Layer
 from tensorflow.python.keras.engine.keras_tensor import KerasTensor
+from keras.layers import Lambda
 
 from constants import Constants, InvalidElectrodeStatus
 
@@ -23,8 +24,8 @@ class LayerNormalization(Layer):
         self.built = False
 
     def call(self, x):
-        mean = K.mean(x, axis=-1, keepdims=True)
-        std = K.std(x, axis=-1, keepdims=True)
+        mean = tf.reduce_mean(x, axis=-1, keepdims=True)
+        std = tf.math.reduce_std(x, axis=-1, keepdims=True)
         norm = (x - mean) * (1 / (std + self.epsilon))
         return norm
 

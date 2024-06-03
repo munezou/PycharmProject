@@ -1,4 +1,5 @@
 import os
+import shutil
 from datetime import timedelta
 from datetime import date
 
@@ -105,6 +106,7 @@ class OutputGenerator:
             for cs in certainty_string:
                 f.write(cs)
 
+
     def aquisition_to_rml_style(self):
         date = self.__date.strftime("%Y-%m-%dT%H:%M:%S")
         buffer = ""
@@ -206,129 +208,135 @@ class OutputGenerator:
     def generate_filtered_edf(self) -> None:
         sampling_freq = Constants.SAMPLING_FREQUENCE
 
-        edf_file = edf.EdfReader(self.__edf_filenames)
-        signal_labels = edf_file.getSignalLabels()
-        eeg_idx = ret_eeg_idx(signal_labels)
-
-        edf_w = edf.EdfWriter(
-            self.__edffiltered_filenames, len(Constants.ALL_SIGNAL_NAME), file_type=edf.FILETYPE_EDF
-        )
-
-        # Header writing (channal common part)
-        edf_w.setAdmincode(edf_file.getAdmincode())
-        edf_w.setBirthdate(self.__user.birthday)
-        edf_w.setEquipment(edf_file.getEquipment())
-        edf_w.setGender(self.__user.gender.value)
-        edf_w.setPatientAdditional(edf_file.getPatientAdditional())
-        edf_w.setPatientCode(str(self.__user.id))
-        edf_w.setPatientName("anonymous")
-        edf_w.setStartdatetime(edf_file.getStartdatetime())
-        edf_w.setTechnician("anonymous")
-        self.__date = edf_file.getStartdatetime()
-
-        # Writing header (ch separate part)
-        for i, name in enumerate(Constants.ALL_SIGNAL_NAME):
-            edf_w.setLabel(i, name)
-
-        signal_digital_maximum = edf_file.getDigitalMaximum(eeg_idx[Constants.EEG_LABELS["A1"]])
-        signal_digital_minimum = edf_file.getDigitalMinimum(eeg_idx[Constants.EEG_LABELS["A1"]])
-
-        signal_physical_maximum = edf_file.getPhysicalMaximum(eeg_idx[Constants.EEG_LABELS["A1"]])
-        signal_physical_minimum = edf_file.getPhysicalMinimum(eeg_idx[Constants.EEG_LABELS["A1"]])
-
-        signal_physical_dimension = edf_file.getPhysicalDimension(eeg_idx[Constants.EEG_LABELS["A1"]])
-
-        for i in range(len(Constants.BRAIN_SIGNAL_NAME)):
-            edf_w.setDigitalMaximum(i, signal_digital_maximum)
-            edf_w.setDigitalMinimum(i, signal_digital_minimum)
-            edf_w.setPhysicalDimension(i, signal_physical_dimension)
-            edf_w.setPhysicalMaximum(i, signal_physical_maximum)
-            edf_w.setPhysicalMinimum(i, signal_physical_minimum)
-            edf_w.setPrefilter(i, "HP:0.3Hz,LP:35Hz")
-            edf_w.setTransducer(i, "trans1")
-            edf_w.setSamplefrequency(i, sampling_freq)
-
-        light_digital_maximum = edf_file.getDigitalMaximum(eeg_idx[Constants.EEG_LABELS["Light"]])
-        light_digital_minimum = edf_file.getDigitalMinimum(eeg_idx[Constants.EEG_LABELS["Light"]])
-
-        light_physical_maximum = edf_file.getPhysicalMaximum(eeg_idx[Constants.EEG_LABELS["Light"]])
-        light_physical_minimum = edf_file.getPhysicalMinimum(eeg_idx[Constants.EEG_LABELS["Light"]])
-
-        light_physical_dimension = edf_file.getPhysicalDimension(
-            eeg_idx[Constants.EEG_LABELS["Light"]]
-        )
-        light_sampling_freq = edf_file.getSampleFrequency(eeg_idx[Constants.EEG_LABELS["Light"]])
-
-        light_off_index = Constants.ALL_SIGNAL_NAME.index("Light_OFF")
-        edf_w.setDigitalMaximum(light_off_index, light_digital_maximum)
-        edf_w.setDigitalMinimum(light_off_index, light_digital_minimum)
-        edf_w.setPhysicalDimension(light_off_index, light_physical_dimension)
-        edf_w.setPhysicalMaximum(light_off_index, light_physical_maximum)
-        edf_w.setPhysicalMinimum(light_off_index, light_physical_minimum)
-        edf_w.setPrefilter(light_off_index, "None")
-        edf_w.setTransducer(light_off_index, "trans1")
-        edf_w.setSamplefrequency(light_off_index, light_sampling_freq)
-
-        regist_digital_maximum = edf_file.getDigitalMaximum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
-        regist_digital_minimum = edf_file.getDigitalMinimum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
-
-        regist_physical_maximum = edf_file.getPhysicalMaximum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
-        regist_physical_minimum = edf_file.getPhysicalMinimum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
-
-        regist_physical_dimension = edf_file.getPhysicalDimension(
-            eeg_idx[Constants.EEG_LABELS["R_A1"]]
-        )
-        regist_sampling_freq = edf_file.getSampleFrequency(eeg_idx[Constants.EEG_LABELS["R_A1"]])
-
-        for i in range(len(Constants.BRAIN_SIGNAL_NAME) + 1, len(Constants.ALL_SIGNAL_NAME)):
-            edf_w.setDigitalMaximum(i, regist_digital_maximum)
-            edf_w.setDigitalMinimum(i, regist_digital_minimum)
-            edf_w.setPhysicalDimension(i, regist_physical_dimension)
-            edf_w.setPhysicalMaximum(i, regist_physical_maximum)
-            edf_w.setPhysicalMinimum(i, regist_physical_minimum)
-            edf_w.setPrefilter(i, "None")
-            edf_w.setTransducer(i, "trans1")
-            edf_w.setSamplefrequency(i, regist_sampling_freq)
-
-        edf_w.update_header()
-
-        light_sampling_freq = int(light_sampling_freq)
-        regist_sampling_freq = int(regist_sampling_freq)
-        
-        for i in range(int(self.__duration)):
-            edf_w.writeSamples(
-                [
-                    np.ascontiguousarray(self.__eeg["fp1_ma"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["fp2_ma"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["fp1_fp2"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["m1_m2"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["fp1"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["fp2"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["a1"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(self.__eeg["a2"][i * sampling_freq: (i + 1) * sampling_freq]),
-                    np.ascontiguousarray(
-                        self.__eeg["lgt_off"][i * light_sampling_freq: (i + 1) * light_sampling_freq]
-                    ),
-                    np.ascontiguousarray(
-                        self.__eeg["r_a1"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
-                    ),
-                    np.ascontiguousarray(
-                        self.__eeg["r_a2"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
-                    ),
-                    np.ascontiguousarray(
-                        self.__eeg["r_ref"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
-                    ),
-                    np.ascontiguousarray(
-                        self.__eeg["r_fp1"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
-                    ),
-                    np.ascontiguousarray(
-                        self.__eeg["r_fp2"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
-                    ),
-                ]
+        with edf.EdfReader(self.__edf_filenames) as edf_file:
+            signal_labels = edf_file.getSignalLabels()
+            eeg_idx = ret_eeg_idx(signal_labels)
+            
+            # Inspection information
+            admincode = edf_file.getAdmincode()
+            equipment = edf_file.getEquipment()
+            patientAdditional = edf_file.getPatientAdditional()
+            startdatetime = edf_file.getStartdatetime()
+            self.__date = edf_file.getStartdatetime()
+            
+            # eeg information
+            signal_digital_maximum = edf_file.getDigitalMaximum(eeg_idx[Constants.EEG_LABELS["A1"]])
+            signal_digital_minimum = edf_file.getDigitalMinimum(eeg_idx[Constants.EEG_LABELS["A1"]])
+            signal_physical_maximum = edf_file.getPhysicalMaximum(eeg_idx[Constants.EEG_LABELS["A1"]])
+            signal_physical_minimum = edf_file.getPhysicalMinimum(eeg_idx[Constants.EEG_LABELS["A1"]])
+            signal_physical_dimension = edf_file.getPhysicalDimension(eeg_idx[Constants.EEG_LABELS["A1"]])
+            
+            # light information
+            light_digital_maximum = edf_file.getDigitalMaximum(eeg_idx[Constants.EEG_LABELS["Light"]])
+            light_digital_minimum = edf_file.getDigitalMinimum(eeg_idx[Constants.EEG_LABELS["Light"]])
+            light_physical_maximum = edf_file.getPhysicalMaximum(eeg_idx[Constants.EEG_LABELS["Light"]])
+            light_physical_minimum = edf_file.getPhysicalMinimum(eeg_idx[Constants.EEG_LABELS["Light"]])
+            light_physical_dimension = edf_file.getPhysicalDimension(
+                eeg_idx[Constants.EEG_LABELS["Light"]]
             )
+            light_sampling_freq = edf_file.getSampleFrequency(eeg_idx[Constants.EEG_LABELS["Light"]])
+            
+            #
+            regist_digital_maximum = edf_file.getDigitalMaximum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
+            regist_digital_minimum = edf_file.getDigitalMinimum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
+            
+            regist_physical_maximum = edf_file.getPhysicalMaximum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
+            regist_physical_minimum = edf_file.getPhysicalMinimum(eeg_idx[Constants.EEG_LABELS["R_A1"]])
+            
+            regist_physical_dimension = edf_file.getPhysicalDimension(
+                eeg_idx[Constants.EEG_LABELS["R_A1"]]
+            )
+            regist_sampling_freq = edf_file.getSampleFrequency(eeg_idx[Constants.EEG_LABELS["R_A1"]])
         
         edf_file._close()
         del edf_file
+        
+        
+        with edf.EdfWriter(
+            self.__edffiltered_filenames, len(Constants.ALL_SIGNAL_NAME), file_type=edf.FILETYPE_EDF
+        ) as edf_w:
+
+            # Header writing (channal common part)
+            edf_w.setAdmincode(admincode)
+            edf_w.setBirthdate(self.__user.birthday)
+            edf_w.setEquipment(equipment)
+            edf_w.setGender(self.__user.gender.value)
+            edf_w.setPatientAdditional(patientAdditional)
+            edf_w.setPatientCode(str(self.__user.id))
+            edf_w.setPatientName("anonymous")
+            edf_w.setStartdatetime(startdatetime)
+            edf_w.setTechnician("anonymous")
+    
+            # Writing header (ch separate part)
+            for i, name in enumerate(Constants.ALL_SIGNAL_NAME):
+                edf_w.setLabel(i, name)
+    
+            for i in range(len(Constants.BRAIN_SIGNAL_NAME)):
+                edf_w.setDigitalMaximum(i, signal_digital_maximum)
+                edf_w.setDigitalMinimum(i, signal_digital_minimum)
+                edf_w.setPhysicalDimension(i, signal_physical_dimension)
+                edf_w.setPhysicalMaximum(i, signal_physical_maximum)
+                edf_w.setPhysicalMinimum(i, signal_physical_minimum)
+                edf_w.setPrefilter(i, "HP:0.3Hz,LP:35Hz")
+                edf_w.setTransducer(i, "trans1")
+                edf_w.setSamplefrequency(i, sampling_freq)
+    
+            light_off_index = Constants.ALL_SIGNAL_NAME.index("Light_OFF")
+            edf_w.setDigitalMaximum(light_off_index, light_digital_maximum)
+            edf_w.setDigitalMinimum(light_off_index, light_digital_minimum)
+            edf_w.setPhysicalDimension(light_off_index, light_physical_dimension)
+            edf_w.setPhysicalMaximum(light_off_index, light_physical_maximum)
+            edf_w.setPhysicalMinimum(light_off_index, light_physical_minimum)
+            edf_w.setPrefilter(light_off_index, "None")
+            edf_w.setTransducer(light_off_index, "trans1")
+            edf_w.setSamplefrequency(light_off_index, light_sampling_freq)
+    
+            for i in range(len(Constants.BRAIN_SIGNAL_NAME) + 1, len(Constants.ALL_SIGNAL_NAME)):
+                edf_w.setDigitalMaximum(i, regist_digital_maximum)
+                edf_w.setDigitalMinimum(i, regist_digital_minimum)
+                edf_w.setPhysicalDimension(i, regist_physical_dimension)
+                edf_w.setPhysicalMaximum(i, regist_physical_maximum)
+                edf_w.setPhysicalMinimum(i, regist_physical_minimum)
+                edf_w.setPrefilter(i, "None")
+                edf_w.setTransducer(i, "trans1")
+                edf_w.setSamplefrequency(i, regist_sampling_freq)
+    
+            edf_w.update_header()
+    
+            light_sampling_freq = int(light_sampling_freq)
+            regist_sampling_freq = int(regist_sampling_freq)
+    
+            for i in range(int(self.__duration)):
+                edf_w.writeSamples(
+                    [
+                        np.ascontiguousarray(self.__eeg["fp1_ma"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["fp2_ma"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["fp1_fp2"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["m1_m2"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["fp1"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["fp2"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["a1"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(self.__eeg["a2"][i * sampling_freq: (i + 1) * sampling_freq]),
+                        np.ascontiguousarray(
+                            self.__eeg["lgt_off"][i * light_sampling_freq: (i + 1) * light_sampling_freq]
+                        ),
+                        np.ascontiguousarray(
+                            self.__eeg["r_a1"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
+                        ),
+                        np.ascontiguousarray(
+                            self.__eeg["r_a2"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
+                        ),
+                        np.ascontiguousarray(
+                            self.__eeg["r_ref"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
+                        ),
+                        np.ascontiguousarray(
+                            self.__eeg["r_fp1"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
+                        ),
+                        np.ascontiguousarray(
+                            self.__eeg["r_fp2"][i * regist_sampling_freq: (i + 1) * regist_sampling_freq]
+                        ),
+                    ]
+                )
 
         edf_w.close()
         del edf_w

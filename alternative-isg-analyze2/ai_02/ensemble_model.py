@@ -36,7 +36,7 @@ class EnsembleModel:
         centanity2_ens9 = np.mean(self.__certainty2_1, axis=0)
         pred_alls2_ens9 = np.argmax(centanity2_ens9, axis=1)
 
-        arg_np = np.sum(self.__elect_info[:, 1:6] == 100, axis=0)
+        arg_np = np.sum(self.__elect_info[:, 1:6] >= 100, axis=0)
 
         arg_n = np.argmax(np.concatenate([arg_np[0:2], arg_np[3:5]]))
 

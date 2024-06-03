@@ -3,8 +3,8 @@ from arguments_return_values import AnalyzerArguments
 
 import numpy as np
 
-from tensorflow.keras.models import load_model
-from tensorflow.keras.models import Model
+from keras.models import load_model
+from keras.models import Model
 
 from ai_version import AiVersion
 from common_ai import LayerNormalization

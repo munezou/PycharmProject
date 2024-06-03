@@ -3,11 +3,11 @@ import math
 
 import numpy as np
 
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, MaxPool1D
-from tensorflow.keras.layers import Activation, concatenate
-from tensorflow.keras.layers import ELU
-from tensorflow.keras.layers import GlobalAveragePooling1D
+from keras.models import Model
+from keras.layers import Input, MaxPool1D
+from keras.layers import Activation, concatenate
+from keras.layers import ELU
+from keras.layers import GlobalAveragePooling1D
 
 import common_ai
 from common_ai import LayerNormalization

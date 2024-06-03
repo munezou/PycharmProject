@@ -61,14 +61,3 @@ class OutputGeneratorArguments:
     edffilterd_name: str
     eeg: dict
     edf_filenames: str
-
-
-@dataclass
-class TimeFrequencyReturn:
-    imf1_ndarray: np.ndarray
-    imf2_ndarray: np.ndarray
-    imf3_ndarray: np.ndarray
-    imf4_ndarray: np.ndarray
-    imf5_ndarray: np.ndarray
-    imf6_ndarray: np.ndarray
-    imf7_ndarray: np.ndarray
